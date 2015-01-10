@@ -1,0 +1,11 @@
+[package]
+name = "selecta"
+version = "0.0.1"
+authors = ["Felipe Sere <felipesere@gmail.com>"]
+
+[lib]
+name = "selecta"
+doctest = false
+test = true
+doc = false
+
