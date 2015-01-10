@@ -24,8 +24,10 @@ fn normalize(query_length: f32, match_length: uint, choice_length: f32) -> f32 {
 }
 
 fn compute_match_length(choice: &str, query: &str) -> Option<uint> {
-    let query_chars = query.chars().collect::<Vec<char>>();
-    let first_char = query_chars[0];
+    let (first, rest) = match query.slice_shift_char() {
+        Some((c, r)) => (c,r),
+        None => return None,
+    };
 
     let match_beginnings = find_positions(first , choice);
 
@@ -54,10 +56,10 @@ fn find_positions(first_char: char, choice: &str) -> Vec<uint> {
     return found;
 }
 
-fn find_match_length(choice: &str, query_chars: &Vec<char>, beginning: uint) -> Option<uint> {
+fn find_match_length(choice: &str, query: &str, beginning: uint) -> Option<uint> {
     let mut last_index = beginning;
-    for query_char in query_chars.iter() {
-       let found = find_first_after(choice, *query_char, last_index);
+    for query_char in query.chars() {
+       let found = find_first_after(choice, query_char, last_index+1);
        match found {
            Some(n) => last_index = n,
            None => return None,
@@ -76,7 +78,6 @@ fn find_first_after(choice: &str, query: char, beginning: uint) -> Option<uint> 
 }
 
 #[cfg(test)]
-
 #[test]
 fn scores_zero_when_the_choice_is_emtpy() {
     assert_eq!(Score::score("", "a"), 0.0);
