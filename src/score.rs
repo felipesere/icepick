@@ -37,14 +37,16 @@ fn compute_match_length(choice: &str, query: &str) -> Option<uint> {
     let mut shortest_match: Option<uint> = None;
 
     for beginning in match_beginnings.iter() {
-        let possible_end = find_end_of_match(choice, &query_chars, *beginning);
-        match possible_end {
-            Some(end) => shortest_match = Some(end - *beginning + 1),
-            None => continue,
+        let possible_match_length = find_match_length(choice, &query_chars, *beginning);
+        match (possible_match_length, shortest_match) {
+            (_, None) => shortest_match = possible_match_length,
+            (Some(match_length), Some(shortest)) if match_length < shortest => shortest_match = possible_match_length,
+            _ => continue,
         };
     }
     return shortest_match;
 }
+
 
 fn find_char_in_choice(first_char: char, choice: &str) -> Vec<uint> {
     let mut found: Vec<uint> = Vec::new();
@@ -57,7 +59,7 @@ fn find_char_in_choice(first_char: char, choice: &str) -> Vec<uint> {
     return found;
 }
 
-fn find_end_of_match(choice: &str, query_chars: &Vec<char>, beginning: uint) -> Option<uint> {
+fn find_match_length(choice: &str, query_chars: &Vec<char>, beginning: uint) -> Option<uint> {
     let mut last_index = beginning;
     for query_char in query_chars.iter() {
        let found = find_first_after(choice, *query_char, last_index);
@@ -66,7 +68,7 @@ fn find_end_of_match(choice: &str, query_chars: &Vec<char>, beginning: uint) -> 
            None => return None,
        };
     }
-    return Some(last_index);
+    return Some(last_index - beginning + 1);
 }
 
 fn find_first_after(choice: &str, query: char, beginning: uint) -> Option<uint> {
@@ -123,7 +125,7 @@ fn normalizes_score_based_on_length() {
     assert_eq!(Score::score("spec/search_spec.rb", "sear"), 1.0 / "spec/search_spec.rb".len() as f32)
 }
 
-//#[test]
+#[test]
 fn matches_punctuation() {
     assert!(Score::score("/! symbols $^", "/!$^") > 0.0);
 }
@@ -148,7 +150,7 @@ fn scores_shorter_matches_higher() {
       assert!(Score::score("1/2/3/4", "1/2/3") > Score::score("1/9/2/3/4", "1/2/3"));
 }
 
-//#[test]
+#[test]
 fn scores_the_tighter_of_two_matches_regardless_of_order() {
       let beginning = "121padding2";
       let end = "1padding212";
