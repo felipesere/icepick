@@ -9,22 +9,17 @@ impl Score {
         let lower_choice = choice.to_ascii_lowercase();
         let lower_query = query.to_ascii_lowercase();
 
-        if choice_length == 0.0 || query_length > choice_length  {
-            return 0.0
-        }
-        if query_length == 0.0  {
-            return 1.0
-        }
+        if query_length == 0.0  { return 1.0 }
 
         let possible_match_length = compute_match_length(lower_choice.as_slice(), lower_query.as_slice());
          match possible_match_length {
-             Some(match_length) => return normalize_score(query_length, match_length, choice_length),
+             Some(match_length) => return normalize(query_length, match_length, choice_length),
              None => return 0.0,
          };
     }
 }
 
-fn normalize_score(query_length: f32, match_length: uint, choice_length: f32) -> f32 {
+fn normalize(query_length: f32, match_length: uint, choice_length: f32) -> f32 {
     (query_length / match_length as f32) / choice_length
 }
 
@@ -32,23 +27,23 @@ fn compute_match_length(choice: &str, query: &str) -> Option<uint> {
     let query_chars = query.chars().collect::<Vec<char>>();
     let first_char = query_chars[0];
 
-    let match_beginnings = find_char_in_choice(first_char, choice);
+    let match_beginnings = find_positions(first , choice);
 
     let mut shortest_match: Option<uint> = None;
 
     for beginning in match_beginnings.iter() {
-        let possible_match_length = find_match_length(choice, &query_chars, *beginning);
-        match (possible_match_length, shortest_match) {
-            (_, None) => shortest_match = possible_match_length,
-            (Some(match_length), Some(shortest)) if match_length < shortest => shortest_match = possible_match_length,
-            _ => continue,
+        let possible_match_length = find_match_length(choice, rest, *beginning);
+
+        match (shortest_match, possible_match_length) {
+            (Some(shortest), Some(length)) if shortest > length => shortest_match = possible_match_length,
+            (None, Some(length)) => shortest_match = possible_match_length,
+            (_, _) => continue,
         };
     }
     return shortest_match;
 }
 
-
-fn find_char_in_choice(first_char: char, choice: &str) -> Vec<uint> {
+fn find_positions(first_char: char, choice: &str) -> Vec<uint> {
     let mut found: Vec<uint> = Vec::new();
     for  (idx, character) in choice.chars().enumerate() {
         if character == first_char {
@@ -155,5 +150,10 @@ fn scores_the_tighter_of_two_matches_regardless_of_order() {
       let beginning = "121padding2";
       let end = "1padding212";
       assert_eq!(Score::score(beginning, "12"), Score::score(end, "12"));
+}
+
+#[test]
+fn tighter_matches_score_higher() {
+    assert!(Score::score("long 12 long", "12") > Score::score("1 long 2", "12"));
 }
 
