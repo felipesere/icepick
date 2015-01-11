@@ -9,22 +9,12 @@ struct Search {
 
 impl Search {
     fn blank(config: Configuration) -> Search {
-        let max_index = Search::extract_max_index(&config);
-
         Search { selection: config.choices[0].to_string(),
+                 max_index: config.visible_limit,
                  config: config,
-                 max_index: max_index,
                  current: 0 }
 
     }
-
-    fn extract_max_index(config: &Configuration) -> uint {
-        match config.visible_limit {
-            Some(n) => n,
-            None => config.choices.len(),
-        }
-    }
-
 
     fn down(self) -> Search {
         let next_index = self.next_index();

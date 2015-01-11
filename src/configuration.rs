@@ -2,7 +2,7 @@ use std::slice::SliceExt;
 
 pub struct Configuration {
     pub choices: Vec<String>,
-    pub visible_limit: Option<uint>,
+    pub visible_limit: uint,
     initial_search: Option<String>,
 }
 
@@ -12,10 +12,14 @@ impl Configuration {
                        visible_limit: Option<uint>)  -> Configuration {
 
         let cleaned = choice.iter().map(clean as fn(&String) -> String).collect::<Vec<String>>();
+        let limit = match visible_limit {
+            Some(n) => n,
+            None => choice.len(),
+        };
 
         Configuration { choices: cleaned,
                         initial_search: initial_search,
-                        visible_limit: visible_limit }
+                        visible_limit: limit }
     }
 
     fn parse_options(input: Vec<String>) -> Option<String> {
