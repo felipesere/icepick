@@ -26,9 +26,7 @@ impl Search {
 
 #[test]
 fn it_selects_the_first_choice_by_default() {
-    let input = vec!["one".to_string(),
-                     "two".to_string(),
-                     "three".to_string()];
+    let input =  one_two_three();
 
     let config = Configuration::from_inputs(input, None);
     let search = Search::blank(config);
@@ -36,14 +34,19 @@ fn it_selects_the_first_choice_by_default() {
     assert_eq!(search.selection, "one");
 }
 
+fn one_two_three() -> Vec<String> {
+    vec!["one".to_string(),
+                     "two".to_string(),
+                     "three".to_string()]
+}
+
 #[test]
 fn it_selets_the_second_when_down_is_called() {
-    let input = vec!["one".to_string(),
-                     "two".to_string(),
-                     "three".to_string()];
+    let input =  one_two_three();
 
     let config = Configuration::from_inputs(input, None);
     let search = Search::blank(config);
 
     assert_eq!(search.down().selection, "two");
 }
+
