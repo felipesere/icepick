@@ -1,12 +1,12 @@
 use std::slice::SliceExt;
 
-struct Configuration {
-    choices: Vec<String>,
+pub struct Configuration {
+    pub choices: Vec<String>,
     initial_search: Option<String>,
 }
 
 impl Configuration {
-    fn from_inputs(choice: Vec<String>, initial_search: Option<String>)  -> Configuration {
+    pub fn from_inputs(choice: Vec<String>, initial_search: Option<String>)  -> Configuration {
         let cleaned = choice.iter().map(clean as fn(&String) -> String).collect::<Vec<String>>();
 
         Configuration { choices: cleaned,
