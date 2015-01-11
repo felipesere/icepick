@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use std::ascii::AsciiExt;
 
 struct Score;
@@ -32,13 +33,12 @@ fn compute_match_length(choice: &str, query: &str) -> Option<uint> {
     let match_beginnings = find_positions(first , choice);
 
     let mut shortest_match: Option<uint> = None;
-
     for beginning in match_beginnings.iter() {
         let possible_match_length = find_match_length(choice, rest, *beginning);
 
         match (shortest_match, possible_match_length) {
             (Some(shortest), Some(length)) if shortest > length => shortest_match = possible_match_length,
-            (None, Some(length)) => shortest_match = possible_match_length,
+            (None, Some(_)) => shortest_match = possible_match_length,
             (_, _) => continue,
         };
     }
@@ -68,13 +68,11 @@ fn find_match_length(choice: &str, query: &str, beginning: uint) -> Option<uint>
     return Some(last_index - beginning + 1);
 }
 
-fn find_first_after(choice: &str, query: char, beginning: uint) -> Option<uint> {
-    for (idx, character) in choice.chars().enumerate().skip(beginning) {
-        if character == query {
-            return Some(idx);
-        }
+fn find_first_after(choice: &str, query: char, offset: uint) -> Option<uint> {
+    match choice.slice_from(offset).find(query) {
+        Some(index) => Some(index + offset),
+        None => None,
     }
-    None
 }
 
 #[cfg(test)]
