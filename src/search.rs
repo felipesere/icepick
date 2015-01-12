@@ -3,16 +3,23 @@ use configuration::Configuration;
 struct Search {
     selection: String,
     config: Configuration,
+    query: String,
     current: uint,
     max_index: uint,
 }
 
 impl Search {
     fn blank(config: Configuration) -> Search {
-        Search { selection: config.choices[0].to_string(),
-                 max_index: config.visible_limit,
-                 config: config,
-                 current: 0 }
+        let max_index = config.visible_limit;
+        let query = config.initial_search.clone();
+        let selection = config.choices[0].to_string();
+
+        Search { max_index: max_index,
+                 query:     query,
+                 config:    config,
+                 current:   0,
+                 selection: selection,
+        }
 
     }
 
@@ -31,8 +38,17 @@ impl Search {
     fn new(self, index: uint) -> Search {
         Search { selection: self.config.choices[index].to_string(),
                  config: self.config,
+                 query: self.query,
                  max_index: self.max_index,
                  current: index }
+    }
+
+    fn append_to_search(self, input: String) -> Search {
+        let index = self.current;
+        let mut new_serach = self.new(index);
+        new_serach.query.push_str(input.as_slice());
+
+        new_serach
     }
 
     fn next_index(&self) -> uint {

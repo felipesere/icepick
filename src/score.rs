@@ -13,15 +13,13 @@ impl Score {
         if query_length == 0.0  { return 1.0 }
 
         let possible_match_length = compute_match_length(lower_choice.as_slice(), lower_query.as_slice());
-         match possible_match_length {
-             Some(match_length) => return normalize(query_length, match_length, choice_length),
-             None => return 0.0,
-         };
+        match possible_match_length {
+            Some(match_length) => {
+                (query_length / match_length as f32) / choice_length
+            },
+            None => 0.0,
+        }
     }
-}
-
-fn normalize(query_length: f32, match_length: uint, choice_length: f32) -> f32 {
-    (query_length / match_length as f32) / choice_length
 }
 
 fn compute_match_length(choice: &str, query: &str) -> Option<uint> {

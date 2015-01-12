@@ -3,7 +3,7 @@ use std::slice::SliceExt;
 pub struct Configuration {
     pub choices: Vec<String>,
     pub visible_limit: uint,
-    initial_search: Option<String>,
+    pub initial_search: String,
 }
 
 impl Configuration {
@@ -17,8 +17,14 @@ impl Configuration {
             None => choice.len(),
         };
 
+        let search = match initial_search {
+            Some(n) => n,
+            None => "".to_string(),
+        };
+
+
         Configuration { choices: cleaned,
-                        initial_search: initial_search,
+                        initial_search: search,
                         visible_limit: limit }
     }
 
@@ -57,7 +63,7 @@ fn can_specify_initial_search() {
                        "some search".to_string()];
 
     let config = Configuration::from_inputs(input, Configuration::parse_options(options), None);
-    assert_eq!(config.initial_search, Some("some search".to_string()));
+    assert_eq!(config.initial_search.as_slice(), "some search");
 }
 
 #[test]
@@ -66,5 +72,5 @@ fn initial_search_is_optional() {
     let options = vec![];
 
     let config = Configuration::from_inputs(input, Configuration::parse_options(options), None);
-    assert_eq!(config.initial_search, None);
+    assert_eq!(config.initial_search, "");
 }
