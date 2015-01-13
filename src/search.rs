@@ -167,3 +167,23 @@ fn it_handles_not_matching_anything() {
     let search = Search::blank(config);
     assert_eq!(search.append_to_search("x").selection, None);
 }
+
+#[test]
+fn up_match_nothing_after_filtering_all_out() {
+    let input = one_two_three();
+
+    let config = Configuration::from_inputs(input, None, None);
+    let search = Search::blank(config).append_to_search("x");
+
+    assert_eq!(search.up().selection, None);
+}
+
+#[test]
+fn down_match_nothing_after_filtering_all_out() {
+    let input = one_two_three();
+
+    let config = Configuration::from_inputs(input, None, None);
+    let search = Search::blank(config).append_to_search("x");
+
+    assert_eq!(search.down().selection, None);
+}
