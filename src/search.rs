@@ -14,12 +14,11 @@ struct Search {
 impl Search {
     fn blank(config: Configuration) -> Search {
         let query = config.initial_search.clone();
-
         Search::new(config, query, 0)
     }
 
     fn new(config: Configuration, query: String, index: uint) -> Search {
-        let result = Search::filter(query.as_slice(), &config.choices.clone());
+        let result = Search::filter(query.as_slice(), &config.choices);
 
         Search { config: config,
                  current: index,
@@ -60,8 +59,7 @@ impl Search {
         self.new_for_index(next_index)
     }
 
-
-    fn append_to_search(self, input: String) -> Search {
+    fn append_to_search(self, input: &str) -> Search {
         let mut new_query = self.query;
         new_query.push_str(input.as_slice());
         Search::new(self.config, new_query, self.current)
@@ -86,7 +84,6 @@ fn it_selects_the_first_choice_by_default() {
 
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config);
-
     assert_eq!(search.selection, "one");
 }
 
@@ -102,7 +99,6 @@ fn it_selets_the_second_when_down_is_called() {
 
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config);
-
     assert_eq!(search.down().selection, "two");
 }
 
@@ -112,7 +108,6 @@ fn it_loop_around_when_reaching_end_of_list() {
 
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config);
-
     assert_eq!(search.down().down().down().down().selection, "two");
 }
 
@@ -122,7 +117,6 @@ fn it_loop_around_when_reaching_top_of_list() {
 
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config);
-
     assert_eq!(search.up().up().selection, "two");
 }
 
@@ -132,7 +126,6 @@ fn it_loop_around_when_reaching_visible_limit() {
 
     let config = Configuration::from_inputs(input, None, Some(2));
     let search = Search::blank(config);
-
     assert_eq!(search.down().down().down().selection, "two");
 }
 
@@ -142,7 +135,7 @@ fn it_moves_down_the_filtered_search_results() {
 
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config);
-    assert_eq!(search.append_to_search("t".to_string()).down().selection, "three");
+    assert_eq!(search.append_to_search("t").down().selection, "three");
 }
 
 #[test]
@@ -151,6 +144,5 @@ fn it_moves_down_the_filtered_search_results_twice() {
 
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config);
-    assert_eq!(search.append_to_search("t".to_string())
-               .append_to_search("w".to_string()).selection, "two");
+    assert_eq!(search.append_to_search("t").append_to_search("w").selection, "two");
 }
