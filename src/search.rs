@@ -24,7 +24,7 @@ impl Search {
         let mut result = config.choices.clone();
         result = Search::filter(query.as_slice(), result);
 
-        Search { selection: config.choices[index].to_string(),
+        Search { selection: result[index].to_string(),
                  config: config,
                  query: query,
                  max_index: max_index,
@@ -32,25 +32,36 @@ impl Search {
                  current: index }
     }
 
-    fn filter(query: &str, mut choices: Vec<String>) -> Vec<String> {
-        choices.sort_by( |a,b| Score::score(a.as_slice(), query).partial_cmp(&Score::score(b.as_slice(), query)).unwrap_or(Ordering::Equal) );
-        choices
-    }
-
-    fn for_index(self, index: uint) -> Search {
+    fn new_for_index(self, index: uint) -> Search {
         Search::new(self.config, self.query, self.max_index, index)
     }
 
+    fn filter(query: &str, choices: Vec<String>) -> Vec<String> {
+        let mut filtered = choices.iter().filter_map( |choice| {
+            let quality = Score::score(choice.as_slice(), query);
+            if quality > 0.0 {
+                Some((quality, choice.to_string()))
+            } else {
+                None
+            }
+        }).collect::<Vec<(f32, String)>>();
+
+        filtered.sort_by( |&(quality_a, _), &(quality_b, _)| {
+            quality_a.partial_cmp(&quality_b).unwrap_or(Ordering::Equal).reverse()
+        });
+
+        filtered.iter().map( |&(_, ref choice)| choice.to_string() ).collect::<Vec<String>>()
+    }
+
+
     fn down(self) -> Search {
         let next_index = self.next_index();
-
-        self.for_index(next_index)
+        self.new_for_index(next_index)
     }
 
     fn up(self) -> Search {
         let next_index = self.prev_index();
-
-        self.for_index(next_index)
+        self.new_for_index(next_index)
     }
 
 
@@ -61,25 +72,15 @@ impl Search {
     }
 
     fn next_index(&self) -> uint {
-        let mut next_index = self.current + 1;
+        let next_index = self.current + 1;
 
-        if next_index >= self.max_index {
-            next_index = 0;
-        }
-
-        next_index
+        if next_index >= self.max_index { 0 } else { next_index }
     }
 
     fn prev_index(&self) -> uint {
-        if self.current == 0 {
-            self.max_index - 1
-        } else  {
-            self.current - 1
-        }
+        if self.current == 0 { self.max_index - 1 } else  { self.current - 1 }
     }
-
 }
-
 
 #[cfg(test)]
 
@@ -139,12 +140,11 @@ fn it_loop_around_when_reaching_visible_limit() {
     assert_eq!(search.down().down().down().selection, "two");
 }
 
-//#[test]
+#[test]
 fn it_moves_down_the_filtered_search_results() {
     let input =  one_two_three();
 
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config);
-    println!("{}", search.result);
     assert_eq!(search.append_to_search("t".to_string()).down().selection, "three");
 }
