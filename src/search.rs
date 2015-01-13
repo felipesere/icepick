@@ -6,7 +6,6 @@ use score::Score;
 struct Search {
     config: Configuration,
     current: uint,
-    max_index: uint,
     query: String,
     selection: String,
     result: Vec<String>,
@@ -14,28 +13,26 @@ struct Search {
 
 impl Search {
     fn blank(config: Configuration) -> Search {
-        let max_index = config.visible_limit;
         let query = config.initial_search.clone();
 
-        Search::new(config, query, max_index, 0)
+        Search::new(config, query, 0)
     }
 
-    fn new(config: Configuration, query: String, max_index: uint, index: uint) -> Search {
-        let result = Search::filter(query.as_slice(), config.choices.clone());
+    fn new(config: Configuration, query: String, index: uint) -> Search {
+        let result = Search::filter(query.as_slice(), &config.choices.clone());
 
         Search { config: config,
                  current: index,
-                 max_index: max_index,
                  query: query,
                  selection: result[index].to_string(),
                  result: result }
     }
 
     fn new_for_index(self, index: uint) -> Search {
-        Search::new(self.config, self.query, self.max_index, index)
+        Search::new(self.config, self.query, index)
     }
 
-    fn filter(query: &str, choices: Vec<String>) -> Vec<String> {
+    fn filter(query: &str, choices: &Vec<String>) -> Vec<String> {
         let mut filtered = choices.iter().filter_map( |choice| {
             let quality = Score::score(choice.as_slice(), query);
             if quality > 0.0 {
@@ -67,17 +64,17 @@ impl Search {
     fn append_to_search(self, input: String) -> Search {
         let mut new_query = self.query;
         new_query.push_str(input.as_slice());
-        Search::new(self.config, new_query, self.max_index, self.current)
+        Search::new(self.config, new_query, self.current)
     }
 
     fn next_index(&self) -> uint {
         let next_index = self.current + 1;
 
-        if next_index >= self.max_index { 0 } else { next_index }
+        if next_index >= self.config.visible_limit { 0 } else { next_index }
     }
 
     fn prev_index(&self) -> uint {
-        if self.current == 0 { self.max_index - 1 } else  { self.current - 1 }
+        if self.current == 0 { self.config.visible_limit - 1 } else  { self.current - 1 }
     }
 }
 
