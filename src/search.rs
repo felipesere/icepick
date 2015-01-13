@@ -33,6 +33,12 @@ impl Search {
         Search::new(self.config, self.query, self.result, index)
     }
 
+    fn new_for_query(self, new_query: String) -> Search {
+        let new_result = Search::filter(new_query.as_slice(), &self.config.choices);
+
+        Search::new(self.config, new_query, new_result, self.current)
+    }
+
     fn filter(query: &str, choices: &Vec<String>) -> Vec<String> {
         let mut filtered = choices.iter().filter_map( |choice| {
             let quality = Score::score(choice.as_slice(), query);
@@ -62,19 +68,24 @@ impl Search {
         let next_index = self.next_index();
         self.new_for_index(next_index)
     }
-
+ 
     fn up(self) -> Search {
         let next_index = self.prev_index();
         self.new_for_index(next_index)
     }
 
     fn append_to_search(self, input: &str) -> Search {
-        let mut new_query = self.query;
+        let mut new_query = self.query.clone();
         new_query.push_str(input.as_slice());
 
-        let new_result    = Search::filter(new_query.as_slice(), &self.result);
+        self.new_for_query(new_query)
+    }
 
-        Search::new(self.config, new_query, new_result, self.current)
+    fn backspace(self) -> Search {
+        let mut new_query = self.query.clone();
+        new_query.pop();
+
+        self.new_for_query(new_query).new_for_index(0)
     }
 
     fn next_index(&self) -> uint {
@@ -89,7 +100,6 @@ impl Search {
 }
 
 #[cfg(test)]
-
 fn one_two_three() -> Vec<String> {
     vec!["one".to_string(),
          "two".to_string(),
@@ -186,4 +196,35 @@ fn down_match_nothing_after_filtering_all_out() {
     let search = Search::blank(config).append_to_search("x");
 
     assert_eq!(search.down().selection, None);
+}
+
+#[test]
+fn backspaces_over_characters() {
+    let input = one_two_three();
+
+    let config = Configuration::from_inputs(input, None, None);
+    let search = Search::blank(config).append_to_search("e");
+
+    assert_eq!(search.query, "e");
+    assert_eq!(search.backspace().query, "");
+}
+
+#[test]
+fn resets_the_index() {
+    let input = one_two_three();
+
+    let config = Configuration::from_inputs(input, None, None);
+    let search = Search::blank(config).append_to_search("e");
+
+    assert_eq!(search.down().backspace().current, 0);
+}
+
+#[test]
+fn previous_results_appear_after_backspace() {
+    let input = one_two_three();
+
+    let config = Configuration::from_inputs(input, None, None);
+    let search = Search::blank(config).append_to_search("t");
+
+    assert_eq!(search.backspace().result.len(), 3);
 }
