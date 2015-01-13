@@ -12,15 +12,8 @@ impl Configuration {
                        visible_limit: Option<uint>)  -> Configuration {
 
         let cleaned = choice.iter().map(clean as fn(&String) -> String).collect::<Vec<String>>();
-        let limit = match visible_limit {
-            Some(n) => n,
-            None => choice.len(),
-        };
-
-        let search = match initial_search {
-            Some(n) => n,
-            None => "".to_string(),
-        };
+        let limit = visible_limit.unwrap_or(choice.len());
+        let search = initial_search.unwrap_or("".to_string());
 
 
         Configuration { choices: cleaned,
