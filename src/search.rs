@@ -20,8 +20,7 @@ impl Search {
 
     fn new(config: Configuration, query: String, prev_result: Vec<String>, index: uint) -> Search {
         let result = Search::filter(query.as_slice(), &prev_result);
-        let select = if result.len() > 0 { Some(result[index].to_string()) } else { None };
-
+        let select = Search::select(&result, index);
         Search { config: config,
                  current: index,
                  query: query,
@@ -48,6 +47,14 @@ impl Search {
         });
 
         filtered.iter().map( |&(_, ref choice)| choice.to_string() ).collect::<Vec<String>>()
+    }
+
+    fn select(result: &Vec<String>, index: uint) -> Option<String> {
+        if result.len() > 0 {
+            Some(result[index].to_string()) 
+        } else { 
+            None
+        }
     }
 
     fn down(self) -> Search {
