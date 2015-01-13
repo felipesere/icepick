@@ -15,21 +15,22 @@ impl Search {
     fn blank(config: Configuration) -> Search {
         let query = config.initial_search.clone();
         let previous_result = config.choices.clone();
-        Search::new(config, query, previous_result, 0)
+        let selection = Some(previous_result[0].clone());
+        Search::new(config, query, previous_result, 0, selection)
     }
 
-    fn new(config: Configuration, query: String, prev_result: Vec<String>, index: uint) -> Search {
-        let result = Search::filter(query.as_slice(), &prev_result);
-        let select = Search::select(&result, index);
+    fn new(config: Configuration, query: String, result: Vec<String>, index: uint, selection: Option<String>) -> Search {
         Search { config: config,
                  current: index,
                  query: query,
-                 selection: select,
+                 selection: selection,
                  result: result }
     }
 
     fn new_for_index(self, index: uint) -> Search {
-        Search::new(self.config, self.query, self.result, index)
+        let new_selection = Search::select(&self.result, index);
+
+        Search::new(self.config, self.query, self.result, index, new_selection)
     }
 
     fn filter(query: &str, choices: &Vec<String>) -> Vec<String> {
@@ -70,7 +71,11 @@ impl Search {
     fn append_to_search(self, input: &str) -> Search {
         let mut new_query = self.query;
         new_query.push_str(input.as_slice());
-        Search::new(self.config, new_query, self.result, self.current)
+
+        let new_result    = Search::filter(new_query.as_slice(), &self.result);
+        let new_selection = Search::select(&new_result, self.current);
+
+        Search::new(self.config, new_query, new_result, self.current, new_selection)
     }
 
     fn next_index(&self) -> uint {
