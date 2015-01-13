@@ -21,15 +21,14 @@ impl Search {
     }
 
     fn new(config: Configuration, query: String, max_index: uint, index: uint) -> Search {
-        let mut result = config.choices.clone();
-        result = Search::filter(query.as_slice(), result);
+        let result = Search::filter(query.as_slice(), config.choices.clone());
 
-        Search { selection: result[index].to_string(),
-                 config: config,
-                 query: query,
+        Search { config: config,
+                 current: index,
                  max_index: max_index,
-                 result: result,
-                 current: index }
+                 query: query,
+                 selection: result[index].to_string(),
+                 result: result }
     }
 
     fn new_for_index(self, index: uint) -> Search {
@@ -147,4 +146,14 @@ fn it_moves_down_the_filtered_search_results() {
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config);
     assert_eq!(search.append_to_search("t".to_string()).down().selection, "three");
+}
+
+#[test]
+fn it_moves_down_the_filtered_search_results_twice() {
+    let input =  one_two_three();
+
+    let config = Configuration::from_inputs(input, None, None);
+    let search = Search::blank(config);
+    assert_eq!(search.append_to_search("t".to_string())
+               .append_to_search("w".to_string()).selection, "two");
 }
