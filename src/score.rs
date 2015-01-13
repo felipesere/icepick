@@ -1,7 +1,6 @@
-#![allow(dead_code)]
 use std::ascii::AsciiExt;
 
-struct Score;
+pub struct Score;
 
 impl Score {
     pub fn score(choice: &str, query: &str) -> f32 {

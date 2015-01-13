@@ -1,54 +1,63 @@
 use configuration::Configuration;
+use std::slice::SliceExt;
+use std::cmp::Ordering;
+use score::Score;
 
 struct Search {
-    selection: String,
     config: Configuration,
-    query: String,
     current: uint,
     max_index: uint,
+    query: String,
+    selection: String,
+    result: Vec<String>,
 }
 
 impl Search {
     fn blank(config: Configuration) -> Search {
         let max_index = config.visible_limit;
         let query = config.initial_search.clone();
-        let selection = config.choices[0].to_string();
 
-        Search { max_index: max_index,
-                 query:     query,
-                 config:    config,
-                 current:   0,
-                 selection: selection,
-        }
+        Search::new(config, query, max_index, 0)
+    }
 
+    fn new(config: Configuration, query: String, max_index: uint, index: uint) -> Search {
+        let mut result = config.choices.clone();
+        result = Search::filter(query.as_slice(), result);
+
+        Search { selection: config.choices[index].to_string(),
+                 config: config,
+                 query: query,
+                 max_index: max_index,
+                 result: result,
+                 current: index }
+    }
+
+    fn filter(query: &str, mut choices: Vec<String>) -> Vec<String> {
+        choices.sort_by( |a,b| Score::score(a.as_slice(), query).partial_cmp(&Score::score(b.as_slice(), query)).unwrap_or(Ordering::Equal) );
+        choices
+    }
+
+    fn for_index(self, index: uint) -> Search {
+        Search::new(self.config, self.query, self.max_index, index)
     }
 
     fn down(self) -> Search {
         let next_index = self.next_index();
 
-        self.new(next_index)
+        self.for_index(next_index)
     }
 
     fn up(self) -> Search {
         let next_index = self.prev_index();
 
-        self.new(next_index)
+        self.for_index(next_index)
     }
 
-    fn new(self, index: uint) -> Search {
-        Search { selection: self.config.choices[index].to_string(),
-                 config: self.config,
-                 query: self.query,
-                 max_index: self.max_index,
-                 current: index }
-    }
 
     fn append_to_search(self, input: String) -> Search {
-        let index = self.current;
-        let mut new_serach = self.new(index);
-        new_serach.query.push_str(input.as_slice());
-
-        new_serach
+        let mut new_query = self.query;
+        new_query.push_str(input.as_slice());
+        Search::new(self.config, new_query, self.max_index, self.current)
     }
 
     fn next_index(&self) -> uint {
@@ -128,4 +137,14 @@ fn it_loop_around_when_reaching_visible_limit() {
     let search = Search::blank(config);
 
     assert_eq!(search.down().down().down().selection, "two");
+}
+
+//#[test]
+fn it_moves_down_the_filtered_search_results() {
+    let input =  one_two_three();
+
+    let config = Configuration::from_inputs(input, None, None);
+    let search = Search::blank(config);
+    println!("{}", search.result);
+    assert_eq!(search.append_to_search("t".to_string()).down().selection, "three");
 }
