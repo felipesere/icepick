@@ -5,6 +5,7 @@ use search::Search;
 enum Text {
     Normal(String),
     Highlight(String),
+    Blank,
 }
 
 struct Renderer {
@@ -18,14 +19,18 @@ impl Renderer {
         }
     }
 
-    fn render(self) -> Vec<Text> {
+    fn render(&self) -> Vec<Text> {
         let mut result = Vec::new();
-        result.push(Text::Normal("> ".to_string()));
+        result.push(self.create_header());
 
-        let selection = self.search.selection.unwrap_or("".to_string());
-        let max_results = self.search.config.visible_limit - 1;
+        let selection = self.search.selection.clone().unwrap_or("".to_string());
 
-        for position in range(0, max_results) {
+        for position in range(0, self.search.config.visible_limit -1) {
+            if position >= self.search.result.len() {
+                result.push(Text::Blank);
+                continue;
+            }
+
             let choice = self.search.result[position].clone();
 
             if choice == selection {
@@ -35,6 +40,12 @@ impl Renderer {
             }
         }
         result
+    }
+
+    fn create_header(&self) -> Text {
+        let mut line = String::from_str("> ");
+        line.push_str(self.search.query.as_slice());
+        Text::Normal(line)
     }
 }
 
@@ -55,12 +66,19 @@ fn it_renderes_selected_matches_with_a_highlight() {
                     Text::Normal("one".to_string()),
                     Text::Highlight("two".to_string())], output);
 }
-//  it "renders selected matches" do
-//    search = Search.blank(config).down
-//    renderer = Renderer.new(search)
-//    expect(renderer.render.choices).to eq [
-//      "> ",
-//      "one",
-//      Text[:inverse, "two", :reset],
-//    ]
-//  end
+
+#[test]
+fn it_renders_a_missmatch() {
+    let config = Configuration::from_inputs(vec!["one".to_string(),
+                                                 "two".to_string(),
+                                                 "three".to_string()], None, Some(3));
+
+    let search = Search::blank(config).append_to_search("z");
+    let renderer = Renderer::new(search);
+
+    let output = renderer.render();
+
+    assert_eq!(vec![Text::Normal("> z".to_string()),
+                    Text::Blank,
+                    Text::Blank], output);
+}

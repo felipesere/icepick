@@ -6,7 +6,7 @@ use score::Score;
 pub struct Search {
     pub config: Configuration,
     current: uint,
-    query: String,
+    pub query: String,
     pub selection: Option<String>,
     pub result: Vec<String>,
 }
@@ -74,7 +74,7 @@ impl Search {
         self.new_for_index(next_index)
     }
 
-    fn append_to_search(self, input: &str) -> Search {
+    pub fn append_to_search(self, input: &str) -> Search {
         let mut new_query = self.query.clone();
         new_query.push_str(input.as_slice());
 
