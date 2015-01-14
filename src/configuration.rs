@@ -1,3 +1,4 @@
+#![warn(dead_code)]
 use std::slice::SliceExt;
 
 pub struct Configuration {

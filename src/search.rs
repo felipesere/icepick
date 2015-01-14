@@ -3,16 +3,16 @@ use std::slice::SliceExt;
 use std::cmp::Ordering;
 use score::Score;
 
-struct Search {
-    config: Configuration,
+pub struct Search {
+    pub config: Configuration,
     current: uint,
     query: String,
-    selection: Option<String>,
-    result: Vec<String>,
+    pub selection: Option<String>,
+    pub result: Vec<String>,
 }
 
 impl Search {
-    fn blank(config: Configuration) -> Search {
+    pub fn blank(config: Configuration) -> Search {
         let query = config.initial_search.clone();
         let previous_result = config.choices.clone();
         Search::new(config, query, previous_result, 0)
@@ -58,17 +58,17 @@ impl Search {
 
     fn select(result: &Vec<String>, index: uint) -> Option<String> {
         if result.len() > 0 {
-            Some(result[index].to_string()) 
-        } else { 
+            Some(result[index].to_string())
+        } else {
             None
         }
     }
 
-    fn down(self) -> Search {
+    pub fn down(self) -> Search {
         let next_index = self.next_index();
         self.new_for_index(next_index)
     }
- 
+
     fn up(self) -> Search {
         let next_index = self.prev_index();
         self.new_for_index(next_index)
