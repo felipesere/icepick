@@ -23,15 +23,15 @@ impl Renderer {
         result.push(Text::Normal("> ".to_string()));
 
         let selection = self.search.selection.unwrap_or("".to_string());
-        let max_results = self.search.config.visible_limit;
-        
-        for choice in self.search.result.iter() {
-            if result.len() >= max_results { break; }
+        let max_results = self.search.config.visible_limit - 1;
 
-            if choice.as_slice() == selection.as_slice() {
-                result.push(Text::Highlight(choice.to_string()));
+        for position in range(0, max_results) {
+            let choice = self.search.result[position].clone();
+
+            if choice == selection {
+                result.push(Text::Highlight(choice));
             } else {
-                result.push(Text::Normal(choice.to_string()));
+                result.push(Text::Normal(choice))
             }
         }
         result
