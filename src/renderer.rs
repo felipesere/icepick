@@ -25,7 +25,7 @@ impl Renderer {
 
         let selection = self.search.selection.clone().unwrap_or("".to_string());
 
-        for position in range(0, self.search.config.visible_limit -1) {
+        for position in 0..(self.search.config.visible_limit -1) {
             if position >= self.search.result.len() {
                 result.push(Text::Blank);
                 continue;

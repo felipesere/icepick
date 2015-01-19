@@ -66,7 +66,7 @@ fn find_match_length(choice: &str, query: &str, beginning: usize) -> Option<usiz
 }
 
 fn find_first_after(choice: &str, query: char, offset: usize) -> Option<usize> {
-    match choice.slice_from(offset).find(query) {
+    match choice[offset..].find(query) {
         Some(index) => Some(index + offset),
         None => None,
     }
