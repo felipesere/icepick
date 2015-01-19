@@ -5,7 +5,7 @@ use score::Score;
 
 pub struct Search {
     pub config: Configuration,
-    current: uint,
+    current: usize,
     pub query: String,
     pub selection: Option<String>,
     pub result: Vec<String>,
@@ -18,7 +18,7 @@ impl Search {
         Search::new(config, query, previous_result, 0)
     }
 
-    fn new(config: Configuration, query: String, result: Vec<String>, index: uint) -> Search {
+    fn new(config: Configuration, query: String, result: Vec<String>, index: usize) -> Search {
 
         let selection = Search::select(&result, index);
 
@@ -29,7 +29,7 @@ impl Search {
                  result: result }
     }
 
-    fn new_for_index(self, index: uint) -> Search {
+    fn new_for_index(self, index: usize) -> Search {
         Search::new(self.config, self.query, self.result, index)
     }
 
@@ -56,7 +56,7 @@ impl Search {
         filtered.iter().map( |&(_, ref choice)| choice.to_string() ).collect::<Vec<String>>()
     }
 
-    fn select(result: &Vec<String>, index: uint) -> Option<String> {
+    fn select(result: &Vec<String>, index: usize) -> Option<String> {
         if result.len() > 0 {
             Some(result[index].to_string())
         } else {
@@ -88,13 +88,13 @@ impl Search {
         self.new_for_query(new_query).new_for_index(0)
     }
 
-    fn next_index(&self) -> uint {
+    fn next_index(&self) -> usize {
         let next_index = self.current + 1;
 
         if next_index >= self.config.visible_limit { 0 } else { next_index }
     }
 
-    fn prev_index(&self) -> uint {
+    fn prev_index(&self) -> usize {
         if self.current == 0 { self.config.visible_limit - 1 } else  { self.current - 1 }
     }
 }

@@ -3,14 +3,14 @@ use std::slice::SliceExt;
 
 pub struct Configuration {
     pub choices: Vec<String>,
-    pub visible_limit: uint,
+    pub visible_limit: usize,
     pub initial_search: String,
 }
 
 impl Configuration {
     pub fn from_inputs(choice: Vec<String>,
                        initial_search: Option<String>,
-                       visible_limit: Option<uint>)  -> Configuration {
+                       visible_limit: Option<usize>)  -> Configuration {
 
         let cleaned = choice.iter().map(clean as fn(&String) -> String).collect::<Vec<String>>();
         let limit = visible_limit.unwrap_or(choice.len());

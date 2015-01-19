@@ -21,7 +21,7 @@ impl Score {
     }
 }
 
-fn compute_match_length(choice: &str, query: &str) -> Option<uint> {
+fn compute_match_length(choice: &str, query: &str) -> Option<usize> {
     let (first, rest) = match query.slice_shift_char() {
         Some((c, r)) => (c,r),
         None => return None,
@@ -29,7 +29,7 @@ fn compute_match_length(choice: &str, query: &str) -> Option<uint> {
 
     let match_beginnings = find_positions(first , choice);
 
-    let mut shortest_match: Option<uint> = None;
+    let mut shortest_match: Option<usize> = None;
     for beginning in match_beginnings.iter() {
         let possible_match_length = find_match_length(choice, rest, *beginning);
 
@@ -42,8 +42,8 @@ fn compute_match_length(choice: &str, query: &str) -> Option<uint> {
     return shortest_match;
 }
 
-fn find_positions(first_char: char, choice: &str) -> Vec<uint> {
-    let mut found: Vec<uint> = Vec::new();
+fn find_positions(first_char: char, choice: &str) -> Vec<usize> {
+    let mut found: Vec<usize> = Vec::new();
     for  (idx, character) in choice.chars().enumerate() {
         if character == first_char {
             found.push(idx);
@@ -53,7 +53,7 @@ fn find_positions(first_char: char, choice: &str) -> Vec<uint> {
     return found;
 }
 
-fn find_match_length(choice: &str, query: &str, beginning: uint) -> Option<uint> {
+fn find_match_length(choice: &str, query: &str, beginning: usize) -> Option<usize> {
     let mut last_index = beginning;
     for query_char in query.chars() {
        let found = find_first_after(choice, query_char, last_index+1);
@@ -65,7 +65,7 @@ fn find_match_length(choice: &str, query: &str, beginning: uint) -> Option<uint>
     return Some(last_index - beginning + 1);
 }
 
-fn find_first_after(choice: &str, query: char, offset: uint) -> Option<uint> {
+fn find_first_after(choice: &str, query: char, offset: usize) -> Option<usize> {
     match choice.slice_from(offset).find(query) {
         Some(index) => Some(index + offset),
         None => None,
