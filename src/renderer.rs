@@ -14,9 +14,7 @@ struct Renderer {
 
 impl Renderer {
     fn new(search: Search) -> Renderer {
-        Renderer {
-            search: search,
-        }
+        Renderer { search: search }
     }
 
     fn render(&self) -> Vec<Text> {
