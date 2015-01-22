@@ -14,6 +14,27 @@ struct TTY {
     original_state: String
 }
 
+pub trait IO {
+    fn write(&mut self, line: &str);
+    fn read(&mut self) -> Option<char>;
+}
+
+impl IO for TTY {
+    fn write(&mut self, line: &str) {
+        self.file.write_str(line);
+    }
+
+    fn read(&mut self) -> Option<char> {
+        let res = match self.file.read_byte() {
+            Ok(c) => Some(c as char),
+            Err(_) => None,
+        };
+
+        println!("[{:?}]", res);
+        res
+    }
+}
+
 impl TTY {
     pub fn new() -> TTY {
         let path = Path::new("/dev/tty");
@@ -49,18 +70,6 @@ impl TTY {
 
     fn reset(self) {
         TTY::stty(&self.file, &[self.original_state.as_slice()]);
-    }
-
-    pub fn write(&mut self, line: &str) {
-        self.file.write_str(line);
-    }
-
-    pub fn read(&mut self) -> Option<char> {
-        let res = match self.file.read_byte() {
-            Ok(c) => Some(c as char),
-            Err(_) => None,
-        };
-        res
     }
 }
 
