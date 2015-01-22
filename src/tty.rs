@@ -1,15 +1,17 @@
 #![allow(unstable)]
 
+extern crate libc;
+
+use winsize;
+
 use std::io::{File, Open, ReadWrite, Command};
 use std::io::process::StdioContainer;
 use std::os::unix::prelude::AsRawFd;
 
-use winsize;
-
 struct TTY {
     file: File,
-    original_state: String,
-    dimensions: (usize, usize)
+    dimensions: (usize, usize),
+    original_state: String
 }
 
 impl TTY {
@@ -45,7 +47,7 @@ impl TTY {
         TTY::stty(file, &["-g"]).unwrap_or("".to_string())
     }
 
-    fn reset(&mut self) {
+    fn reset(self) {
         TTY::stty(&self.file, &[self.original_state.as_slice()]);
     }
 
@@ -65,19 +67,17 @@ impl TTY {
 #[cfg(test)]
 
 #[test]
+fn can_create_a_tty() {
+    let mut tty = TTY::new();
+    tty.write("##### a string        \n");
+    //tty.read();
+}
+
+#[test]
 fn winsize_has_valid_width_and_height() {
     let tty = TTY::new();
     let (width, height) = tty.dimensions;
     assert!(width > 0);
     assert!(height > 0);
-}
-
-#[test]
-fn can_read_and_write() {
-    let mut tty = TTY::new();
-    tty.write("#### winning ####\n");
-   // let ch = tty.read();
-   // println!("[{:?}]", ch);
-
-    println!("dimensions: {:?}", tty.dimensions);
+    tty.reset();
 }
