@@ -8,3 +8,4 @@ pub mod configuration;
 pub mod renderer;
 
 pub mod tty;
+pub mod winsize;

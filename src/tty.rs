@@ -1,11 +1,15 @@
 #![allow(unstable)]
 
-extern crate libc;
+use std::io::{File, Open, ReadWrite, Command};
+use std::io::process::StdioContainer;
+use std::os::unix::prelude::AsRawFd;
 
-use std::io::{IoResult, standard_error, ResourceUnavailable, File, Open, ReadWrite};
+use winsize;
 
 struct TTY {
-    file: File
+    file: File,
+    original_state: String,
+    dimensions: (usize, usize)
 }
 
 impl TTY {
@@ -15,44 +19,65 @@ impl TTY {
                 Ok(f) => f,
                 Err(e) => panic!("file error: {}", e),
         };
+        TTY::no_echo_no_escaping(&file);
 
-        TTY { file: file }
-    }
-}
-
-#[repr(C)]
-struct winsize {
-    ws_row: libc::c_ushort,     /* rows, in characters */
-    ws_col: libc::c_ushort,     /* columns, in characters */
-    ws_xpixel: libc::c_ushort,  /* horizontal size, pixels */
-    ws_ypixel: libc::c_ushort   /* vertical size, pixels */
-}
-
-const TIOCGWINSZ: libc::c_ulong = 0x40087468;
-
-pub fn get_winsize() -> IoResult<(isize, isize)> {
-    let w = winsize { ws_row: 0, ws_col: 0, ws_xpixel: 0, ws_ypixel: 0 };
-    let r = unsafe { libc::funcs::bsd44::ioctl(libc::STDOUT_FILENO, TIOCGWINSZ, &w) };
-
-    match r {
-        0 => Ok((w.ws_col as isize, w.ws_row as isize)),
-        _ => {
-            return Err(standard_error(ResourceUnavailable))
+        TTY {
+            original_state: TTY::previous_state(&file),
+            dimensions: winsize::get_winsize(&file).unwrap(),
+            file: file,
         }
+    }
+
+    fn stty(file: &File, args: &[&str]) -> Option<String> {
+        let container = StdioContainer::InheritFd(file.as_raw_fd());
+        let output = match Command::new("stty").args(args).stdin(container).output() {
+            Ok(r) => r,
+            Err(e) => panic!("failed on process: {}", e),
+        };
+        String::from_utf8(output.output).ok()
+    }
+
+    fn no_echo_no_escaping(file: &File) {
+        TTY::stty(file, &["-echo", "-icanon"]);
+    }
+
+    fn previous_state(file: &File) -> String {
+        TTY::stty(file, &["-g"]).unwrap_or("".to_string())
+    }
+
+    fn reset(&mut self) {
+        TTY::stty(&self.file, &[self.original_state.as_slice()]);
+    }
+
+    pub fn write(&mut self, line: &str) {
+        self.file.write_str(line);
+    }
+
+    pub fn read(&mut self) -> Option<char> {
+        let res = match self.file.read_byte() {
+            Ok(c) => Some(c as char),
+            Err(_) => None,
+        };
+        res
     }
 }
 
 #[cfg(test)]
 
 #[test]
-fn can_create_a_tty() {
+fn winsize_has_valid_width_and_height() {
     let tty = TTY::new();
+    let (width, height) = tty.dimensions;
+    assert!(width > 0);
+    assert!(height > 0);
 }
 
 #[test]
-fn winsize_has_valid_width_and_height() {
-    let (width, height) = get_winsize().unwrap();
-    assert!(width > 0);
-    assert!(height > 0);
+fn can_read_and_write() {
+    let mut tty = TTY::new();
+    tty.write("#### winning ####\n");
+   // let ch = tty.read();
+   // println!("[{:?}]", ch);
 
+    println!("dimensions: {:?}", tty.dimensions);
 }
