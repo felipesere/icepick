@@ -10,3 +10,4 @@ pub mod renderer;
 pub mod tty;
 pub mod fake_tty;
 pub mod winsize;
+pub mod ansi;

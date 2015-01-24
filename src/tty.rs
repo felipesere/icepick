@@ -17,6 +17,7 @@ struct TTY {
 pub trait IO {
     fn write(&mut self, line: &str);
     fn read(&mut self) -> Option<char>;
+    fn last(&self) -> &str;
 }
 
 impl IO for TTY {
@@ -32,6 +33,10 @@ impl IO for TTY {
 
         println!("[{:?}]", res);
         res
+    }
+
+    fn last(&self) -> &str {
+        "fail"
     }
 }
 
