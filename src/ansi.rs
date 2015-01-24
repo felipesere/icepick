@@ -7,13 +7,25 @@ struct Ansi<'a> {
 
 impl <'a> Ansi<'a> {
     pub fn escape(&mut self, message: &str) {
-        let mut esc = "\x1b[".to_string();
-        esc.push_str(message);
-        self.io.write(esc.as_slice());
+        let out = format!("\x1b[{}", message);
+        self.io.write(out.as_slice());
     }
 
     pub fn clear(&mut self) {
         self.escape("2J");
+    }
+
+    fn hide_cursor(&mut self) {
+        self.escape("?251");
+    }
+
+    fn show_cursor(&mut self) {
+        self.escape("?25h");
+    }
+
+    fn set_position(&mut self, line: isize, column: isize) {
+        let message = format!("{};{}H", line+1, column+1);
+        self.escape(message.as_slice());
     }
 }
 
@@ -22,6 +34,7 @@ impl <'a> Ansi<'a> {
 #[test]
 fn it_escapes_a_str() {
     let mut ansi = Ansi { io: Box::new(FakeIO::new()) };
+
     ansi.escape("something");
     let inner_box = ansi.io;
     assert_eq!(inner_box.last(), "\x1b[something");
@@ -30,7 +43,36 @@ fn it_escapes_a_str() {
 #[test]
 fn it_clears_the_screen() {
     let mut ansi = Ansi { io: Box::new(FakeIO::new()) };
+
     ansi.clear();
     let inner_box = ansi.io;
     assert_eq!(inner_box.last(), "\x1b[2J");
 }
+
+#[test]
+fn it_hides_the_cursos() {
+    let mut ansi = Ansi { io: Box::new(FakeIO::new()) };
+
+    ansi.hide_cursor();
+    let inner_box = ansi.io;
+    assert_eq!(inner_box.last(), "\x1b[?251");
+}
+
+#[test]
+fn it_shows_the_cursor() {
+    let mut ansi = Ansi { io: Box::new(FakeIO::new()) };
+
+    ansi.show_cursor();
+    let inner_box = ansi.io;
+    assert_eq!(inner_box.last(), "\x1b[?25h");
+}
+
+#[test]
+fn it_sets_the_position() {
+    let mut ansi = Ansi { io: Box::new(FakeIO::new()) };
+
+    ansi.set_position(8,12);
+    let inner_box = ansi.io;
+    assert_eq!(inner_box.last(), "\x1b[9;13H");
+}
+
