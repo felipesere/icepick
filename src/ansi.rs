@@ -27,6 +27,14 @@ impl <'a> Ansi<'a> {
         let message = format!("{};{}H", line+1, column+1);
         self.escape(message.as_slice());
     }
+
+    fn invert(&mut self) {
+        self.escape("7m");
+    }
+
+    fn reset(&mut self) {
+        self.escape("0m");
+    }
 }
 
 #[cfg(test)]
@@ -74,5 +82,23 @@ fn it_sets_the_position() {
     ansi.set_position(8,12);
     let inner_box = ansi.io;
     assert_eq!(inner_box.last(), "\x1b[9;13H");
+}
+
+#[test]
+fn it_inverts() {
+    let mut ansi = Ansi { io: Box::new(FakeIO::new()) };
+
+    ansi.invert();
+    let inner_box = ansi.io;
+    assert_eq!(inner_box.last(), "\x1b[7m");
+}
+
+#[test]
+fn it_resets() {
+    let mut ansi = Ansi { io: Box::new(FakeIO::new()) };
+
+    ansi.reset();
+    let inner_box = ansi.io;
+    assert_eq!(inner_box.last(), "\x1b[0m");
 }
 
