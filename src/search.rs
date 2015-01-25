@@ -32,7 +32,7 @@ impl Search {
     }
 
     pub fn done(self) -> Search {
-        self.abort()
+        Search::new(self.config, self.query, self.result, self.current, true)
     }
 
     fn new(config: Configuration, query: String, result: Vec<String>, index: usize, done: bool) -> Search {
@@ -286,4 +286,14 @@ fn aborted_search_has_no_selection() {
     let search = Search::blank(config).abort();
 
     assert_eq!(search.selection, None);
+}
+
+#[test]
+fn done_search_has_selection() {
+    let input = one_two_three();
+
+    let config = Configuration::from_inputs(input, None, None);
+    let search = Search::blank(config).done();
+
+    assert_eq!(search.selection, Some("one".to_string()));
 }
