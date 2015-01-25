@@ -1,5 +1,6 @@
 use std::slice::SliceExt;
 
+#[derive(Show)]
 pub struct Configuration {
     pub choices: Vec<String>,
     pub visible_limit: usize,
