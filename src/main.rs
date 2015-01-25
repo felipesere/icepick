@@ -6,15 +6,35 @@ extern crate selecta;
 use getopts::{optopt ,getopts};
 use selecta::configuration::Configuration;
 use selecta::search::Search;
+use selecta::renderer::Renderer;
+use selecta::tty::TTY;
+use selecta::tty::IO;
+use selecta::screen::Screen;
 
 fn main() {
     let initial_query = extract_initial_query();
     let lines = read_lines();
 
-    let config = Configuration::from_inputs(lines, initial_query, Some(10));
-    let search = Search::blank(config).append_to_search("e");
+    let config = Configuration::from_inputs(lines, initial_query, Some(20));
+    let mut search = Search::blank(config);
 
-    println!("{:?}", search.selection);
+    let mut tty = TTY::new();
+    let screen = Screen;
+
+    while !search.is_done() {
+        let input = tty.read();
+        match input {
+            Some(n) => {
+                search = screen.handle_keystroke(search,n.to_string().as_slice());
+            },
+            None => break,
+        };
+        println!("{:?}", search);
+    }
+
+    let result = Renderer::new(search).render();
+
+    println!("{:?}", result);
 }
 
 fn extract_initial_query() -> Option<String> {
