@@ -8,7 +8,7 @@ use std::io::{File, Open, ReadWrite, Command};
 use std::io::process::StdioContainer;
 use std::os::unix::prelude::AsRawFd;
 
-struct TTY {
+pub struct TTY {
     file: File,
     dimensions: (usize, usize),
     original_state: String
@@ -30,8 +30,8 @@ impl IO for TTY {
             Ok(c) => Some(c as char),
             Err(_) => None,
         };
+        println!("{:?}", res);
 
-        println!("[{:?}]", res);
         res
     }
 

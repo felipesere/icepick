@@ -2,22 +2,22 @@ use configuration::Configuration;
 use search::Search;
 
 #[derive(PartialEq, Show)]
-enum Text {
+pub enum Text {
     Normal(String),
     Highlight(String),
     Blank,
 }
 
-struct Renderer {
+pub struct Renderer {
     search: Search,
 }
 
 impl Renderer {
-    fn new(search: Search) -> Renderer {
+    pub fn new(search: Search) -> Renderer {
         Renderer { search: search }
     }
 
-    fn render(&self) -> Vec<Text> {
+    pub fn render(&self) -> Vec<Text> {
         let mut result = Vec::new();
         result.push(self.create_header());
 

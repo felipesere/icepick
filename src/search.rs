@@ -87,7 +87,7 @@ impl Search {
         self.new_for_index(next_index)
     }
 
-    fn up(self) -> Search {
+    pub fn up(self) -> Search {
         let next_index = self.prev_index();
         self.new_for_index(next_index)
     }
@@ -99,7 +99,7 @@ impl Search {
         self.new_for_query(new_query)
     }
 
-    fn backspace(self) -> Search {
+    pub fn backspace(self) -> Search {
         let mut new_query = self.query.clone();
         new_query.pop();
 
@@ -276,7 +276,6 @@ fn done_search_is_done() {
 
     assert!(search.is_done());
 }
-
 
 #[test]
 fn aborted_search_has_no_selection() {
