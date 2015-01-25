@@ -3,22 +3,39 @@ use std::slice::SliceExt;
 use std::cmp::Ordering;
 use score::Score;
 
+
+#[derive(Show)]
 pub struct Search {
     pub config: Configuration,
     current: usize,
     pub query: String,
     pub selection: Option<String>,
     pub result: Vec<String>,
+    done: bool,
 }
 
 impl Search {
     pub fn blank(config: Configuration) -> Search {
         let query = config.initial_search.clone();
         let previous_result = config.choices.clone();
-        Search::new(config, query, previous_result, 0)
+        Search::new(config, query, previous_result, 0, false)
     }
 
-    fn new(config: Configuration, query: String, result: Vec<String>, index: usize) -> Search {
+    pub fn is_done(&self) -> bool {
+        self.done
+    }
+
+    pub fn abort(self) -> Search {
+        let mut search = Search::new(self.config, self.query, self.result, self.current, true);
+        search.selection = None;
+        search
+    }
+
+    pub fn done(self) -> Search {
+        self.abort()
+    }
+
+    fn new(config: Configuration, query: String, result: Vec<String>, index: usize, done: bool) -> Search {
 
         let selection = Search::select(&result, index);
 
@@ -26,17 +43,18 @@ impl Search {
                  current: index,
                  query: query,
                  selection: selection,
-                 result: result }
+                 result: result,
+                 done: done}
     }
 
     fn new_for_index(self, index: usize) -> Search {
-        Search::new(self.config, self.query, self.result, index)
+        Search::new(self.config, self.query, self.result, index, self.done)
     }
 
     fn new_for_query(self, new_query: String) -> Search {
         let new_result = Search::filter(new_query.as_slice(), &self.config.choices);
 
-        Search::new(self.config, new_query, new_result, self.current)
+        Search::new(self.config, new_query, new_result, self.current, self.done)
     }
 
     fn filter(query: &str, choices: &Vec<String>) -> Vec<String> {
@@ -227,4 +245,45 @@ fn previous_results_appear_after_backspace() {
     let search = Search::blank(config).append_to_search("t");
 
     assert_eq!(search.backspace().result.len(), 3);
+}
+
+#[test]
+fn initial_search_is_not_done() {
+    let input = one_two_three();
+
+    let config = Configuration::from_inputs(input, None, None);
+    let search = Search::blank(config);
+
+    assert!(!search.is_done());
+}
+
+#[test]
+fn aborted_search_is_done() {
+    let input = one_two_three();
+
+    let config = Configuration::from_inputs(input, None, None);
+    let search = Search::blank(config).abort();
+
+    assert!(search.is_done());
+}
+
+#[test]
+fn done_search_is_done() {
+    let input = one_two_three();
+
+    let config = Configuration::from_inputs(input, None, None);
+    let search = Search::blank(config).done();
+
+    assert!(search.is_done());
+}
+
+
+#[test]
+fn aborted_search_has_no_selection() {
+    let input = one_two_three();
+
+    let config = Configuration::from_inputs(input, None, None);
+    let search = Search::blank(config).abort();
+
+    assert_eq!(search.selection, None);
 }
