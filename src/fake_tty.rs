@@ -16,7 +16,7 @@ impl IO for FakeIO {
        self.last = line.to_string();
    }
 
-   fn read(&mut self) -> Option<char> {
+   fn read(&mut self) -> Option<String> {
        None
    }
 

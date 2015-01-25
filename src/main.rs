@@ -26,7 +26,7 @@ fn main() {
         let input = tty.read();
         match input {
             Some(n) => {
-                search = screen.handle_keystroke(search,n.to_string().as_slice());
+                search = screen.handle_keystroke(search,n.as_slice());
             },
             None => break,
         };

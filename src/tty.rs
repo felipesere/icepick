@@ -16,7 +16,7 @@ pub struct TTY {
 
 pub trait IO {
     fn write(&mut self, line: &str);
-    fn read(&mut self) -> Option<char>;
+    fn read(&mut self) -> Option<String>;
     fn last(&self) -> &str;
 }
 
@@ -25,9 +25,9 @@ impl IO for TTY {
         self.file.write_str(line);
     }
 
-    fn read(&mut self) -> Option<char> {
+    fn read(&mut self) -> Option<String> {
         let res = match self.file.read_byte() {
-            Ok(c) => Some(c as char),
+            Ok(c) => Some(c.to_string()),
             Err(_) => None,
         };
         println!("{:?}", res);
