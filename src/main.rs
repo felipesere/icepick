@@ -20,6 +20,7 @@ fn main() {
 
     let mut tty = TTY::new();
     let screen = Screen;
+    let renderer = Renderer;
 
     while !search.is_done() {
         let input = tty.read();
@@ -29,11 +30,12 @@ fn main() {
             },
             None => break,
         };
-        println!("{:?}", search);
+        let result = renderer.render(&search);
+        println!("{:?}", result);
     }
 
-    let result = Renderer::new(search).render();
 
+    let result = renderer.render(&search);
     println!("{:?}", result);
 }
 
