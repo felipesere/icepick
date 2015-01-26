@@ -1,14 +1,18 @@
 use fake_tty::FakeIO;
 use tty::IO;
 
-struct Ansi<'a> {
-    io: Box<(IO + 'a)>,
+pub struct Ansi<'a> {
+    pub io: Box<(IO + 'a)>,
 }
 
 impl <'a> Ansi<'a> {
     pub fn escape(&mut self, message: &str) {
-        let out = format!("\x1b[{}", message);
+        let out = Ansi::esc(message);
         self.io.write(out.as_slice());
+    }
+
+    fn esc(input: &str) -> String {
+        format!("\x1b[{}", input)
     }
 
     pub fn clear(&mut self) {
@@ -34,6 +38,15 @@ impl <'a> Ansi<'a> {
 
     fn reset(&mut self) {
         self.escape("0m");
+    }
+
+    pub fn inverted(&mut self, line: &str) {
+        let compound = format!("{}{}{}", Ansi::esc("7m"), line, Ansi::esc("0m"));
+        self.io.write(compound.as_slice());
+    }
+
+    pub fn print(&mut self, line: &str) {
+        self.io.write(line);
     }
 }
 
@@ -91,6 +104,14 @@ fn it_inverts() {
     ansi.invert();
     let inner_box = ansi.io;
     assert_eq!(inner_box.last(), "\x1b[7m");
+}
+
+fn it_prints_inverted() {
+    let mut ansi = Ansi { io: Box::new(FakeIO::new()) };
+
+    ansi.inverted("test");
+    let inner_box = ansi.io;
+    assert_eq!(inner_box.last(), "\x1b[7mtest\x1b[0m");
 }
 
 #[test]

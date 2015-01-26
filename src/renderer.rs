@@ -1,12 +1,6 @@
 use configuration::Configuration;
 use search::Search;
-
-#[derive(PartialEq, Show)]
-pub enum Text {
-    Normal(String),
-    Highlight(String),
-    Blank,
-}
+use text::Text;
 
 pub struct Renderer;
 

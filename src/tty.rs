@@ -18,16 +18,21 @@ pub trait IO {
     fn write(&mut self, line: &str);
     fn read(&mut self) -> Option<String>;
     fn last(&self) -> &str;
+    fn lines(&self) -> Vec<String>;
 }
 
 impl IO for TTY {
     fn write(&mut self, line: &str) {
-        self.file.write_str(line);
+        let it = format!("{}\n", line);
+        self.file.write_str(it.as_slice());
     }
 
     fn read(&mut self) -> Option<String> {
         let res = match self.file.read_byte() {
-            Ok(c) => Some(c.to_string()),
+            Ok(c) => {
+                let character = c as char;
+                Some(character.to_string())
+            },
             Err(_) => None,
         };
         println!("{:?}", res);
@@ -37,6 +42,12 @@ impl IO for TTY {
 
     fn last(&self) -> &str {
         "fail"
+    }
+
+    fn lines(&self) -> Vec<String> {
+        let mut lines: Vec<String> = Vec::new();
+        lines.push("fail".to_string());
+        lines
     }
 }
 

@@ -10,6 +10,8 @@ use selecta::renderer::Renderer;
 use selecta::tty::TTY;
 use selecta::tty::IO;
 use selecta::screen::Screen;
+use selecta::text::Text;
+use selecta::ansi::Ansi;
 
 fn main() {
     let initial_query = extract_initial_query();
@@ -19,8 +21,16 @@ fn main() {
     let mut search = Search::blank(config);
 
     let mut tty = TTY::new();
-    let screen = Screen;
+    let mut screen = Screen::new();
     let renderer = Renderer;
+    let ansi = Ansi { io: Box::new(TTY::new()) };
+
+   for _ in 0..20 {
+       tty.write("\n");
+   };
+
+
+   screen.print(&search);
 
     while !search.is_done() {
         let input = tty.read();
@@ -30,14 +40,14 @@ fn main() {
             },
             None => break,
         };
-        let result = renderer.render(&search);
-        println!("{:?}", result);
+        screen.print(&search);
     }
-
-
-    let result = renderer.render(&search);
-    println!("{:?}", result);
+    match search.selection {
+        Some(ref t) => println!("{}\n",t),
+        None => println!("None"),
+    };
 }
+
 
 fn extract_initial_query() -> Option<String> {
     let args: Vec<String> = std::os::args();
