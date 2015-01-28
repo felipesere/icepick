@@ -6,18 +6,28 @@ use fake_tty::FakeIO;
 use renderer::Renderer;
 use text::Text;
 
+
 pub struct Screen <'a> {
-    ansi: Ansi<'a>,
+    pub ansi: Ansi<'a>,
+    height: usize,
 }
 
 
 impl <'a> Screen <'a>{
     pub fn new() -> Screen<'a>  {
-        Screen { ansi: Ansi { io: Box::new(TTY::new()) } }
+        let ansi = Ansi { io: Box::new(TTY::new()) };
+        let (_, height) = ansi.io.dimensions();
+        Screen {
+            ansi: ansi,
+            height: height,
+        }
     }
 
     fn fake() -> Screen<'a> {
-        Screen { ansi: Ansi { io: Box::new(FakeIO::new()) } }
+        Screen {
+            ansi: Ansi { io: Box::new(FakeIO::new()) },
+            height: 20,
+        }
     }
 
     pub fn handle_keystroke(&self, search: Search, input: &str) -> Search {
@@ -34,12 +44,23 @@ impl <'a> Screen <'a>{
     pub fn print(&mut self, search: &Search) {
         let renderer = Renderer;
         let result = renderer.render(search);
-        for text in result.iter() {
-            match *text {
-                Text::Normal(ref t) => self.ansi.print(t.as_slice()),
-                Text::Highlight(ref t) => self.ansi.inverted(t.as_slice()),
-                Text::Blank => self.ansi.print("".as_slice()),
-            };
+        self.ansi.hide_cursor();
+
+        let start_line = self.height - search.config.visible_limit -1;
+
+        for (idx, text) in result.iter().enumerate() {
+            self.write(start_line+idx, text);
+        };
+    }
+
+    pub fn write(&mut self, line: usize, text: &Text) {
+        self.ansi.blank_line(line);
+        self.ansi.set_position(line,0);
+
+        match *text {
+            Text::Normal(ref t) => self.ansi.print(t.as_slice()),
+            Text::Highlight(ref t) => self.ansi.inverted(t.as_slice()),
+            Text::Blank => self.ansi.print("".as_slice()),
         };
     }
 }
@@ -85,16 +106,6 @@ pub fn marks_a_search_as_done_for_enter() {
     let screen = Screen::new();
     let result = screen.handle_keystroke(input, "\n");
     assert!(result.is_done());
-}
-
-#[test]
-pub fn prints_max_number_of_lines() {
-    let input = blank_search();
-    let mut screen = Screen::fake();
-
-    screen.print(&input);
-    let result = screen.ansi.io.last();
-    assert_eq!("", result.as_slice());
 }
 
 fn blank_search() -> Search {
