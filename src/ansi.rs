@@ -19,15 +19,15 @@ impl <'a> Ansi<'a> {
         self.escape("2J");
     }
 
-    fn hide_cursor(&mut self) {
+    pub fn hide_cursor(&mut self) {
         self.escape("?251");
     }
 
-    fn show_cursor(&mut self) {
+    pub fn show_cursor(&mut self) {
         self.escape("?25h");
     }
 
-    fn set_position(&mut self, line: isize, column: isize) {
+    pub fn set_position(&mut self, line: usize, column: usize) {
         let message = format!("{};{}H", line+1, column+1);
         self.escape(message.as_slice());
     }
@@ -47,6 +47,11 @@ impl <'a> Ansi<'a> {
 
     pub fn print(&mut self, line: &str) {
         self.io.write(line);
+    }
+
+    pub fn blank_line(&mut self, line: usize) {
+        self.set_position(line, 0);
+        self.escape("2K");
     }
 }
 
@@ -122,4 +127,3 @@ fn it_resets() {
     let inner_box = ansi.io;
     assert_eq!(inner_box.last(), "\x1b[0m");
 }
-
