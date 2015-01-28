@@ -6,12 +6,9 @@ extern crate selecta;
 use getopts::{optopt ,getopts};
 use selecta::configuration::Configuration;
 use selecta::search::Search;
-use selecta::renderer::Renderer;
 use selecta::tty::TTY;
 use selecta::tty::IO;
 use selecta::screen::Screen;
-use selecta::text::Text;
-use selecta::ansi::Ansi;
 
 fn main() {
     let initial_query = extract_initial_query();
@@ -22,15 +19,8 @@ fn main() {
 
     let mut tty = TTY::new();
     let mut screen = Screen::new();
-    let renderer = Renderer;
-    let ansi = Ansi { io: Box::new(TTY::new()) };
 
-   for _ in 0..20 {
-       tty.write("\n");
-   };
-
-
-   screen.print(&search);
+    screen.print(&search);
 
     while !search.is_done() {
         let input = tty.read();
@@ -46,6 +36,7 @@ fn main() {
         Some(ref t) => println!("{}\n",t),
         None => println!("None"),
     };
+    screen.ansi.show_cursor();
 }
 
 
