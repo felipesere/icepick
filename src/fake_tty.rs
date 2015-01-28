@@ -32,4 +32,8 @@ impl IO for FakeIO {
    fn last(&self) -> &str {
        self.last.as_slice()
    }
+
+   fn dimensions(&self) -> (usize, usize) {
+       (50,50)
+   }
 }

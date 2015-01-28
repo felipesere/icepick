@@ -19,6 +19,7 @@ pub trait IO {
     fn read(&mut self) -> Option<String>;
     fn last(&self) -> &str;
     fn lines(&self) -> Vec<String>;
+    fn dimensions(&self) -> (usize, usize);
 }
 
 impl IO for TTY {
@@ -35,8 +36,6 @@ impl IO for TTY {
             },
             Err(_) => None,
         };
-        println!("{:?}", res);
-
         res
     }
 
@@ -48,6 +47,10 @@ impl IO for TTY {
         let mut lines: Vec<String> = Vec::new();
         lines.push("fail".to_string());
         lines
+    }
+
+    fn dimensions(&self) -> (usize, usize) {
+        self.dimensions
     }
 }
 
