@@ -20,13 +20,6 @@ impl Configuration {
                         initial_search: search,
                         visible_limit: limit }
     }
-
-    fn parse_options(input: Vec<String>) -> Option<String> {
-        match input.position_elem(&"-s".to_string()) {
-            Some(ref idx) => Some(input[*idx + 1].clone()),
-            None => None,
-        }
-    }
 }
 
 fn clean(input: &String) -> String {
@@ -47,9 +40,7 @@ fn removes_leading_and_trailing_whitespace() {
 #[test]
 fn can_specify_initial_search() {
     let input = vec!["foo".to_string()];
-    let options = vec!["-s".to_string(),
-                       "some search".to_string()];
-    let config = Configuration::from_inputs(input, Configuration::parse_options(options), None);
+    let config = Configuration::from_inputs(input, Some("some search".to_string()), None);
 
     assert_eq!(config.initial_search.as_slice(), "some search");
 }
@@ -57,8 +48,7 @@ fn can_specify_initial_search() {
 #[test]
 fn initial_search_is_optional() {
     let input = vec!["foo".to_string()];
-    let options = vec![];
-    let config = Configuration::from_inputs(input, Configuration::parse_options(options), None);
+    let config = Configuration::from_inputs(input, None, None);
 
     assert_eq!(config.initial_search, "");
 }
