@@ -48,6 +48,6 @@ fn extract_initial_query() -> Option<String> {
 
 fn read_lines() -> Vec<String> {
     std::io::stdio::stdin().lock().lines().map( |line| {
-        line.unwrap().trim().to_string()
+        line.unwrap()
     }).collect()
 }
