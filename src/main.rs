@@ -32,10 +32,7 @@ fn main() {
         };
         screen.print(&search);
     }
-    match search.selection {
-        Some(ref t) => println!("{}\n", t),
-        None => println!("None"),
-    };
+    println!("{}\n", search.selection.unwrap_or("None".to_string()));
     screen.ansi.show_cursor();
 }
 
