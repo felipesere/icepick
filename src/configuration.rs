@@ -27,10 +27,6 @@ impl Configuration {
             None => None,
         }
     }
-
-    fn choices(self) -> Vec<String> {
-        self.choices
-    }
 }
 
 fn clean(input: &String) -> String {
@@ -45,7 +41,7 @@ fn removes_leading_and_trailing_whitespace() {
     let input = vec![" a choice ".to_string()];
     let config = Configuration::from_inputs(input, None, None);
 
-    assert_eq!(config.choices(), vec!("a choice"));
+    assert_eq!(config.choices, vec!("a choice"));
 }
 
 #[test]
