@@ -1,6 +1,6 @@
 extern crate libc;
 
-use std::io::{IoResult, standard_error, ResourceUnavailable, File};
+use std::old_io::{IoResult, standard_error, ResourceUnavailable, File};
 use std::os::unix::prelude::AsRawFd;
 
 #[repr(C)]

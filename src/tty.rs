@@ -1,11 +1,9 @@
-#![allow(unstable)]
-
 extern crate libc;
 
 use winsize;
 
-use std::io::{File, Open, ReadWrite, Command};
-use std::io::process::StdioContainer;
+use std::old_io::{File, Open, ReadWrite, Command};
+use std::old_io::process::StdioContainer;
 use std::os::unix::prelude::AsRawFd;
 
 pub struct TTY {
