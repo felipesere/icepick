@@ -1,6 +1,6 @@
 use configuration::Configuration;
 use std::slice::SliceExt;
-use std::cmp::Ordering;
+use std::cmp::{Ordering, min};
 use score::Score;
 
 #[derive(Show)]
@@ -108,11 +108,23 @@ impl Search {
     fn next_index(&self) -> usize {
         let next_index = self.current + 1;
 
-        if next_index >= self.config.visible_limit { 0 } else { next_index }
+        if next_index >= self.actual_limit() {
+            0
+        } else {
+            next_index
+        }
     }
 
     fn prev_index(&self) -> usize {
-        if self.current == 0 { self.config.visible_limit - 1 } else { self.current - 1 }
+        if self.current == 0 {
+            self.actual_limit() - 1
+        } else {
+            self.current - 1
+        }
+    }
+
+    fn actual_limit(&self) -> usize {
+        min(self.config.visible_limit, self.result.len())
     }
 }
 
@@ -284,6 +296,24 @@ fn done_search_has_selection() {
     let input = one_two_three();
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config).done();
+
+    assert_eq!(search.selection, Some("one".to_string()));
+}
+
+#[test]
+fn loop_around_when_reaching_bottom_of_choices() {
+    let input = one_two_three();
+    let config = Configuration::from_inputs(input, None, None);
+    let search = Search::blank(config).append_to_search("n").down();
+
+    assert_eq!(search.selection, Some("one".to_string()));
+}
+
+#[test]
+fn loop_around_when_reaching_top_of_choices() {
+    let input = one_two_three();
+    let config = Configuration::from_inputs(input, None, None);
+    let search = Search::blank(config).append_to_search("n").up();
 
     assert_eq!(search.selection, Some("one".to_string()));
 }
