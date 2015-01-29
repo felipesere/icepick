@@ -57,10 +57,7 @@ impl IO for TTY {
 impl TTY {
     pub fn new() -> TTY {
         let path = Path::new("/dev/tty");
-        let file = match File::open_mode(&path, Open, ReadWrite) {
-                Ok(f) => f,
-                Err(e) => panic!("file error: {}", e),
-        };
+        let file = File::open_mode(&path, Open, ReadWrite).unwrap();
         TTY::no_echo_no_escaping(&file);
 
         TTY {
@@ -72,10 +69,7 @@ impl TTY {
 
     fn stty(file: &File, args: &[&str]) -> Option<String> {
         let container = StdioContainer::InheritFd(file.as_raw_fd());
-        let output = match Command::new("stty").args(args).stdin(container).output() {
-            Ok(r) => r,
-            Err(e) => panic!("failed on process: {}", e),
-        };
+        let output = Command::new("stty").args(args).stdin(container).output().unwrap();
         String::from_utf8(output.output).ok()
     }
 

@@ -44,10 +44,7 @@ fn extract_initial_query() -> Option<String> {
     let opts = &[
         optopt("s", "search", "initial search query", ""),
     ];
-    let matches = match getopts(args.tail(), opts) {
-        Ok(m) => { m }
-        Err(f) => { panic!(f.to_string()) }
-    };
+    let matches = getopts(args.tail(), opts).unwrap();
 
     matches.opt_str("s")
 }
