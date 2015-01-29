@@ -3,7 +3,7 @@
 extern crate getopts;
 extern crate selecta;
 
-use getopts::{optopt ,getopts};
+use getopts::{optopt,getopts};
 use selecta::configuration::Configuration;
 use selecta::search::Search;
 use selecta::tty::TTY;
@@ -26,45 +26,28 @@ fn main() {
         let input = tty.read();
         match input {
             Some(n) => {
-                search = screen.handle_keystroke(search,n.as_slice());
+                search = screen.handle_keystroke(search, n.as_slice());
             },
             None => break,
         };
         screen.print(&search);
     }
-    match search.selection {
-        Some(ref t) => println!("{}\n",t),
-        None => println!("None"),
-    };
+    println!("{}\n", search.selection.unwrap_or("None".to_string()));
     screen.ansi.show_cursor();
 }
 
-
 fn extract_initial_query() -> Option<String> {
-    let args: Vec<String> = std::os::args();
+    let args = std::os::args();
     let opts = &[
         optopt("s", "search", "initial search query", ""),
     ];
-    let matches = match getopts(args.tail(), opts) {
-        Ok(m) => { m }
-        Err(f) => { panic!(f.to_string()) }
-    };
+    let matches = getopts(args.tail(), opts).unwrap();
 
     matches.opt_str("s")
 }
 
 fn read_lines() -> Vec<String> {
-    let mut lines: Vec<String> = Vec::new();
-    let mut reader = std::io::stdio::stdin();
-
-    loop {
-        match reader.read_line() {
-            Err(_) => break,
-            Ok(l) => {
-                let message = l.trim_left().trim_right();
-                lines.push(message.to_string());
-            },
-        };
-    };
-    lines
+    std::io::stdio::stdin().lock().lines().map( |line| {
+        line.unwrap()
+    }).collect()
 }
