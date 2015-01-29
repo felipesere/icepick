@@ -57,7 +57,7 @@ fn read_lines() -> Vec<String> {
         match reader.read_line() {
             Err(_) => break,
             Ok(l) => {
-                let message = l.trim_left().trim_right();
+                let message = l.trim();
                 lines.push(message.to_string());
             },
         };

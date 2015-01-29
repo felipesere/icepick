@@ -35,7 +35,7 @@ impl Configuration {
 
 fn clean(input: &String) -> String {
     let slice = input.as_slice();
-    slice.trim_left().trim_right().to_string()
+    slice.trim().to_string()
 }
 
 #[cfg(test)]
