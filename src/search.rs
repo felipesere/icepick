@@ -3,7 +3,6 @@ use std::slice::SliceExt;
 use std::cmp::Ordering;
 use score::Score;
 
-
 #[derive(Show)]
 pub struct Search {
     pub config: Configuration,
@@ -113,7 +112,7 @@ impl Search {
     }
 
     fn prev_index(&self) -> usize {
-        if self.current == 0 { self.config.visible_limit - 1 } else  { self.current - 1 }
+        if self.current == 0 { self.config.visible_limit - 1 } else { self.current - 1 }
     }
 }
 
@@ -126,80 +125,79 @@ fn one_two_three() -> Vec<String> {
 
 #[test]
 fn it_selects_the_first_choice_by_default() {
-    let input =  one_two_three();
-
+    let input = one_two_three();
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config);
+
     assert_eq!(search.selection, Some("one".to_string()));
 }
 
 #[test]
 fn it_selets_the_second_when_down_is_called() {
-    let input =  one_two_three();
-
+    let input = one_two_three();
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config);
+
     assert_eq!(search.down().selection, Some("two".to_string()));
 }
 
 #[test]
 fn it_loop_around_when_reaching_end_of_list() {
-    let input =  one_two_three();
-
+    let input = one_two_three();
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config);
+
     assert_eq!(search.down().down().down().down().selection, Some("two".to_string()));
 }
 
 #[test]
 fn it_loop_around_when_reaching_top_of_list() {
-    let input =  one_two_three();
-
+    let input = one_two_three();
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config);
+
     assert_eq!(search.up().up().selection, Some("two".to_string()));
 }
 
 #[test]
 fn it_loop_around_when_reaching_visible_limit() {
-    let input =  one_two_three();
-
+    let input = one_two_three();
     let config = Configuration::from_inputs(input, None, Some(2));
     let search = Search::blank(config);
+
     assert_eq!(search.down().down().down().selection, Some("two".to_string()));
 }
 
 #[test]
 fn it_moves_down_the_filtered_search_results() {
-    let input =  one_two_three();
-
+    let input = one_two_three();
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config);
+
     assert_eq!(search.append_to_search("t").down().selection, Some("three".to_string()));
 }
 
 #[test]
 fn it_moves_down_the_filtered_search_results_twice() {
-    let input =  one_two_three();
-
+    let input = one_two_three();
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config);
+
     assert_eq!(search.append_to_search("t").append_to_search("w").selection, Some("two".to_string()));
 }
 
 #[test]
 fn it_handles_not_matching_anything() {
     let input = one_two_three();
-
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config);
+
     assert_eq!(search.append_to_search("x").selection, None);
 }
 
 #[test]
 fn up_match_nothing_after_filtering_all_out() {
     let input = one_two_three();
-
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config).append_to_search("x");
 
@@ -209,7 +207,6 @@ fn up_match_nothing_after_filtering_all_out() {
 #[test]
 fn down_match_nothing_after_filtering_all_out() {
     let input = one_two_three();
-
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config).append_to_search("x");
 
@@ -219,7 +216,6 @@ fn down_match_nothing_after_filtering_all_out() {
 #[test]
 fn backspaces_over_characters() {
     let input = one_two_three();
-
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config).append_to_search("e");
 
@@ -230,7 +226,6 @@ fn backspaces_over_characters() {
 #[test]
 fn resets_the_index() {
     let input = one_two_three();
-
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config).append_to_search("e");
 
@@ -240,7 +235,6 @@ fn resets_the_index() {
 #[test]
 fn previous_results_appear_after_backspace() {
     let input = one_two_three();
-
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config).append_to_search("t");
 
@@ -250,7 +244,6 @@ fn previous_results_appear_after_backspace() {
 #[test]
 fn initial_search_is_not_done() {
     let input = one_two_three();
-
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config);
 
@@ -270,7 +263,6 @@ fn aborted_search_is_done() {
 #[test]
 fn done_search_is_done() {
     let input = one_two_three();
-
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config).done();
 
@@ -290,7 +282,6 @@ fn aborted_search_has_no_selection() {
 #[test]
 fn done_search_has_selection() {
     let input = one_two_three();
-
     let config = Configuration::from_inputs(input, None, None);
     let search = Search::blank(config).done();
 

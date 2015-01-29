@@ -3,7 +3,7 @@
 extern crate getopts;
 extern crate selecta;
 
-use getopts::{optopt ,getopts};
+use getopts::{optopt,getopts};
 use selecta::configuration::Configuration;
 use selecta::search::Search;
 use selecta::tty::TTY;
@@ -26,19 +26,18 @@ fn main() {
         let input = tty.read();
         match input {
             Some(n) => {
-                search = screen.handle_keystroke(search,n.as_slice());
+                search = screen.handle_keystroke(search, n.as_slice());
             },
             None => break,
         };
         screen.print(&search);
     }
     match search.selection {
-        Some(ref t) => println!("{}\n",t),
+        Some(ref t) => println!("{}\n", t),
         None => println!("None"),
     };
     screen.ansi.show_cursor();
 }
-
 
 fn extract_initial_query() -> Option<String> {
     let args: Vec<String> = std::os::args();

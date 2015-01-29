@@ -10,12 +10,11 @@ pub struct Configuration {
 impl Configuration {
     pub fn from_inputs(choice: Vec<String>,
                        initial_search: Option<String>,
-                       visible_limit: Option<usize>)  -> Configuration {
+                       visible_limit: Option<usize>) -> Configuration {
 
         let cleaned = choice.iter().map(clean as fn(&String) -> String).collect::<Vec<String>>();
         let limit = visible_limit.unwrap_or(choice.len());
         let search = initial_search.unwrap_or("".to_string());
-
 
         Configuration { choices: cleaned,
                         initial_search: search,
@@ -44,7 +43,6 @@ fn clean(input: &String) -> String {
 #[test]
 fn removes_leading_and_trailing_whitespace() {
     let input = vec![" a choice ".to_string()];
-
     let config = Configuration::from_inputs(input, None, None);
 
     assert_eq!(config.choices(), vec!("a choice"));
@@ -55,8 +53,8 @@ fn can_specify_initial_search() {
     let input = vec!["foo".to_string()];
     let options = vec!["-s".to_string(),
                        "some search".to_string()];
-
     let config = Configuration::from_inputs(input, Configuration::parse_options(options), None);
+
     assert_eq!(config.initial_search.as_slice(), "some search");
 }
 
@@ -64,7 +62,7 @@ fn can_specify_initial_search() {
 fn initial_search_is_optional() {
     let input = vec!["foo".to_string()];
     let options = vec![];
-
     let config = Configuration::from_inputs(input, Configuration::parse_options(options), None);
+
     assert_eq!(config.initial_search, "");
 }
