@@ -37,7 +37,7 @@ fn main() {
 }
 
 fn extract_initial_query() -> Option<String> {
-    let args: Vec<String> = std::os::args();
+    let args = std::os::args();
     let opts = &[
         optopt("s", "search", "initial search query", ""),
     ];
