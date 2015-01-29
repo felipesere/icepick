@@ -50,17 +50,7 @@ fn extract_initial_query() -> Option<String> {
 }
 
 fn read_lines() -> Vec<String> {
-    let mut lines: Vec<String> = Vec::new();
-    let mut reader = std::io::stdio::stdin();
-
-    loop {
-        match reader.read_line() {
-            Err(_) => break,
-            Ok(l) => {
-                let message = l.trim();
-                lines.push(message.to_string());
-            },
-        };
-    };
-    lines
+    std::io::stdio::stdin().lock().lines().map( |line| {
+        line.unwrap().trim().to_string()
+    }).collect()
 }
