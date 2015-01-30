@@ -1,8 +1,6 @@
 extern crate libc;
 
-use winsize;
-
-use std::old_io::{File, Open, ReadWrite, Command};
+use std::old_io::{stdio, File, Open, ReadWrite, Command};
 use std::old_io::process::StdioContainer;
 use std::os::unix::prelude::AsRawFd;
 
@@ -56,11 +54,14 @@ impl TTY {
     pub fn new() -> TTY {
         let path = Path::new("/dev/tty");
         let file = File::open_mode(&path, Open, ReadWrite).unwrap();
+        let (w,h) = stdio::stdout_raw().winsize().unwrap();
+        let dimension = (w as usize, h as usize);
+
         TTY::no_echo_no_escaping(&file);
 
         TTY {
             original_state: TTY::previous_state(&file),
-            dimensions: winsize::get_winsize(&file).unwrap(),
+            dimensions: dimension,
             file: file,
         }
     }
