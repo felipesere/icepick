@@ -1,4 +1,4 @@
-#![allow(unstable)]
+#![feature(io, os, core, collections, rustc_private)]
 
 extern crate getopts;
 extern crate selecta;

@@ -54,8 +54,7 @@ impl TTY {
     pub fn new() -> TTY {
         let path = Path::new("/dev/tty");
         let file = File::open_mode(&path, Open, ReadWrite).unwrap();
-        let (w,h) = stdio::stdout_raw().winsize().unwrap();
-        let dimension = (w as usize, h as usize);
+        let dimension = TTY::get_window_size();
 
         TTY::no_echo_no_escaping(&file);
 
@@ -64,6 +63,11 @@ impl TTY {
             dimensions: dimension,
             file: file,
         }
+    }
+
+    fn get_window_size() -> (usize, usize) {
+        let (w,h) = stdio::stdout_raw().winsize().unwrap();
+        (w as usize, h as usize)
     }
 
     fn stty(file: &File, args: &[&str]) -> Option<String> {
@@ -92,13 +96,4 @@ fn can_create_a_tty() {
     let mut tty = TTY::new();
     tty.write("##### a string        \n");
     //tty.read();
-}
-
-#[test]
-fn winsize_has_valid_width_and_height() {
-    let tty = TTY::new();
-    let (width, height) = tty.dimensions;
-    assert!(width > 0);
-    assert!(height > 0);
-    tty.reset();
 }

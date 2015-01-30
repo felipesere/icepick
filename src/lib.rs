@@ -1,6 +1,7 @@
 #![allow(unstable)]
 #![allow(dead_code)]
 #![allow(missing_copy_implementations)]
+#![feature(io)]
 
 pub mod score;
 pub mod search;
