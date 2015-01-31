@@ -69,7 +69,7 @@ mod tests {
     use super::*;
 
     #[test]
-    pub fn search_is_done_when_esc() {
+    fn search_is_done_when_esc() {
         let input = blank_search();
         let screen = Screen::new();
         let result = screen.handle_keystroke(input, "\u{1b}");
@@ -77,7 +77,7 @@ mod tests {
     }
 
     #[test]
-    pub fn moves_the_selection_down_for_ctrl_n() {
+    fn moves_the_selection_down_for_ctrl_n() {
         let input = blank_search();
         let screen = Screen::new();
         let result = screen.handle_keystroke(input, "\u{e}");
@@ -85,7 +85,7 @@ mod tests {
     }
 
     #[test]
-    pub fn moves_the_selection_up_for_ctrl_p() {
+    fn moves_the_selection_up_for_ctrl_p() {
         let input = blank_search().down();
         let screen = Screen::new();
         let result = screen.handle_keystroke(input, "\u{10}");
@@ -93,7 +93,7 @@ mod tests {
     }
 
     #[test]
-    pub fn removes_the_last_character_for_delete() {
+    fn removes_the_last_character_for_delete() {
         let input = blank_search().append_to_search("w").append_to_search("x");
         let screen = Screen::new();
         let result = screen.handle_keystroke(input, "\u{7f}");
@@ -101,7 +101,7 @@ mod tests {
     }
 
     #[test]
-    pub fn marks_a_search_as_done_for_enter() {
+    fn marks_a_search_as_done_for_enter() {
         let input = blank_search();
         let screen = Screen::new();
         let result = screen.handle_keystroke(input, "\n");
