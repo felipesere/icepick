@@ -111,6 +111,7 @@ fn it_inverts() {
     assert_eq!(inner_box.last(), "\x1b[7m");
 }
 
+#[test]
 fn it_prints_inverted() {
     let mut ansi = Ansi { io: Box::new(FakeIO::new()) };
 
