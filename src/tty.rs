@@ -21,7 +21,7 @@ pub trait IO {
 impl IO for TTY {
     fn write(&mut self, line: &str) {
         let it = format!("{}\n", line);
-        self.file.write_str(it.as_slice());
+        self.file.write_str(it.as_slice()).unwrap();
     }
 
     fn read(&mut self) -> Option<String> {
