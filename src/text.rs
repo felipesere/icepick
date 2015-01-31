@@ -14,12 +14,13 @@ impl Text {
     }
 }
 
-
 #[cfg(test)]
+mod tests {
+    use super::*;
 
-#[test]
-pub fn normal_is_a_simple_string() {
-    let normal = Text::Normal("test".to_string());
-    assert_eq!("test", normal.printable().as_slice());
+    #[test]
+    pub fn normal_is_a_simple_string() {
+        let normal = Text::Normal("test".to_string());
+        assert_eq!("test", normal.printable().as_slice());
+    }
 }
-

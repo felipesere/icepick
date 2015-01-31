@@ -73,82 +73,86 @@ fn find_first_after(choice: &str, query: char, offset: usize) -> Option<usize> {
 }
 
 #[cfg(test)]
-#[test]
-fn scores_zero_when_the_choice_is_emtpy() {
-    assert_eq!(Score::score("", "a"), 0.0);
-}
+mod tests {
+    use super::*;
 
-#[test]
-fn scores_one_when_the_query_is_empty() {
-    assert_eq!(Score::score("a", ""), 1.0);
-}
+    #[test]
+    fn scores_zero_when_the_choice_is_emtpy() {
+        assert_eq!(Score::score("", "a"), 0.0);
+    }
 
-#[test]
-fn scores_zero_if_query_is_longer_than_the_choice() {
-    assert_eq!(Score::score("a", "aaaaa"), 0.0);
-}
+    #[test]
+    fn scores_one_when_the_query_is_empty() {
+        assert_eq!(Score::score("a", ""), 1.0);
+    }
 
-#[test]
-fn scores_zero_if_query_does_not_match_at_all() {
-    assert_eq!(Score::score("a", "b"), 0.0);
-}
+    #[test]
+    fn scores_zero_if_query_is_longer_than_the_choice() {
+        assert_eq!(Score::score("a", "aaaaa"), 0.0);
+    }
 
-#[test]
-fn scores_greater_than_zero_if_query_matches_choice() {
-    assert!(Score::score("a", "a") > 0.0);
-    assert!(Score::score("ab", "a") > 0.0);
-    assert!(Score::score("ba", "a") > 0.0);
-    assert!(Score::score("bab", "a") > 0.0);
-    assert!(Score::score("babababab", "aaaa") > 0.0);
-}
+    #[test]
+    fn scores_zero_if_query_does_not_match_at_all() {
+        assert_eq!(Score::score("a", "b"), 0.0);
+    }
 
-#[test]
-fn case_insensitive_matching() {
-    assert!(Score::score("a", "A") == 1.0);
-    assert!(Score::score("A", "a") == 1.0);
-}
+    #[test]
+    fn scores_greater_than_zero_if_query_matches_choice() {
+        assert!(Score::score("a", "a") > 0.0);
+        assert!(Score::score("ab", "a") > 0.0);
+        assert!(Score::score("ba", "a") > 0.0);
+        assert!(Score::score("bab", "a") > 0.0);
+        assert!(Score::score("babababab", "aaaa") > 0.0);
+    }
 
-#[test]
-fn normalizes_score_based_on_length() {
-    assert_eq!(Score::score("a", "a"), 1.0);
-    assert_eq!(Score::score("ab", "ab"), 0.5);
-    assert_eq!(Score::score("a long string", "a long string"), 1.0 / "a long string".len() as f32);
-    assert_eq!(Score::score("spec/search_spec.rb", "sear"), 1.0 / "spec/search_spec.rb".len() as f32)
-}
+    #[test]
+    fn case_insensitive_matching() {
+        assert!(Score::score("a", "A") == 1.0);
+        assert!(Score::score("A", "a") == 1.0);
+    }
 
-#[test]
-fn matches_punctuation() {
-    assert!(Score::score("/! symbols $^", "/!$^") > 0.0);
-}
+    #[test]
+    fn normalizes_score_based_on_length() {
+        assert_eq!(Score::score("a", "a"), 1.0);
+        assert_eq!(Score::score("ab", "ab"), 0.5);
+        assert_eq!(Score::score("a long string", "a long string"), 1.0 / "a long string".len() as f32);
+        assert_eq!(Score::score("spec/search_spec.rb", "sear"), 1.0 / "spec/search_spec.rb".len() as f32)
+    }
 
-#[test]
-fn repeated_character_does_not_match() {
-    assert_eq!(Score::score("a", "aa"), 0.0);
-}
+    #[test]
+    fn matches_punctuation() {
+        assert!(Score::score("/! symbols $^", "/!$^") > 0.0);
+    }
 
-#[test]
-fn scores_higher_for_better_matches() {
-      assert!(Score::score("selecta.gemspec", "asp") > Score::score("algorithm4_spec.rb", "asp"));
-      assert!(Score::score("README.md", "em") > Score::score("benchmark.rb", "em"));
-      assert!(Score::score("search.rb", "sear") > Score::score("spec/search_spec.rb", "sear"));
-}
+    #[test]
+    fn repeated_character_does_not_match() {
+        assert_eq!(Score::score("a", "aa"), 0.0);
+    }
 
-#[test]
-fn scores_shorter_matches_higher() {
-      assert!(Score::score("fbb", "fbb") > Score::score("foo bar baz", "fbb"));
-      assert!(Score::score("foo", "foo") > Score::score("longer foo", "foo"));
-      assert!(Score::score("foo", "foo") > Score::score("foo longer", "foo"));
-      assert!(Score::score("1/2/3/4", "1/2/3") > Score::score("1/9/2/3/4", "1/2/3"));
-}
+    #[test]
+    fn scores_higher_for_better_matches() {
+          assert!(Score::score("selecta.gemspec", "asp") > Score::score("algorithm4_spec.rb", "asp"));
+          assert!(Score::score("README.md", "em") > Score::score("benchmark.rb", "em"));
+          assert!(Score::score("search.rb", "sear") > Score::score("spec/search_spec.rb", "sear"));
+    }
 
-#[test]
-fn scores_the_tighter_of_two_matches_regardless_of_order() {
-      let beginning = "121padding2";
-      let end = "1padding212";
-      assert_eq!(Score::score(beginning, "12"), Score::score(end, "12"));
-}
+    #[test]
+    fn scores_shorter_matches_higher() {
+          assert!(Score::score("fbb", "fbb") > Score::score("foo bar baz", "fbb"));
+          assert!(Score::score("foo", "foo") > Score::score("longer foo", "foo"));
+          assert!(Score::score("foo", "foo") > Score::score("foo longer", "foo"));
+          assert!(Score::score("1/2/3/4", "1/2/3") > Score::score("1/9/2/3/4", "1/2/3"));
+    }
 
-#[test]
-fn tighter_matches_score_higher() {
-    assert!(Score::score("long 12 long", "12") > Score::score("1 long 2", "12"));
+    #[test]
+    fn scores_the_tighter_of_two_matches_regardless_of_order() {
+          let beginning = "121padding2";
+          let end = "1padding212";
+          assert_eq!(Score::score(beginning, "12"), Score::score(end, "12"));
+    }
+
+    #[test]
+    fn tighter_matches_score_higher() {
+        assert!(Score::score("long 12 long", "12") > Score::score("1 long 2", "12"));
+    }
 }

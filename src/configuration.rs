@@ -28,27 +28,30 @@ fn clean(input: &String) -> String {
 }
 
 #[cfg(test)]
+mod tests {
+    use super::*;
 
-#[test]
-fn removes_leading_and_trailing_whitespace() {
-    let input = vec![" a choice ".to_string()];
-    let config = Configuration::from_inputs(input, None, None);
+    #[test]
+    fn removes_leading_and_trailing_whitespace() {
+        let input = vec![" a choice ".to_string()];
+        let config = Configuration::from_inputs(input, None, None);
 
-    assert_eq!(config.choices, vec!("a choice"));
-}
+        assert_eq!(config.choices, vec!("a choice"));
+    }
 
-#[test]
-fn can_specify_initial_search() {
-    let input = vec!["foo".to_string()];
-    let config = Configuration::from_inputs(input, Some("some search".to_string()), None);
+    #[test]
+    fn can_specify_initial_search() {
+        let input = vec!["foo".to_string()];
+        let config = Configuration::from_inputs(input, Some("some search".to_string()), None);
 
-    assert_eq!(config.initial_search.as_slice(), "some search");
-}
+        assert_eq!(config.initial_search.as_slice(), "some search");
+    }
 
-#[test]
-fn initial_search_is_optional() {
-    let input = vec!["foo".to_string()];
-    let config = Configuration::from_inputs(input, None, None);
+    #[test]
+    fn initial_search_is_optional() {
+        let input = vec!["foo".to_string()];
+        let config = Configuration::from_inputs(input, None, None);
 
-    assert_eq!(config.initial_search, "");
+        assert_eq!(config.initial_search, "");
+    }
 }

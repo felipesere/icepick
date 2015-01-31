@@ -90,10 +90,13 @@ impl TTY {
 }
 
 #[cfg(test)]
+mod tests {
+    use super::*;
 
-#[test]
-fn can_create_a_tty() {
-    let mut tty = TTY::new();
-    tty.write("##### a string        \n");
-    //tty.read();
+    #[test]
+    fn can_create_a_tty() {
+        let mut tty = TTY::new();
+        tty.write("##### a string        \n");
+        //tty.read();
+    }
 }

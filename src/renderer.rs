@@ -1,4 +1,3 @@
-use configuration::Configuration;
 use search::Search;
 use text::Text;
 
@@ -36,34 +35,40 @@ impl Renderer {
 }
 
 #[cfg(test)]
+mod tests {
+    use search::Search;
+    use text::Text;
+    use configuration::Configuration;
+    use super::*;
 
-#[test]
-fn it_renderes_selected_matches_with_a_highlight() {
-    let config = Configuration::from_inputs(vec!["one".to_string(),
-                                                 "two".to_string(),
-                                                 "three".to_string()], None, Some(3));
-    let search = Search::blank(config).down();
-    let renderer = Renderer;
+    #[test]
+    fn it_renderes_selected_matches_with_a_highlight() {
+        let config = Configuration::from_inputs(vec!["one".to_string(),
+                                                     "two".to_string(),
+                                                     "three".to_string()], None, Some(3));
+        let search = Search::blank(config).down();
+        let renderer = Renderer;
 
-    let output = renderer.render(&search);
+        let output = renderer.render(&search);
 
-    assert_eq!(vec![Text::Normal("> ".to_string()),
-                    Text::Normal("one".to_string()),
-                    Text::Highlight("two".to_string())], output);
-}
+        assert_eq!(vec![Text::Normal("> ".to_string()),
+                        Text::Normal("one".to_string()),
+                        Text::Highlight("two".to_string())], output);
+    }
 
-#[test]
-fn it_renders_a_missmatch() {
-    let config = Configuration::from_inputs(vec!["one".to_string(),
-                                                 "two".to_string(),
-                                                 "three".to_string()], None, Some(3));
+    #[test]
+    fn it_renders_a_missmatch() {
+        let config = Configuration::from_inputs(vec!["one".to_string(),
+                                                     "two".to_string(),
+                                                     "three".to_string()], None, Some(3));
 
-    let search = Search::blank(config).append_to_search("z");
-    let renderer = Renderer;
+        let search = Search::blank(config).append_to_search("z");
+        let renderer = Renderer;
 
-    let output = renderer.render(&search);
+        let output = renderer.render(&search);
 
-    assert_eq!(vec![Text::Normal("> z".to_string()),
-                    Text::Blank,
-                    Text::Blank], output);
+        assert_eq!(vec![Text::Normal("> z".to_string()),
+                        Text::Blank,
+                        Text::Blank], output);
+    }
 }
