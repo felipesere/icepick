@@ -1,4 +1,4 @@
-#[derive(PartialEq, Show)]
+#[derive(PartialEq, Debug)]
 pub enum Text {
     Normal(String),
     Highlight(String),

@@ -3,7 +3,7 @@ use std::slice::SliceExt;
 use std::cmp::{Ordering, min};
 use score::Score;
 
-#[derive(Show)]
+#[derive(Debug)]
 pub struct Search {
     pub config: Configuration,
     current: usize,
