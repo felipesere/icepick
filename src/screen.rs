@@ -6,15 +6,13 @@ use fake_tty::FakeIO;
 use renderer::Renderer;
 use text::Text;
 
-
 pub struct Screen <'a> {
     pub ansi: Ansi<'a>,
     height: usize,
 }
 
-
 impl <'a> Screen <'a>{
-    pub fn new() -> Screen<'a>  {
+    pub fn new() -> Screen<'a> {
         let ansi = Ansi { io: Box::new(TTY::new()) };
         let (_, height) = ansi.io.dimensions();
         Screen {
@@ -46,16 +44,16 @@ impl <'a> Screen <'a>{
         let result = renderer.render(search);
         self.ansi.hide_cursor();
 
-        let start_line = self.height - search.config.visible_limit -1;
+        let start_line = self.height - search.config.visible_limit - 1;
 
         for (idx, text) in result.iter().enumerate() {
-            self.write(start_line+idx, text);
+            self.write(start_line + idx, text);
         };
     }
 
     pub fn write(&mut self, line: usize, text: &Text) {
         self.ansi.blank_line(line);
-        self.ansi.set_position(line,0);
+        self.ansi.set_position(line, 0);
 
         match *text {
             Text::Normal(ref t) => self.ansi.print(t.as_slice()),
@@ -64,7 +62,6 @@ impl <'a> Screen <'a>{
         };
     }
 }
-
 
 #[cfg(test)]
 
@@ -113,4 +110,3 @@ fn blank_search() -> Search {
     let config = Configuration::from_inputs(input, None, Some(10));
     Search::blank(config)
 }
-

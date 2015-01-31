@@ -12,7 +12,6 @@ impl FakeIO {
             lines: Vec::new(),
         }
     }
-
 }
 
 impl IO for FakeIO {
@@ -34,6 +33,6 @@ impl IO for FakeIO {
    }
 
    fn dimensions(&self) -> (usize, usize) {
-       (50,50)
+       (50, 50)
    }
 }

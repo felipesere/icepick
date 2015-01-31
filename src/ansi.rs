@@ -28,7 +28,7 @@ impl <'a> Ansi<'a> {
     }
 
     pub fn set_position(&mut self, line: usize, column: usize) {
-        let message = format!("{};{}H", line+1, column+1);
+        let message = format!("{};{}H", line + 1, column + 1);
         self.escape(message.as_slice());
     }
 

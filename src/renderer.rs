@@ -11,7 +11,7 @@ impl Renderer {
 
         let selection = search.selection.clone().unwrap_or("".to_string());
 
-        for position in 0..(search.config.visible_limit -1) {
+        for position in 0..(search.config.visible_limit - 1) {
             if position >= search.result.len() {
                 result.push(Text::Blank);
                 continue;
@@ -34,7 +34,6 @@ impl Renderer {
         Text::Normal(line)
     }
 }
-
 
 #[cfg(test)]
 

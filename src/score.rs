@@ -9,7 +9,7 @@ impl Score {
         let lower_choice = choice.to_ascii_lowercase();
         let lower_query = query.to_ascii_lowercase();
 
-        if query_length == 0.0  { return 1.0 }
+        if query_length == 0.0 { return 1.0 }
 
         let possible_match_length = compute_match_length(lower_choice.as_slice(), lower_query.as_slice());
         match possible_match_length {
@@ -27,7 +27,7 @@ fn compute_match_length(choice: &str, query: &str) -> Option<usize> {
         None => return None,
     };
 
-    let match_beginnings = find_positions(first , choice);
+    let match_beginnings = find_positions(first, choice);
 
     let mut shortest_match: Option<usize> = None;
     for beginning in match_beginnings.iter() {
@@ -44,7 +44,7 @@ fn compute_match_length(choice: &str, query: &str) -> Option<usize> {
 
 fn find_positions(first_char: char, choice: &str) -> Vec<usize> {
     let mut found: Vec<usize> = Vec::new();
-    for  (idx, character) in choice.chars().enumerate() {
+    for (idx, character) in choice.chars().enumerate() {
         if character == first_char {
             found.push(idx);
         }
@@ -56,7 +56,7 @@ fn find_positions(first_char: char, choice: &str) -> Vec<usize> {
 fn find_match_length(choice: &str, query: &str, beginning: usize) -> Option<usize> {
     let mut last_index = beginning;
     for query_char in query.chars() {
-       let found = find_first_after(choice, query_char, last_index+1);
+       let found = find_first_after(choice, query_char, last_index + 1);
        match found {
            Some(n) => last_index = n,
            None => return None,
@@ -110,9 +110,9 @@ fn case_insensitive_matching() {
 
 #[test]
 fn normalizes_score_based_on_length() {
-    assert_eq!(Score::score("a", "a") , 1.0);
-    assert_eq!(Score::score("ab", "ab") , 0.5);
-    assert_eq!(Score::score("a long string", "a long string") , 1.0 / "a long string".len() as f32);
+    assert_eq!(Score::score("a", "a"), 1.0);
+    assert_eq!(Score::score("ab", "ab"), 0.5);
+    assert_eq!(Score::score("a long string", "a long string"), 1.0 / "a long string".len() as f32);
     assert_eq!(Score::score("spec/search_spec.rb", "sear"), 1.0 / "spec/search_spec.rb".len() as f32)
 }
 
@@ -123,7 +123,7 @@ fn matches_punctuation() {
 
 #[test]
 fn repeated_character_does_not_match() {
-    assert_eq!(Score::score("a", "aa") , 0.0);
+    assert_eq!(Score::score("a", "aa"), 0.0);
 }
 
 #[test]
@@ -152,4 +152,3 @@ fn scores_the_tighter_of_two_matches_regardless_of_order() {
 fn tighter_matches_score_higher() {
     assert!(Score::score("long 12 long", "12") > Score::score("1 long 2", "12"));
 }
-
