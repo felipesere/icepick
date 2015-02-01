@@ -47,7 +47,7 @@ impl Search {
     fn new_for_query(self, new_query: String) -> Search {
         let new_result = Search::filter(new_query.as_slice(), &self.config.choices);
 
-        Search::new(self.config, new_query, new_result, self.current, self.done)
+        Search::new(self.config, new_query, new_result, 0, self.done)
     }
 
     fn filter(query: &str, choices: &Vec<String>) -> Vec<String> {
@@ -96,7 +96,7 @@ impl Search {
         let mut new_query = self.query.clone();
         new_query.pop();
 
-        self.new_for_query(new_query).new_for_index(0)
+        self.new_for_query(new_query)
     }
 
     fn next_index(&self) -> usize {
@@ -234,12 +234,21 @@ mod tests {
     }
 
     #[test]
-    fn resets_the_index() {
+    fn resets_the_index_when_removing_char_from_search() {
         let input = one_two_three();
         let config = Configuration::from_inputs(input, None, None);
         let search = Search::blank(config).append_to_search("e");
 
         assert_eq!(search.down().backspace().current, 0);
+    }
+
+    #[test]
+    fn resets_the_index_when_adding_char_to_seach() {
+        let input = one_two_three();
+        let config = Configuration::from_inputs(input, None, None);
+        let search = Search::blank(config).down();
+
+        assert_eq!(search.append_to_search("o").current, 0);
     }
 
     #[test]
