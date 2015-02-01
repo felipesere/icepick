@@ -10,6 +10,7 @@ use selecta::tty::TTY;
 use selecta::tty::IO;
 use selecta::screen::Screen;
 
+#[allow(dead_code)]
 fn main() {
     let initial_query = extract_initial_query();
     let lines = read_lines();

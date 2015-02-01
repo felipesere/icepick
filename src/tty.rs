@@ -21,7 +21,7 @@ pub trait IO {
 impl IO for TTY {
     fn write(&mut self, line: &str) {
         let it = format!("{}\n", line);
-        self.file.write_str(it.as_slice());
+        self.file.write_str(it.as_slice()).unwrap();
     }
 
     fn read(&mut self) -> Option<String> {
@@ -90,10 +90,13 @@ impl TTY {
 }
 
 #[cfg(test)]
+mod tests {
+    use super::*;
 
-#[test]
-fn can_create_a_tty() {
-    let mut tty = TTY::new();
-    tty.write("##### a string        \n");
-    //tty.read();
+    #[test]
+    fn can_create_a_tty() {
+        let mut tty = TTY::new();
+        tty.write("##### a string        \n");
+        //tty.read();
+    }
 }
