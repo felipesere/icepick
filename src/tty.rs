@@ -89,12 +89,3 @@ impl TTY {
         TTY::stty(file, &["-g"]).unwrap_or("".to_string())
     }
 }
-
-#[cfg(test)]
-
-#[test]
-fn can_create_a_tty() {
-    let mut tty = TTY::new();
-    tty.write("##### a string        \n");
-    //tty.read();
-}
