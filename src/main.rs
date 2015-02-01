@@ -6,7 +6,6 @@ extern crate selecta;
 use getopts::{optopt,getopts};
 use selecta::configuration::Configuration;
 use selecta::search::Search;
-use selecta::tty::TTY;
 use selecta::tty::IO;
 use selecta::screen::Screen;
 
@@ -18,17 +17,16 @@ fn main() {
     let config = Configuration::from_inputs(lines, initial_query, Some(20));
     let mut search = Search::blank(config);
 
-    let mut tty = TTY::new();
     let mut screen = Screen::new();
 
     for _ in 0..search.config.visible_limit {
-        tty.write("");
+        screen.ansi.io.write("");
     }
 
     screen.print(&search);
 
     while !search.is_done() {
-        let input = tty.read();
+        let input = screen.ansi.io.read();
         match input {
             Some(n) => {
                 search = screen.handle_keystroke(search, n.as_slice());
@@ -38,7 +36,7 @@ fn main() {
         screen.print(&search);
     }
     screen.move_cursor_to_end();
-    tty.reset();
+    screen.ansi.io.reset();
     println!("{}\n", search.selection.unwrap_or("None".to_string()));
     screen.ansi.show_cursor();
 }

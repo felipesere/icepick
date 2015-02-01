@@ -16,6 +16,7 @@ pub trait IO {
     fn last(&self) -> &str;
     fn lines(&self) -> Vec<String>;
     fn dimensions(&self) -> (usize, usize);
+    fn reset(&self);
 }
 
 impl IO for TTY {
@@ -48,6 +49,10 @@ impl IO for TTY {
     fn dimensions(&self) -> (usize, usize) {
         self.dimensions
     }
+
+    fn reset(&self) {
+        TTY::stty(&self.file, &[self.original_state.as_slice()]);
+    }
 }
 
 impl TTY {
@@ -64,10 +69,6 @@ impl TTY {
             dimensions: dimension,
             file: file,
         }
-    }
-
-    pub fn reset(&self) {
-        TTY::stty(&self.file, &[self.original_state.as_slice()]);
     }
 
     fn get_window_size() -> (usize, usize) {

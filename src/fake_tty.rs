@@ -35,4 +35,7 @@ impl IO for FakeIO {
    fn dimensions(&self) -> (usize, usize) {
        (50, 50)
    }
+
+   fn reset(&self) {
+   }
 }
