@@ -1,8 +1,8 @@
 use configuration::Configuration;
 use std::slice::SliceExt;
-use std::cmp::{Ordering, min};
+use std::cmp::min;
 use score::Score;
-use std::collections::BinaryHeap;
+use sorted_result_set::SortedResultSet;
 
 #[derive(Debug)]
 pub struct Search {
@@ -12,33 +12,6 @@ pub struct Search {
     pub selection: Option<String>,
     pub result: Vec<String>,
     done: bool,
-}
-
-pub struct ScoreResult {
-    pub quality: f32,
-    pub choice: String,
-}
-
-impl Ord for ScoreResult {
-    fn cmp(&self, other: &ScoreResult) -> Ordering {
-        // Reverses ordering to make the binary max heap a min heap in Search::filter.
-        self.quality.partial_cmp(&other.quality).unwrap_or(Ordering::Equal).reverse()
-    }
-}
-
-impl PartialOrd for ScoreResult {
-    fn partial_cmp(&self, other: &ScoreResult) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Eq for ScoreResult {
-}
-
-impl PartialEq for ScoreResult {
-    fn eq(&self, other: &ScoreResult) -> bool {
-       self.quality == other.quality
-    }
 }
 
 impl Search {
@@ -79,34 +52,15 @@ impl Search {
     }
 
     pub fn filter(query: &str, choices: &Vec<String>) -> Vec<String> {
-        // preallocates limit + 1 for an optimized push_pop operation later
-        let mut result: BinaryHeap<ScoreResult> = BinaryHeap::with_capacity(20 + 1);
-        let mut choice_i = choices.iter();
+        let mut results = SortedResultSet::new(20);
 
-        // fills up the heap with at most *limit* elements
-        while result.len() < 20 {
-            let choice = match choice_i.next() {
-                Some(t) => t,
-                None => break,
-            };
-
-            match Score::score(choice.as_slice(), query) {
-                0.0       => continue,
-                quality   => result.push(ScoreResult{quality: quality, choice: choice.clone()}),
-            }
-        }
-
-        // heap is full, push_pop ensures that only top results stay in the heap without growing
-        // USES SAME ITERATOR AS BEFORE. We don't want to walk over elements that are already
-        // processed.
-        for choice in choice_i {
+        for choice in choices.iter() {
             match Score::score(choice.as_slice(), query) {
                 0.0     => continue,
-                quality => result.push_pop(ScoreResult { quality: quality, choice: choice.clone()}),
+                quality => results.push(quality,choice.clone()),
             };
         }
-
-        result.into_sorted_vec().iter().map( |score_result| score_result.choice.to_string() ).collect::<Vec<String>>()
+        results.sorted_vec()
     }
 
     fn select(result: &Vec<String>, index: usize) -> Option<String> {
@@ -357,7 +311,7 @@ mod tests {
         result
     }
 
-    //109344 ns/iter (+/- 26026)
+    //123479 ns/iter (+/- 20102)
     #[bench]
     fn filter_speed(b: &mut Bencher) {
         let input = input_times(1000);
