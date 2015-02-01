@@ -59,6 +59,10 @@ impl <'a> Screen <'a>{
             Text::Blank => self.ansi.print("".as_slice()),
         };
     }
+
+    pub fn move_cursor_to_end(&mut self) {
+        self.ansi.set_position(self.height - 1, 0);
+    }
 }
 
 #[cfg(test)]
