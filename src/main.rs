@@ -21,6 +21,10 @@ fn main() {
     let mut tty = TTY::new();
     let mut screen = Screen::new();
 
+    for _ in 0..search.config.visible_limit {
+        tty.write("");
+    }
+
     screen.print(&search);
 
     while !search.is_done() {
