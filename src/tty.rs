@@ -55,14 +55,19 @@ impl TTY {
         let path = Path::new("/dev/tty");
         let file = File::open_mode(&path, Open, ReadWrite).unwrap();
         let dimension = TTY::get_window_size();
+        let orig_state = TTY::previous_state(&file);
 
         TTY::no_echo_no_escaping(&file);
 
         TTY {
-            original_state: TTY::previous_state(&file),
+            original_state: orig_state,
             dimensions: dimension,
             file: file,
         }
+    }
+
+    pub fn reset(&self) {
+        TTY::stty(&self.file, &[self.original_state.as_slice()]);
     }
 
     fn get_window_size() -> (usize, usize) {
@@ -82,21 +87,5 @@ impl TTY {
 
     fn previous_state(file: &File) -> String {
         TTY::stty(file, &["-g"]).unwrap_or("".to_string())
-    }
-
-    fn reset(self) {
-        TTY::stty(&self.file, &[self.original_state.as_slice()]);
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn can_create_a_tty() {
-        let mut tty = TTY::new();
-        tty.write("##### a string        \n");
-        //tty.read();
     }
 }

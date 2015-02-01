@@ -33,6 +33,7 @@ fn main() {
         };
         screen.print(&search);
     }
+    tty.reset();
     println!("{}\n", search.selection.unwrap_or("None".to_string()));
     screen.ansi.show_cursor();
 }
