@@ -94,7 +94,7 @@ mod tests {
     #[test]
     fn marks_a_search_as_done_for_enter() {
         let input = blank_search();
-        let screen = Screen::new();
+        let screen = Screen::fake();
         let result = screen.handle_keystroke(input, "\n");
         assert!(result.is_done());
     }
