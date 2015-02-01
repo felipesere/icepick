@@ -29,7 +29,6 @@ impl <'a> Screen <'a>{
 
     pub fn handle_keystroke(&self, search: Search, input: &str) -> Search {
         match input {
-           "\u{1b}" => search.abort(),
            "\u{e}" => search.down(),
            "\u{10}" => search.up(),
            "\u{7f}" => search.backspace(),
@@ -67,14 +66,6 @@ mod tests {
     use configuration::Configuration;
     use search::Search;
     use super::*;
-
-    #[test]
-    fn search_is_done_when_esc() {
-        let input = blank_search();
-        let screen = Screen::new();
-        let result = screen.handle_keystroke(input, "\u{1b}");
-        assert!(result.is_done());
-    }
 
     #[test]
     fn moves_the_selection_down_for_ctrl_n() {

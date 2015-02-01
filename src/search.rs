@@ -24,12 +24,6 @@ impl Search {
         self.done
     }
 
-    pub fn abort(self) -> Search {
-        let mut search = Search::new(self.config, self.query, self.result, self.current, true);
-        search.selection = None;
-        search
-    }
-
     pub fn done(self) -> Search {
         Search::new(self.config, self.query, self.result, self.current, true)
     }
@@ -267,32 +261,12 @@ mod tests {
     }
 
     #[test]
-    fn aborted_search_is_done() {
-        let input = one_two_three();
-
-        let config = Configuration::from_inputs(input, None, None);
-        let search = Search::blank(config).abort();
-
-        assert!(search.is_done());
-    }
-
-    #[test]
     fn done_search_is_done() {
         let input = one_two_three();
         let config = Configuration::from_inputs(input, None, None);
         let search = Search::blank(config).done();
 
         assert!(search.is_done());
-    }
-
-    #[test]
-    fn aborted_search_has_no_selection() {
-        let input = one_two_three();
-
-        let config = Configuration::from_inputs(input, None, None);
-        let search = Search::blank(config).abort();
-
-        assert_eq!(search.selection, None);
     }
 
     #[test]
