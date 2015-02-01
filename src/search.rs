@@ -50,7 +50,7 @@ impl Search {
         Search::new(self.config, new_query, new_result, 0, self.done)
     }
 
-    fn filter(query: &str, choices: &Vec<String>) -> Vec<String> {
+    pub fn filter(query: &str, choices: &Vec<String>) -> Vec<String> {
         let mut filtered = choices.iter().filter_map( |choice| {
             let quality = Score::score(choice.as_slice(), query);
             if quality > 0.0 {
@@ -124,8 +124,10 @@ impl Search {
 
 #[cfg(test)]
 mod tests {
+    extern crate test;
     use configuration::Configuration;
     use super::*;
+    use self::test::Bencher;
 
     fn one_two_three() -> Vec<String> {
         vec!["one".to_string(),
@@ -303,5 +305,24 @@ mod tests {
         let search = Search::blank(config).append_to_search("n").up();
 
         assert_eq!(search.selection, Some("one".to_string()));
+    }
+
+    fn input_times(n: usize) -> Vec<String> {
+        let mut result: Vec<String> = Vec::new();
+        for thing in one_two_three().iter().cycle().take(n) {
+            result.push(thing.clone());
+        }
+        result
+    }
+
+    //254344 ns/iter (+/- 57744)
+    #[bench]
+    fn filter_speed(b: &mut Bencher) {
+        let input = input_times(1000);
+        let query = "t";
+
+        b.iter(||{ 
+            Search::filter(query, &input)
+        });
     }
 }
