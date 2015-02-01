@@ -55,11 +55,12 @@ impl TTY {
         let path = Path::new("/dev/tty");
         let file = File::open_mode(&path, Open, ReadWrite).unwrap();
         let dimension = TTY::get_window_size();
+        let orig_state = TTY::previous_state(&file);
 
         TTY::no_echo_no_escaping(&file);
 
         TTY {
-            original_state: TTY::previous_state(&file),
+            original_state: orig_state,
             dimensions: dimension,
             file: file,
         }
