@@ -1,4 +1,3 @@
-#![allow(dead_code)]
 #![allow(missing_copy_implementations)]
 #![feature(io, std_misc, core, collections, libc, path)]
 

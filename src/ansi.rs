@@ -31,14 +31,6 @@ impl <'a> Ansi<'a> {
         self.escape(message.as_slice());
     }
 
-    fn invert(&mut self) {
-        self.escape("7m");
-    }
-
-    fn reset(&mut self) {
-        self.escape("0m");
-    }
-
     pub fn inverted(&mut self, line: &str) {
         let compound = format!("{}{}{}", Ansi::esc("7m"), line, Ansi::esc("0m"));
         self.io.write(compound.as_slice());
@@ -105,29 +97,11 @@ mod tests {
     }
 
     #[test]
-    fn it_inverts() {
-        let mut ansi = Ansi { io: Box::new(FakeIO::new()) };
-
-        ansi.invert();
-        let inner_box = ansi.io;
-        assert_eq!(inner_box.last(), "\x1b[7m");
-    }
-
-    #[test]
     fn it_prints_inverted() {
         let mut ansi = Ansi { io: Box::new(FakeIO::new()) };
 
         ansi.inverted("test");
         let inner_box = ansi.io;
         assert_eq!(inner_box.last(), "\x1b[7mtest\x1b[0m");
-    }
-
-    #[test]
-    fn it_resets() {
-        let mut ansi = Ansi { io: Box::new(FakeIO::new()) };
-
-        ansi.reset();
-        let inner_box = ansi.io;
-        assert_eq!(inner_box.last(), "\x1b[0m");
     }
 }
