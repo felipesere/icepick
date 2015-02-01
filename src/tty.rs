@@ -65,6 +65,10 @@ impl TTY {
         }
     }
 
+    pub fn reset(&self) {
+        TTY::stty(&self.file, &[self.original_state.as_slice()]);
+    }
+
     fn get_window_size() -> (usize, usize) {
         let (w,h) = stdio::stdout_raw().winsize().unwrap();
         (w as usize, h as usize)
@@ -82,10 +86,6 @@ impl TTY {
 
     fn previous_state(file: &File) -> String {
         TTY::stty(file, &["-g"]).unwrap_or("".to_string())
-    }
-
-    fn reset(self) {
-        TTY::stty(&self.file, &[self.original_state.as_slice()]);
     }
 }
 
