@@ -23,7 +23,7 @@ impl <'a> Screen <'a>{
         }
     }
 
-    fn fake() -> Screen<'a> {
+    pub fn fake() -> Screen<'a> {
         Screen {
             ansi: Ansi { io: Box::new(FakeIO::new()) },
             height: 20,
@@ -71,7 +71,7 @@ impl <'a> Screen <'a>{
 #[test]
 pub fn search_is_done_when_esc() {
     let input = blank_search();
-    let screen = Screen::new();
+    let screen = Screen::fake();
     let result = screen.handle_keystroke(input, "\u{1b}");
     assert!(result.is_done());
 }
@@ -79,7 +79,7 @@ pub fn search_is_done_when_esc() {
 #[test]
 pub fn moves_the_selection_down_for_ctrl_n() {
     let input = blank_search();
-    let screen = Screen::new();
+    let screen = Screen::fake();
     let result = screen.handle_keystroke(input, "\u{e}");
     assert_eq!(result.selection, Some("two".to_string()));
 }
@@ -87,7 +87,7 @@ pub fn moves_the_selection_down_for_ctrl_n() {
 #[test]
 pub fn moves_the_selection_up_for_ctrl_p() {
     let input = blank_search().down();
-    let screen = Screen::new();
+    let screen = Screen::fake();
     let result = screen.handle_keystroke(input, "\u{10}");
     assert_eq!(result.selection, Some("one".to_string()));
 }
@@ -95,7 +95,7 @@ pub fn moves_the_selection_up_for_ctrl_p() {
 #[test]
 pub fn removes_the_last_character_for_delete() {
     let input = blank_search().append_to_search("w").append_to_search("x");
-    let screen = Screen::new();
+    let screen = Screen::fake();
     let result = screen.handle_keystroke(input, "\u{7f}");
     assert_eq!(result.selection, Some("two".to_string()));
 }
@@ -103,7 +103,7 @@ pub fn removes_the_last_character_for_delete() {
 #[test]
 pub fn marks_a_search_as_done_for_enter() {
     let input = blank_search();
-    let screen = Screen::new();
+    let screen = Screen::fake();
     let result = screen.handle_keystroke(input, "\n");
     assert!(result.is_done());
 }
@@ -113,4 +113,3 @@ fn blank_search() -> Search {
     let config = Configuration::from_inputs(input, None, Some(10));
     Search::blank(config)
 }
-
