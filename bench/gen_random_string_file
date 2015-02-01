@@ -1,0 +1,16 @@
+#! /usr/bin/ruby
+
+def random_char
+  (("a".."z").to_a + ("A".."Z").to_a).sample
+end
+
+def random_string
+  (0..Random.rand(15..30)).map{random_char}.join
+end
+
+filename = ARGV[0] || "random_strings.txt"
+num_strings = ARGV[1] ? ARGV[1].to_i : 10000
+
+File.open(filename, "w") do |f|
+  num_strings.times { f.write(random_string + "\n") }
+end
