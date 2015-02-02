@@ -47,6 +47,7 @@ impl <'a> Screen <'a>{
         for (idx, text) in result.iter().enumerate() {
             self.write(start_line + idx, text);
         };
+        self.ansi.set_position(start_line, renderer.header(search).len());
         self.ansi.show_cursor();
     }
 
