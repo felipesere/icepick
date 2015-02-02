@@ -47,6 +47,7 @@ impl <'a> Screen <'a>{
         for (idx, text) in result.iter().enumerate() {
             self.write(start_line + idx, text);
         };
+        self.ansi.show_cursor();
     }
 
     pub fn write(&mut self, line: usize, text: &Text) {
