@@ -20,7 +20,7 @@ impl Search {
     pub fn blank(config: Configuration) -> Search {
         let query = config.initial_search.clone();
         let result = config.choices.clone();
-        let mut result_stack: Vec<Vec<String>> = Vec::new();
+        let result_stack: Vec<Vec<String>> = Vec::new();
 
         Search::new(config, query, result_stack, result, 0, false)
     }
@@ -100,7 +100,7 @@ impl Search {
     pub fn backspace(mut self) -> Search {
         let mut new_query = self.query.clone();
         new_query.pop();
-        let new_result = self.result_stack.pop().unwrap();
+        let new_result = self.result_stack.pop().unwrap_or(self.result);
 
         Search::new(self.config, new_query, self.result_stack, new_result, 0, self.done)
     }
