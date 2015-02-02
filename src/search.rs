@@ -57,9 +57,9 @@ impl Search {
         let query = query.to_ascii_lowercase();
 
         for choice in choices.iter() {
-            let choice = choice.to_ascii_lowercase();
+            let lower_choice = choice.to_ascii_lowercase();
 
-            match Score::score(choice.as_slice(), query.as_slice()) {
+            match Score::score(lower_choice.as_slice(), query.as_slice()) {
                 0.0     => continue,
                 quality => results.push(quality,choice.clone()),
             };
