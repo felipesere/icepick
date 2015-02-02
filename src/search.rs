@@ -12,14 +12,17 @@ pub struct Search {
     pub query: String,
     pub selection: Option<String>,
     pub result: Vec<String>,
+    result_stack: Vec<Vec<String>>,
     done: bool,
 }
 
 impl Search {
     pub fn blank(config: Configuration) -> Search {
         let query = config.initial_search.clone();
-        let previous_result = config.choices.clone();
-        Search::new(config, query, previous_result, 0, false)
+        let result = config.choices.clone();
+        let mut result_stack: Vec<Vec<String>> = Vec::new();
+
+        Search::new(config, query, result_stack, result, 0, false)
     }
 
     pub fn is_done(&self) -> bool {
@@ -27,10 +30,10 @@ impl Search {
     }
 
     pub fn done(self) -> Search {
-        Search::new(self.config, self.query, self.result, self.current, true)
+        Search::new(self.config, self.query, self.result_stack, self.result, self.current, true)
     }
 
-    fn new(config: Configuration, query: String, result: Vec<String>, index: usize, done: bool) -> Search {
+    fn new(config: Configuration, query: String, result_stack: Vec<Vec<String>>, result: Vec<String>, index: usize, done: bool) -> Search {
 
         let selection = Search::select(&result, index);
 
@@ -39,17 +42,19 @@ impl Search {
                  query: query,
                  selection: selection,
                  result: result,
+                 result_stack: result_stack,
                  done: done}
     }
 
     fn new_for_index(self, index: usize) -> Search {
-        Search::new(self.config, self.query, self.result, index, self.done)
+        Search::new(self.config, self.query, self.result_stack, self.result, index, self.done)
     }
 
-    fn new_for_query(self, new_query: String) -> Search {
+    fn new_for_query(mut self, new_query: String) -> Search {
         let new_result = Search::filter(new_query.as_slice(), &self.config.choices);
+        self.result_stack.push(self.result);
 
-        Search::new(self.config, new_query, new_result, 0, self.done)
+        Search::new(self.config, new_query, self.result_stack, new_result, 0, self.done)
     }
 
     pub fn filter(query: &str, choices: &Vec<String>) -> Vec<String> {
@@ -92,11 +97,12 @@ impl Search {
         self.new_for_query(new_query)
     }
 
-    pub fn backspace(self) -> Search {
+    pub fn backspace(mut self) -> Search {
         let mut new_query = self.query.clone();
         new_query.pop();
+        let new_result = self.result_stack.pop().unwrap();
 
-        self.new_for_query(new_query)
+        Search::new(self.config, new_query, self.result_stack, new_result, 0, self.done)
     }
 
     fn next_index(&self) -> usize {
