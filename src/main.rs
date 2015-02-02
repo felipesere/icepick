@@ -23,9 +23,8 @@ fn main() {
         screen.ansi.io.write("");
     }
 
-    screen.print(&search);
-
     while !search.is_done() {
+        screen.print(&search);
         let input = screen.ansi.io.read();
         match input {
             Some(n) => {
@@ -33,7 +32,6 @@ fn main() {
             },
             None => break,
         };
-        screen.print(&search);
     }
     screen.move_cursor_to_end();
     screen.ansi.io.reset();
