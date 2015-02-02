@@ -1,0 +1,73 @@
+     Running target/release/selecta-a266c4b65541129f
+
+running 61 tests
+test ansi::tests::it_clears_the_screen ... ignored
+test ansi::tests::it_escapes_a_str ... ignored
+test ansi::tests::it_hides_the_cursos ... ignored
+test ansi::tests::it_prints_inverted ... ignored
+test ansi::tests::it_sets_the_position ... ignored
+test ansi::tests::it_shows_the_cursor ... ignored
+test configuration::tests::can_specify_initial_search ... ignored
+test configuration::tests::initial_search_is_optional ... ignored
+test configuration::tests::removes_leading_and_trailing_whitespace ... ignored
+test renderer::tests::it_renderes_selected_matches_with_a_highlight ... ignored
+test renderer::tests::it_renders_a_missmatch ... ignored
+test score::tests::matches_punctuation ... ignored
+test score::tests::normalizes_score_based_on_length ... ignored
+test score::tests::repeated_character_does_not_match ... ignored
+test score::tests::scores_greater_than_zero_if_query_matches_choice ... ignored
+test score::tests::scores_higher_for_better_matches ... ignored
+test score::tests::scores_one_when_the_query_is_empty ... ignored
+test score::tests::scores_shorter_matches_higher ... ignored
+test score::tests::scores_the_tighter_of_two_matches_regardless_of_order ... ignored
+test score::tests::scores_zero_if_query_does_not_match_at_all ... ignored
+test score::tests::scores_zero_if_query_is_longer_than_the_choice ... ignored
+test score::tests::scores_zero_when_the_choice_is_emtpy ... ignored
+test score::tests::tighter_matches_score_higher ... ignored
+test screen::tests::marks_a_search_as_done_for_enter ... ignored
+test screen::tests::moves_the_selection_down_for_ctrl_n ... ignored
+test screen::tests::moves_the_selection_up_for_ctrl_p ... ignored
+test screen::tests::removes_the_last_character_for_delete ... ignored
+test search::tests::backspaces_over_characters ... ignored
+test search::tests::done_search_has_selection ... ignored
+test search::tests::done_search_is_done ... ignored
+test search::tests::down_match_nothing_after_filtering_all_out ... ignored
+test search::tests::initial_search_is_not_done ... ignored
+test search::tests::it_handles_not_matching_anything ... ignored
+test search::tests::it_loop_around_when_reaching_end_of_list ... ignored
+test search::tests::it_loop_around_when_reaching_top_of_list ... ignored
+test search::tests::it_loop_around_when_reaching_visible_limit ... ignored
+test search::tests::it_moves_down_the_filtered_search_results ... ignored
+test search::tests::it_moves_down_the_filtered_search_results_twice ... ignored
+test search::tests::it_selects_the_first_choice_by_default ... ignored
+test search::tests::it_selets_the_second_when_down_is_called ... ignored
+test search::tests::loop_around_when_reaching_bottom_of_choices ... ignored
+test search::tests::loop_around_when_reaching_top_of_choices ... ignored
+test search::tests::previous_results_appear_after_backspace ... ignored
+test search::tests::resets_the_index_when_adding_char_to_seach ... ignored
+test search::tests::resets_the_index_when_removing_char_from_search ... ignored
+test search::tests::search_is_case_insensitive ... ignored
+test search::tests::up_match_nothing_after_filtering_all_out ... ignored
+test text::tests::normal_is_a_simple_string ... ignored
+test score::tests::almost_overlapping_matches      ... bench:       406 ns/iter (+/- 179)
+test score::tests::matching_broken_up              ... bench:       206 ns/iter (+/- 50)
+test score::tests::matching_exactly                ... bench:       841 ns/iter (+/- 173)
+test score::tests::non_matching                    ... bench:        54 ns/iter (+/- 10)
+test score::tests::overlapping_matches             ... bench:       464 ns/iter (+/- 98)
+test score::tests::paths_empty_query               ... bench:     47294 ns/iter (+/- 31363)
+test score::tests::paths_non_matching              ... bench:    181030 ns/iter (+/- 33086)
+test score::tests::paths_trivial_query             ... bench:     56244 ns/iter (+/- 22545)
+test score::tests::progressive_non_sequential_few  ... bench:     57722 ns/iter (+/- 8210)
+test score::tests::progressive_non_sequential_many ... bench:     70204 ns/iter (+/- 11439)
+test score::tests::progressive_sequential_few      ... bench:     71472 ns/iter (+/- 11727)
+test score::tests::progressive_sequential_many     ... bench:     86294 ns/iter (+/- 17357)
+test search::tests::filter_speed                   ... bench:     83989 ns/iter (+/- 15623)
+
+test result: ok. 0 passed; 0 failed; 48 ignored; 13 measured
+
+     Running target/release/selecta-d0233b89008e2ea8
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured
+
