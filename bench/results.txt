@@ -1,6 +1,7 @@
+   Compiling selecta v0.0.1 (file:///Users/ukutaht/dev/rust/selecta)
      Running target/release/selecta-a266c4b65541129f
 
-running 61 tests
+running 60 tests
 test ansi::tests::it_clears_the_screen ... ignored
 test ansi::tests::it_escapes_a_str ... ignored
 test ansi::tests::it_hides_the_cursos ... ignored
@@ -9,7 +10,6 @@ test ansi::tests::it_sets_the_position ... ignored
 test ansi::tests::it_shows_the_cursor ... ignored
 test configuration::tests::can_specify_initial_search ... ignored
 test configuration::tests::initial_search_is_optional ... ignored
-test configuration::tests::removes_leading_and_trailing_whitespace ... ignored
 test renderer::tests::it_renderes_selected_matches_with_a_highlight ... ignored
 test renderer::tests::it_renders_a_missmatch ... ignored
 test score::tests::matches_punctuation ... ignored
@@ -49,21 +49,21 @@ test search::tests::resets_the_index_when_removing_char_from_search ... ignored
 test search::tests::search_is_case_insensitive ... ignored
 test search::tests::up_match_nothing_after_filtering_all_out ... ignored
 test text::tests::normal_is_a_simple_string ... ignored
-test score::tests::almost_overlapping_matches      ... bench:       406 ns/iter (+/- 179)
-test score::tests::matching_broken_up              ... bench:       206 ns/iter (+/- 50)
-test score::tests::matching_exactly                ... bench:       841 ns/iter (+/- 173)
-test score::tests::non_matching                    ... bench:        54 ns/iter (+/- 10)
-test score::tests::overlapping_matches             ... bench:       464 ns/iter (+/- 98)
-test score::tests::paths_empty_query               ... bench:     47294 ns/iter (+/- 31363)
-test score::tests::paths_non_matching              ... bench:    181030 ns/iter (+/- 33086)
-test score::tests::paths_trivial_query             ... bench:     56244 ns/iter (+/- 22545)
-test score::tests::progressive_non_sequential_few  ... bench:     57722 ns/iter (+/- 8210)
-test score::tests::progressive_non_sequential_many ... bench:     70204 ns/iter (+/- 11439)
-test score::tests::progressive_sequential_few      ... bench:     71472 ns/iter (+/- 11727)
-test score::tests::progressive_sequential_many     ... bench:     86294 ns/iter (+/- 17357)
-test search::tests::filter_speed                   ... bench:     83989 ns/iter (+/- 15623)
+test score::tests::almost_overlapping_matches      ... bench:       257 ns/iter (+/- 108)
+test score::tests::matching_broken_up              ... bench:       101 ns/iter (+/- 36)
+test score::tests::matching_exactly                ... bench:       666 ns/iter (+/- 198)
+test score::tests::non_matching                    ... bench:        56 ns/iter (+/- 6)
+test score::tests::overlapping_matches             ... bench:       275 ns/iter (+/- 41)
+test score::tests::paths_empty_query               ... bench:     39890 ns/iter (+/- 7828)
+test score::tests::paths_non_matching              ... bench:    190878 ns/iter (+/- 51472)
+test score::tests::paths_trivial_query             ... bench:     48677 ns/iter (+/- 15840)
+test score::tests::progressive_non_sequential_few  ... bench:     49421 ns/iter (+/- 21479)
+test score::tests::progressive_non_sequential_many ... bench:     63780 ns/iter (+/- 8929)
+test score::tests::progressive_sequential_few      ... bench:     65650 ns/iter (+/- 4368)
+test score::tests::progressive_sequential_many     ... bench:     78105 ns/iter (+/- 1528)
+test search::tests::filter_speed                   ... bench:     68990 ns/iter (+/- 2289)
 
-test result: ok. 0 passed; 0 failed; 48 ignored; 13 measured
+test result: ok. 0 passed; 0 failed; 47 ignored; 13 measured
 
      Running target/release/selecta-d0233b89008e2ea8
 

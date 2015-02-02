@@ -23,30 +23,20 @@ fn compute_match_length(choice: &str, query: &str) -> Option<usize> {
         None => return None,
     };
 
-    let match_beginnings = find_positions(first, choice);
-
     let mut shortest_match: Option<usize> = None;
-    for beginning in match_beginnings.iter() {
-        let possible_match_length = find_match_length(choice, rest, *beginning);
 
-        match (shortest_match, possible_match_length) {
-            (Some(shortest), Some(length)) if shortest > length => shortest_match = possible_match_length,
-            (None, Some(_)) => shortest_match = possible_match_length,
-            (_, _) => continue,
-        };
-    }
-    return shortest_match;
-}
-
-fn find_positions(first_char: char, choice: &str) -> Vec<usize> {
-    let mut found: Vec<usize> = Vec::new();
     for (idx, character) in choice.chars().enumerate() {
-        if character == first_char {
-            found.push(idx);
+        if character == first {
+            let possible_match_length = find_match_length(choice, rest, idx);
+
+            match (shortest_match, possible_match_length) {
+                (Some(shortest), Some(length)) if shortest > length => shortest_match = possible_match_length,
+                (None, Some(_)) => shortest_match = possible_match_length,
+                (_, _) => continue,
+            };
         }
     }
-
-    return found;
+    return shortest_match;
 }
 
 fn find_match_length(choice: &str, query: &str, beginning: usize) -> Option<usize> {
