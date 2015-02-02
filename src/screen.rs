@@ -42,12 +42,12 @@ impl <'a> Screen <'a>{
         let result = renderer.render(search);
         self.ansi.hide_cursor();
 
-        let start_line = self.height - search.config.visible_limit - 1;
+        let start_line = self.height - search.config.visible_limit - 2;
 
         for (idx, text) in result.iter().enumerate() {
             self.write(start_line + idx, text);
         };
-        self.ansi.set_position(start_line, renderer.header(search).len());
+        self.ansi.set_position(start_line - 1, renderer.header(search).len());
         self.ansi.show_cursor();
     }
 

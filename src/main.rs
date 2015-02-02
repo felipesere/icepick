@@ -19,7 +19,7 @@ fn main() {
 
     let mut screen = Screen::new();
 
-    for _ in 0..search.config.visible_limit {
+    for _ in 0..(search.config.visible_limit - 1) {
         screen.ansi.io.write("");
     }
 
