@@ -1,17 +1,13 @@
-use std::ascii::AsciiExt;
-
 pub struct Score;
 
 impl Score {
     pub fn score(choice: &str, query: &str) -> f32 {
         let choice_length = choice.len() as f32;
         let query_length = query.len() as f32;
-        let lower_choice = choice.to_ascii_lowercase();
-        let lower_query = query.to_ascii_lowercase();
 
         if query_length == 0.0 { return 1.0 }
 
-        let possible_match_length = compute_match_length(lower_choice.as_slice(), lower_query.as_slice());
+        let possible_match_length = compute_match_length(choice.as_slice(), query.as_slice());
         match possible_match_length {
             Some(match_length) => {
                 (query_length / match_length as f32) / choice_length
@@ -106,12 +102,6 @@ mod tests {
     }
 
     #[test]
-    fn case_insensitive_matching() {
-        assert!(Score::score("a", "A") == 1.0);
-        assert!(Score::score("A", "a") == 1.0);
-    }
-
-    #[test]
     fn normalizes_score_based_on_length() {
         assert_eq!(Score::score("a", "a"), 1.0);
         assert_eq!(Score::score("ab", "ab"), 0.5);
@@ -132,7 +122,7 @@ mod tests {
     #[test]
     fn scores_higher_for_better_matches() {
           assert!(Score::score("selecta.gemspec", "asp") > Score::score("algorithm4_spec.rb", "asp"));
-          assert!(Score::score("README.md", "em") > Score::score("benchmark.rb", "em"));
+          assert!(Score::score("readme.md", "em") > Score::score("benchmark.rb", "em"));
           assert!(Score::score("search.rb", "sear") > Score::score("spec/search_spec.rb", "sear"));
     }
 

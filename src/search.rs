@@ -3,6 +3,7 @@ use std::slice::SliceExt;
 use std::cmp::min;
 use score::Score;
 use sorted_result_set::SortedResultSet;
+use std::ascii::AsciiExt;
 
 #[derive(Debug)]
 pub struct Search {
@@ -53,9 +54,12 @@ impl Search {
 
     pub fn filter(query: &str, choices: &Vec<String>) -> Vec<String> {
         let mut results = SortedResultSet::new(20);
+        let query = query.to_ascii_lowercase();
 
         for choice in choices.iter() {
-            match Score::score(choice.as_slice(), query) {
+            let choice = choice.to_ascii_lowercase();
+
+            match Score::score(choice.as_slice(), query.as_slice()) {
                 0.0     => continue,
                 quality => results.push(quality,choice.clone()),
             };
@@ -303,6 +307,15 @@ mod tests {
         assert_eq!(search.selection, Some("one".to_string()));
     }
 
+    #[test]
+    fn search_is_case_insensitive() {
+        let input = one_two_three();
+        let config = Configuration::from_inputs(input, None, None);
+        let search = Search::blank(config).append_to_search("T");
+
+        assert_eq!(search.result.len(), 2);
+    }
+
     fn input_times(n: usize) -> Vec<String> {
         let mut result: Vec<String> = Vec::new();
         for thing in one_two_three().iter().cycle().take(n) {
@@ -311,7 +324,7 @@ mod tests {
         result
     }
 
-    //123479 ns/iter (+/- 20102)
+    //84114 ns/iter (+/- 33515)
     #[bench]
     fn filter_speed(b: &mut Bencher) {
         let input = input_times(1000);
