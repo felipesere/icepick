@@ -42,11 +42,13 @@ impl <'a> Screen <'a>{
         let result = renderer.render(search);
         self.ansi.hide_cursor();
 
-        let start_line = self.height - search.config.visible_limit - 1;
+        let start_line = self.height - search.config.visible_limit - 2;
 
         for (idx, text) in result.iter().enumerate() {
             self.write(start_line + idx, text);
         };
+        self.ansi.set_position(start_line - 1, renderer.header(search).len());
+        self.ansi.show_cursor();
     }
 
     pub fn write(&mut self, line: usize, text: &Text) {
@@ -58,6 +60,10 @@ impl <'a> Screen <'a>{
             Text::Highlight(ref t) => self.ansi.inverted(t.as_slice()),
             Text::Blank => self.ansi.print("".as_slice()),
         };
+    }
+
+    pub fn move_cursor_to_end(&mut self) {
+        self.ansi.set_position(self.height - 1, 0);
     }
 }
 
@@ -94,7 +100,7 @@ mod tests {
     #[test]
     fn marks_a_search_as_done_for_enter() {
         let input = blank_search();
-        let screen = Screen::new();
+        let screen = Screen::fake();
         let result = screen.handle_keystroke(input, "\n");
         assert!(result.is_done());
     }

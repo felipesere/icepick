@@ -6,7 +6,7 @@ pub struct Renderer;
 impl Renderer {
     pub fn render(&self, search: &Search) -> Vec<Text> {
         let mut result = Vec::new();
-        result.push(self.create_header(search));
+        result.push(Text::Normal(self.header(search)));
 
         let selection = search.selection.clone().unwrap_or("".to_string());
 
@@ -27,10 +27,8 @@ impl Renderer {
         result
     }
 
-    fn create_header(&self, search: &Search) -> Text {
-        let mut line = String::from_str("> ");
-        line.push_str(search.query.as_slice());
-        Text::Normal(line)
+    pub fn header(&self, search: &Search) -> String {
+        format!("> {}", search.query)
     }
 }
 
