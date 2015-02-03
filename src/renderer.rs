@@ -39,12 +39,15 @@ mod tests {
     use configuration::Configuration;
     use super::*;
 
+    fn input() -> Vec<String> {
+        vec!["one".to_string(), "two".to_string(), "three".to_string()]
+    }
+
     #[test]
     fn it_renderes_selected_matches_with_a_highlight() {
-        let config = Configuration::from_inputs(vec!["one".to_string(),
-                                                     "two".to_string(),
-                                                     "three".to_string()], None, Some(3));
-        let search = Search::blank(config).down();
+        let input = input();
+        let config = Configuration::from_inputs(&input, None, Some(3));
+        let search = Search::blank(&config).down();
         let renderer = Renderer;
 
         let output = renderer.render(&search);
@@ -56,11 +59,10 @@ mod tests {
 
     #[test]
     fn it_renders_a_missmatch() {
-        let config = Configuration::from_inputs(vec!["one".to_string(),
-                                                     "two".to_string(),
-                                                     "three".to_string()], None, Some(3));
+        let input = input();
+        let config = Configuration::from_inputs(&input, None, Some(3));
 
-        let search = Search::blank(config).append_to_search("z");
+        let search = Search::blank(&config).append_to_search("z");
         let renderer = Renderer;
 
         let output = renderer.render(&search);

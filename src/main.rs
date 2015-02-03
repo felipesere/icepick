@@ -14,12 +14,12 @@ fn main() {
     let initial_query = extract_initial_query();
     let lines = read_lines();
 
-    let config = Configuration::from_inputs(lines, initial_query, Some(20));
-    let mut search = Search::blank(config);
+    let config = Configuration::from_inputs(&lines, initial_query, Some(20));
+    let mut search = Search::blank(&config);
 
     let mut screen = Screen::new();
 
-    for _ in 0..(search.config.visible_limit - 1) {
+    for _ in 0..(config.visible_limit - 1) {
         screen.ansi.io.write("");
     }
 

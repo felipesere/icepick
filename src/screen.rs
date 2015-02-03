@@ -27,7 +27,7 @@ impl <'a> Screen <'a>{
         }
     }
 
-    pub fn handle_keystroke(&self, search: Search, input: &str) -> Search {
+    pub fn handle_keystroke(&self, search: Search<'a>, input: &str) -> Search<'a> {
         match input {
            "\u{e}" => search.down(),
            "\u{10}" => search.up(),
@@ -75,39 +75,45 @@ mod tests {
 
     #[test]
     fn moves_the_selection_down_for_ctrl_n() {
-        let input = blank_search();
+        let input = input();
+        let config = Configuration::from_inputs(&input, None, Some(10));
+        let search = Search::blank(&config);
         let screen = Screen::fake();
-        let result = screen.handle_keystroke(input, "\u{e}");
+        let result = screen.handle_keystroke(search, "\u{e}");
         assert_eq!(result.selection, Some("two".to_string()));
     }
 
     #[test]
     fn moves_the_selection_up_for_ctrl_p() {
-        let input = blank_search().down();
+        let input = input();
+        let config = Configuration::from_inputs(&input, None, Some(10));
+        let search = Search::blank(&config).down();
         let screen = Screen::fake();
-        let result = screen.handle_keystroke(input, "\u{10}");
+        let result = screen.handle_keystroke(search, "\u{10}");
         assert_eq!(result.selection, Some("one".to_string()));
     }
 
     #[test]
     fn removes_the_last_character_for_delete() {
-        let input = blank_search().append_to_search("w").append_to_search("x");
+        let input = input();
+        let config = Configuration::from_inputs(&input, None, Some(10));
+        let search = Search::blank(&config).append_to_search("w").append_to_search("x");
         let screen = Screen::fake();
-        let result = screen.handle_keystroke(input, "\u{7f}");
+        let result = screen.handle_keystroke(search, "\u{7f}");
         assert_eq!(result.selection, Some("two".to_string()));
     }
 
     #[test]
     fn marks_a_search_as_done_for_enter() {
-        let input = blank_search();
+        let input = input();
+        let config = Configuration::from_inputs(&input, None, Some(10));
+        let search = Search::blank(&config);
         let screen = Screen::fake();
-        let result = screen.handle_keystroke(input, "\n");
+        let result = screen.handle_keystroke(search, "\n");
         assert!(result.is_done());
     }
 
-    fn blank_search() -> Search {
-        let input = vec!["one".to_string(), "two".to_string()];
-        let config = Configuration::from_inputs(input, None, Some(10));
-        Search::blank(config)
+    fn input() -> Vec<String> {
+        vec!["one".to_string(), "two".to_string()]
     }
 }

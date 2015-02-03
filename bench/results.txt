@@ -49,19 +49,19 @@ test search::tests::resets_the_index_when_removing_char_from_search ... ignored
 test search::tests::search_is_case_insensitive ... ignored
 test search::tests::up_match_nothing_after_filtering_all_out ... ignored
 test text::tests::normal_is_a_simple_string ... ignored
-test score::tests::almost_overlapping_matches      ... bench:       257 ns/iter (+/- 108)
-test score::tests::matching_broken_up              ... bench:       101 ns/iter (+/- 36)
-test score::tests::matching_exactly                ... bench:       666 ns/iter (+/- 198)
-test score::tests::non_matching                    ... bench:        56 ns/iter (+/- 6)
-test score::tests::overlapping_matches             ... bench:       275 ns/iter (+/- 41)
-test score::tests::paths_empty_query               ... bench:     39890 ns/iter (+/- 7828)
-test score::tests::paths_non_matching              ... bench:    190878 ns/iter (+/- 51472)
-test score::tests::paths_trivial_query             ... bench:     48677 ns/iter (+/- 15840)
-test score::tests::progressive_non_sequential_few  ... bench:     49421 ns/iter (+/- 21479)
-test score::tests::progressive_non_sequential_many ... bench:     63780 ns/iter (+/- 8929)
-test score::tests::progressive_sequential_few      ... bench:     65650 ns/iter (+/- 4368)
-test score::tests::progressive_sequential_many     ... bench:     78105 ns/iter (+/- 1528)
-test search::tests::filter_speed                   ... bench:     68990 ns/iter (+/- 2289)
+test score::tests::almost_overlapping_matches      ... bench:       261 ns/iter (+/- 70)
+test score::tests::matching_broken_up              ... bench:       100 ns/iter (+/- 10)
+test score::tests::matching_exactly                ... bench:       646 ns/iter (+/- 18)
+test score::tests::non_matching                    ... bench:        56 ns/iter (+/- 10)
+test score::tests::overlapping_matches             ... bench:       261 ns/iter (+/- 72)
+test score::tests::paths_empty_query               ... bench:     38951 ns/iter (+/- 586)
+test score::tests::paths_non_matching              ... bench:    189074 ns/iter (+/- 1819)
+test score::tests::paths_trivial_query             ... bench:     48054 ns/iter (+/- 1104)
+test score::tests::progressive_non_sequential_few  ... bench:     49779 ns/iter (+/- 3095)
+test score::tests::progressive_non_sequential_many ... bench:     68987 ns/iter (+/- 4413)
+test score::tests::progressive_sequential_few      ... bench:     69092 ns/iter (+/- 1760)
+test score::tests::progressive_sequential_many     ... bench:     83040 ns/iter (+/- 9491)
+test search::tests::filter_speed                   ... bench:     52224 ns/iter (+/- 1265)
 
 test result: ok. 0 passed; 0 failed; 47 ignored; 13 measured
 

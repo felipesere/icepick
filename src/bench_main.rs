@@ -9,16 +9,19 @@ use selecta::search::Search;
 use selecta::tty::TTY;
 use selecta::tty::IO;
 use selecta::screen::Screen;
+use std::old_io::{File, BufferedReader};
 
 #[allow(dead_code)]
 fn main() {
     let initial_query = extract_initial_query();
-    let lines = read_lines(100000);
+    let lines = read_lines("bench/30000.txt".to_string());
 
-    let config = Configuration::from_inputs(lines, initial_query, Some(20));
-    let mut search = Search::blank(config);
+    let config = Configuration::from_inputs(&lines, initial_query, Some(20));
+    let mut search = Search::blank(&config);
 
-    search = search.append_to_search("t").backspace().append_to_search("o");
+    search = search.append_to_search("t").append_to_search("o").append_to_search("a").append_to_search("w").append_to_search("c").backspace().backspace().backspace().append_to_search("w").backspace().append_to_search("a");
+
+    println!("{}\n", search.selection.unwrap_or("None".to_string()));
 }
 
 fn extract_initial_query() -> Option<String> {
@@ -31,16 +34,15 @@ fn extract_initial_query() -> Option<String> {
     matches.opt_str("s")
 }
 
-fn one_two_three() -> Vec<String> {
-    vec!["one".to_string(),
-         "two".to_string(),
-         "three".to_string()]
-}
-
-fn read_lines(n: usize) -> Vec<String> {
-    let mut result: Vec<String> = Vec::new();
-    for thing in one_two_three().iter().cycle().take(n) {
-        result.push(thing.clone());
+fn read_lines(fname: String) -> Vec<String> {
+    let path = Path::new(fname);
+    let mut file = BufferedReader::new(File::open(&path));
+    let mut result = Vec::new();
+    loop {
+        match file.read_line() {
+            Ok(line) => result.push(line),
+            Err(e) => break,
+        }
     }
     result
 }
