@@ -28,7 +28,7 @@ impl Renderer {
     }
 
     pub fn header(&self, search: &Search) -> String {
-        format!("> {}", search.query)
+        format!("{} > {}", search.result.len(), search.query)
     }
 }
 
@@ -49,7 +49,7 @@ mod tests {
 
         let output = renderer.render(&search);
 
-        assert_eq!(vec![Text::Normal("> ".to_string()),
+        assert_eq!(vec![Text::Normal("3 > ".to_string()),
                         Text::Normal("one".to_string()),
                         Text::Highlight("two".to_string())], output);
     }
@@ -65,7 +65,7 @@ mod tests {
 
         let output = renderer.render(&search);
 
-        assert_eq!(vec![Text::Normal("> z".to_string()),
+        assert_eq!(vec![Text::Normal("0 > z".to_string()),
                         Text::Blank,
                         Text::Blank], output);
     }
