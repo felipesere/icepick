@@ -211,7 +211,7 @@ mod tests {
 
     #[bench]
     fn progressive_sequential_few(b: &mut Bencher) {
-        let paths = PATHS.slice_to(500);
+        let paths = &PATHS[..500];
         b.iter(|| {
             (
                 get_scores("x", paths),
@@ -226,7 +226,7 @@ mod tests {
 
     #[bench]
     fn progressive_non_sequential_few(b: &mut Bencher) {
-        let paths = PATHS.slice_to(500);
+        let paths = &PATHS[..500];
         b.iter(|| {
             (
                 get_scores("x", paths),
@@ -240,7 +240,7 @@ mod tests {
 
     #[bench]
     fn progressive_sequential_many(b: &mut Bencher) {
-        let paths = PATHS.slice_to(500);
+        let paths = &PATHS[..500];
         b.iter(|| {
             (
                 get_scores("g", paths),
@@ -256,7 +256,7 @@ mod tests {
 
     #[bench]
     fn progressive_non_sequential_many(b: &mut Bencher) {
-        let paths = PATHS.slice_to(500);
+        let paths = &PATHS[..500];
         b.iter(|| {
             (
                 get_scores("g", paths),
