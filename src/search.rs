@@ -19,8 +19,8 @@ pub struct Search<'s> {
 impl<'s> Search<'s> {
     pub fn blank(config: &'s Configuration<'s>) -> Search<'s> {
         let query = config.initial_search.clone();
-        let choice_stack: Vec<&'s Vec<String>> = Vec::new();
-        let mut results: Vec<String> = Vec::new();
+        let choice_stack = Vec::new();
+        let mut results = Vec::new();
 
         for choice in config.choices.iter().take(config.visible_limit) {
             results.push(choice.clone());
