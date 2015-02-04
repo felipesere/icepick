@@ -20,13 +20,13 @@ impl<'s> Search<'s> {
     pub fn blank(config: &'s Configuration<'s>) -> Search<'s> {
         let query = config.initial_search.clone();
         let choice_stack = Vec::new();
-        let mut results = Vec::new();
+        let mut result = Vec::new();
 
         for choice in config.choices.iter().take(config.visible_limit) {
-            results.push(choice.clone());
+            result.push(choice.clone());
         }
 
-        Search::new(config, query, choice_stack, results, 0, false)
+        Search::new(config, query, choice_stack, result, 0, false)
     }
 
     pub fn is_done(&self) -> bool {
@@ -54,24 +54,25 @@ impl<'s> Search<'s> {
     }
 
     fn new_for_query(self, new_query: String) -> Search<'s> {
-        let new_result = Search::filter(new_query.as_slice(), self.config.choices, self.config.visible_limit);
+        let mut results = SortedResultSet::new(self.config.visible_limit);
 
-        Search::new(self.config, new_query, self.choice_stack, new_result, 0, self.done)
+        Search::iter_matches(new_query.as_slice(), self.config.choices, 
+                        |match_str, quality| results.push(match_str, quality));
+
+        Search::new(self.config, new_query, self.choice_stack, results.sorted_vec(), 0, self.done)
     }
 
-    pub fn filter(query: &str, choices: &Vec<String>, result_size: usize) -> Vec<String> {
-        let mut results = SortedResultSet::new(result_size);
-        let query = query.to_ascii_lowercase();
+    pub fn iter_matches<F: FnMut(&'s String, f32)>(query: &str, choices: &'s Vec<String>, mut f: F) {
+        let lower_query = query.to_ascii_lowercase();
 
         for choice in choices.iter() {
             let lower_choice = choice.to_ascii_lowercase();
 
-            match Score::score(&lower_choice, &query) {
+            match Score::score(&lower_choice, &lower_query) {
                 0.0     => continue,
-                quality => results.push(quality, choice),
+                quality => f(choice, quality),
             };
         }
-        results.sorted_vec()
     }
 
     fn select(result: &Vec<String>, index: usize) -> Option<String> {
@@ -135,6 +136,7 @@ mod tests {
     use configuration::Configuration;
     use super::*;
     use self::test::Bencher;
+    use sorted_result_set::SortedResultSet;
 
     fn one_two_three() -> Vec<String> {
         vec!["one".to_string(),
@@ -347,7 +349,10 @@ mod tests {
         let query = "t";
 
         b.iter(||{
-            Search::filter(query, &input, 20)
+            let mut results = SortedResultSet::new(20);
+            Search::iter_matches(query, &input,
+                                    |choice, quality| results.push(choice, quality));
+            results
         });
     }
 }

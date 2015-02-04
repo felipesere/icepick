@@ -40,7 +40,7 @@ impl<'s> SortedResultSet<'s> {
             size:     size}
     }
     
-    pub fn push(&mut self, quality: f32, choice: &'s String) {
+    pub fn push(&mut self, choice: &'s String, quality: f32) {
         let result = ScoreResult { quality: quality, choice: choice};
 
         if self.results.len() < self.size {
