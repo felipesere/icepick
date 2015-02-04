@@ -1,3 +1,4 @@
+use std::cmp::min;
 pub struct Score;
 
 impl Score {
@@ -23,39 +24,38 @@ fn compute_match_length(choice: &String, query: &String) -> Option<usize> {
         None => return None,
     };
 
-    let mut shortest_match: Option<usize> = None;
+    let impossible_match = choice.len() + 1;
+    let mut shortest_match = impossible_match;
 
     for (idx, character) in choice.chars().enumerate() {
+        // found beginning of match
         if character == first {
-            let possible_match_length = find_match_length(choice, rest, idx);
-
-            match (shortest_match, possible_match_length) {
-                (Some(shortest), Some(length)) if shortest > length => shortest_match = possible_match_length,
-                (None, Some(_)) => shortest_match = possible_match_length,
-                (_, _) => continue,
+            match match_length_from(choice, rest, idx) {
+                Some(length) => shortest_match = min(length, shortest_match),
+                _ => continue,
             };
         }
     }
-    return shortest_match;
+
+    if shortest_match == impossible_match {None} else {Some(shortest_match)}
 }
 
-fn find_match_length(choice: &String, query: &str, beginning: usize) -> Option<usize> {
-    let mut last_index = beginning;
+fn match_length_from(choice: &String, query: &str, beginning: usize) -> Option<usize> {
+    let mut match_index = beginning;
+
     for query_char in query.chars() {
-       let found = find_first_after(choice, query_char, last_index + 1);
-       match found {
-           Some(n) => last_index = n,
+       match find_first_after(choice, query_char, match_index + 1) {
+           Some(n) => match_index = n,
            None => return None,
        };
     }
-    return Some(last_index - beginning + 1);
+    return Some(match_index - beginning + 1);
 }
 
 fn find_first_after(choice: &String, query: char, offset: usize) -> Option<usize> {
-    match choice[offset..].find(query) {
-        Some(index) => Some(index + offset),
-        None => None,
-    }
+    choice[offset..]
+        .find(query)
+        .and_then(|index| Some(index + offset))
 }
 
 #[cfg(test)]
