@@ -22,7 +22,7 @@ impl<'s> Search<'s> {
         let choice_stack: Vec<&'s Vec<String>> = Vec::new();
         let mut results: Vec<String> = Vec::new();
 
-        for choice in config.choices.iter().take(20) {
+        for choice in config.choices.iter().take(config.visible_limit) {
             results.push(choice.clone());
         }
 
@@ -38,7 +38,6 @@ impl<'s> Search<'s> {
     }
 
     fn new(config: &'s Configuration<'s>, query: String, choice_stack: Vec<&'s Vec<String>>, result: Vec<String>, index: usize, done: bool) -> Search<'s> {
-
         let selection = Search::select(&result, index);
 
         Search { config: config,
@@ -55,13 +54,13 @@ impl<'s> Search<'s> {
     }
 
     fn new_for_query(self, new_query: String) -> Search<'s> {
-        let new_result = Search::filter(new_query.as_slice(), self.config.choices);
+        let new_result = Search::filter(new_query.as_slice(), self.config.choices, self.config.visible_limit);
 
         Search::new(self.config, new_query, self.choice_stack, new_result, 0, self.done)
     }
 
-    pub fn filter(query: &str, choices: &Vec<String>) -> Vec<String> {
-        let mut results = SortedResultSet::new(20);
+    pub fn filter(query: &str, choices: &Vec<String>, result_size: usize) -> Vec<String> {
+        let mut results = SortedResultSet::new(result_size);
         let query = query.to_ascii_lowercase();
 
         for choice in choices.iter() {
@@ -324,6 +323,15 @@ mod tests {
         assert_eq!(search.result.len(), 2);
     }
 
+    #[test]
+    fn uses_configs_visible_limit_as_result_size() {
+        let input = input_times(30);
+        let config = Configuration::from_inputs(&input, None, Some(20));
+        let search = Search::blank(&config).append_to_search("T");
+
+        assert_eq!(search.result.len(), 20);
+    }
+
     fn input_times(n: usize) ->Vec<String> {
         let mut result: Vec<String> = Vec::new();
         for thing in one_two_three().iter().cycle().take(n) {
@@ -339,7 +347,7 @@ mod tests {
         let query = "t";
 
         b.iter(||{
-            Search::filter(query, &input)
+            Search::filter(query, &input, 20)
         });
     }
 }
