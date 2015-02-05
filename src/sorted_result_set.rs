@@ -16,11 +16,15 @@ impl<'s> SortedResultSet<'s> {
     pub fn push(&mut self, choice: &'s String, quality: f32) {
         let result = ScoreResult { quality: quality, choice: choice};
 
-        if self.results.len() < self.size {
-            self.results.push(result);
-        } else {
+        if self.is_full() {
             self.results.push_pop(result);
+        } else {
+            self.results.push(result);
         }
+    }
+
+    fn is_full(&self) -> bool {
+        self.results.len() >= self.size
     }
 
     pub fn as_sorted_vec(self) -> Vec<String> {
