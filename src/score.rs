@@ -46,7 +46,7 @@ fn match_length_from(choice: &String, query: &str, beginning: usize) -> Option<u
            None => return None,
        };
     }
-    return Some(match_index - beginning + 1);
+    Some(match_index - beginning + 1)
 }
 
 fn find_first_after(choice: &String, query: char, offset: usize) -> Option<usize> {
