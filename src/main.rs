@@ -19,8 +19,8 @@ fn main() {
 
     let mut screen = Screen::new();
 
-    for _ in 0..(search.config.visible_limit - 1) {
-        screen.ansi.io.write("");
+    for _ in 0..(search.config.visible_limit) {
+        screen.ansi.io.write("\n");
     }
 
     while !search.is_done() {
@@ -35,7 +35,7 @@ fn main() {
     }
     screen.move_cursor_to_end();
     screen.ansi.io.reset();
-    println!("{}\n", search.selection.unwrap_or("None".to_string()));
+    println!("\n{}", search.selection.unwrap_or("None".to_string()));
 }
 
 fn extract_initial_query() -> Option<String> {
