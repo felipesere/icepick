@@ -59,7 +59,7 @@ impl<'s> Search<'s> {
         Search::iter_matches(new_query.as_slice(), self.config.choices, 
                         |match_str, quality| results.push(match_str, quality));
 
-        Search::new(self.config, new_query, self.choice_stack, results.sorted_vec(), 0, self.done)
+        Search::new(self.config, new_query, self.choice_stack, results.as_sorted_vec(), 0, self.done)
     }
 
     pub fn iter_matches<F: FnMut(&'s String, f32)>(query: &str, choices: &'s Vec<String>, mut f: F) {

@@ -23,7 +23,7 @@ impl<'s> SortedResultSet<'s> {
         }
     }
 
-    pub fn sorted_vec(self) -> Vec<String> {
+    pub fn as_sorted_vec(self) -> Vec<String> {
         self.results.into_sorted_vec().iter().map(|score_result| score_result.choice.clone()).collect()
     }
 }
