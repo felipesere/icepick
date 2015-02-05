@@ -10,19 +10,13 @@ impl Renderer {
 
         let selection = search.selection.clone().unwrap_or("".to_string());
 
-        for position in 0..(search.config.visible_limit) {
-            if position >= search.result.len() {
-                result.push(Text::Blank);
-                continue;
-            }
-
-            let choice = search.result[position].clone();
-
-            if choice == selection {
-                result.push(Text::Highlight(choice));
-            } else {
-                result.push(Text::Normal(choice))
-            }
+        for position in 0..search.config.visible_limit {
+            let element = match search.result.get(position) {
+                Some(choice) if *choice == selection => Text::Highlight(choice.clone()),
+                Some(choice) => Text::Normal(choice.clone()),
+                None => Text::Blank
+            };
+            result.push(element);
         }
         result
     }
