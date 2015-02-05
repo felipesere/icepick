@@ -8,11 +8,8 @@ impl Score {
 
         if query_length == 0.0 { return 1.0 }
 
-        let possible_match_length = compute_match_length(choice, query);
-        match possible_match_length {
-            Some(match_length) => {
-                (query_length / match_length as f32) / choice_length
-            },
+        match compute_match_length(choice, query) {
+            Some(match_length) => (query_length / match_length as f32) / choice_length,
             None => 0.0,
         }
     }
