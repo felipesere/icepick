@@ -76,7 +76,7 @@ mod tests {
     #[test]
     fn moves_the_selection_down_for_ctrl_n() {
         let input = input();
-        let config = Configuration::from_inputs(&input, None, Some(10));
+        let config = Configuration::from_inputs(input, None, Some(10));
         let search = Search::blank(&config);
         let screen = Screen::fake();
         let result = screen.handle_keystroke(search, "\u{e}");
@@ -86,7 +86,7 @@ mod tests {
     #[test]
     fn moves_the_selection_up_for_ctrl_p() {
         let input = input();
-        let config = Configuration::from_inputs(&input, None, Some(10));
+        let config = Configuration::from_inputs(input, None, Some(10));
         let search = Search::blank(&config).down();
         let screen = Screen::fake();
         let result = screen.handle_keystroke(search, "\u{10}");
@@ -96,7 +96,7 @@ mod tests {
     #[test]
     fn removes_the_last_character_for_delete() {
         let input = input();
-        let config = Configuration::from_inputs(&input, None, Some(10));
+        let config = Configuration::from_inputs(input, None, Some(10));
         let search = Search::blank(&config).append_to_search("w").append_to_search("x");
         let screen = Screen::fake();
         let result = screen.handle_keystroke(search, "\u{7f}");
@@ -106,7 +106,7 @@ mod tests {
     #[test]
     fn marks_a_search_as_done_for_enter() {
         let input = input();
-        let config = Configuration::from_inputs(&input, None, Some(10));
+        let config = Configuration::from_inputs(input, None, Some(10));
         let search = Search::blank(&config);
         let screen = Screen::fake();
         let result = screen.handle_keystroke(search, "\n");

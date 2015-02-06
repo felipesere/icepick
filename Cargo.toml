@@ -9,3 +9,5 @@ doctest = false
 test = true
 doc = false
 
+[profile.release]
+opt-level = 3

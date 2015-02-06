@@ -14,7 +14,7 @@ fn main() {
     let initial_query = extract_initial_query();
     let lines = read_lines();
 
-    let config = Configuration::from_inputs(&lines, initial_query, Some(20));
+    let config = Configuration::from_inputs(lines, initial_query, Some(20));
     let mut search = Search::blank(&config);
 
     let mut screen = Screen::new();

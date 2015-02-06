@@ -46,7 +46,7 @@ mod tests {
     #[test]
     fn it_renderes_selected_matches_with_a_highlight() {
         let input = input();
-        let config = Configuration::from_inputs(&input, None, Some(3));
+        let config = Configuration::from_inputs(input, None, Some(3));
         let search = Search::blank(&config).down();
         let renderer = Renderer;
 
@@ -60,7 +60,7 @@ mod tests {
     #[test]
     fn it_renders_a_missmatch() {
         let input = input();
-        let config = Configuration::from_inputs(&input, None, Some(3));
+        let config = Configuration::from_inputs(input, None, Some(3));
 
         let search = Search::blank(&config).append_to_search("z");
         let renderer = Renderer;
