@@ -6,7 +6,7 @@ use score::Score;
 #[derive(Debug)]
 pub struct Search {
     pub config: Configuration,
-    current: usize,
+    pub current: usize,
     pub query: String,
     pub selection: Option<String>,
     pub result: Vec<String>,
