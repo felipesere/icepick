@@ -8,7 +8,6 @@ pub struct Search {
     pub config: Configuration,
     pub current: usize,
     pub query: String,
-    pub selection: Option<String>,
     pub result: Vec<String>,
     done: bool,
 }
@@ -28,14 +27,18 @@ impl Search {
         Search::new(self.config, self.query, self.result, self.current, true)
     }
 
+    pub fn selection(&self) -> Option<String> {
+        if self.result.len() > 0 {
+            Some(self.result[self.current].to_string())
+        } else {
+            None
+        }
+    }
+
     fn new(config: Configuration, query: String, result: Vec<String>, index: usize, done: bool) -> Search {
-
-        let selection = Search::select(&result, index);
-
         Search { config: config,
                  current: index,
                  query: query,
-                 selection: selection,
                  result: result,
                  done: done}
     }
@@ -65,14 +68,6 @@ impl Search {
         });
 
         filtered.iter().map( |&(_, ref choice)| choice.to_string() ).collect::<Vec<String>>()
-    }
-
-    fn select(result: &Vec<String>, index: usize) -> Option<String> {
-        if result.len() > 0 {
-            Some(result[index].to_string())
-        } else {
-            None
-        }
     }
 
     pub fn down(self) -> Search {
@@ -139,7 +134,7 @@ mod tests {
         let config = Configuration::from_inputs(input, None, None);
         let search = Search::blank(config);
 
-        assert_eq!(search.selection, Some("one".to_string()));
+        assert_eq!(search.selection(), Some("one".to_string()));
     }
 
     #[test]
@@ -148,7 +143,7 @@ mod tests {
         let config = Configuration::from_inputs(input, None, None);
         let search = Search::blank(config);
 
-        assert_eq!(search.down().selection, Some("two".to_string()));
+        assert_eq!(search.down().selection(), Some("two".to_string()));
     }
 
     #[test]
@@ -157,7 +152,7 @@ mod tests {
         let config = Configuration::from_inputs(input, None, None);
         let search = Search::blank(config);
 
-        assert_eq!(search.down().down().down().down().selection, Some("two".to_string()));
+        assert_eq!(search.down().down().down().down().selection(), Some("two".to_string()));
     }
 
     #[test]
@@ -166,7 +161,7 @@ mod tests {
         let config = Configuration::from_inputs(input, None, None);
         let search = Search::blank(config);
 
-        assert_eq!(search.up().up().selection, Some("two".to_string()));
+        assert_eq!(search.up().up().selection(), Some("two".to_string()));
     }
 
     #[test]
@@ -175,7 +170,7 @@ mod tests {
         let config = Configuration::from_inputs(input, None, Some(2));
         let search = Search::blank(config);
 
-        assert_eq!(search.down().down().down().selection, Some("two".to_string()));
+        assert_eq!(search.down().down().down().selection(), Some("two".to_string()));
     }
 
     #[test]
@@ -184,7 +179,7 @@ mod tests {
         let config = Configuration::from_inputs(input, None, None);
         let search = Search::blank(config);
 
-        assert_eq!(search.append_to_search("t").down().selection, Some("three".to_string()));
+        assert_eq!(search.append_to_search("t").down().selection(), Some("three".to_string()));
     }
 
     #[test]
@@ -193,7 +188,7 @@ mod tests {
         let config = Configuration::from_inputs(input, None, None);
         let search = Search::blank(config);
 
-        assert_eq!(search.append_to_search("t").append_to_search("w").selection, Some("two".to_string()));
+        assert_eq!(search.append_to_search("t").append_to_search("w").selection(), Some("two".to_string()));
     }
 
     #[test]
@@ -202,7 +197,7 @@ mod tests {
         let config = Configuration::from_inputs(input, None, None);
         let search = Search::blank(config);
 
-        assert_eq!(search.append_to_search("x").selection, None);
+        assert_eq!(search.append_to_search("x").selection(), None);
     }
 
     #[test]
@@ -211,7 +206,7 @@ mod tests {
         let config = Configuration::from_inputs(input, None, None);
         let search = Search::blank(config).append_to_search("x");
 
-        assert_eq!(search.up().selection, None);
+        assert_eq!(search.up().selection(), None);
     }
 
     #[test]
@@ -220,7 +215,7 @@ mod tests {
         let config = Configuration::from_inputs(input, None, None);
         let search = Search::blank(config).append_to_search("x");
 
-        assert_eq!(search.down().selection, None);
+        assert_eq!(search.down().selection(), None);
     }
 
     #[test]
@@ -284,7 +279,7 @@ mod tests {
         let config = Configuration::from_inputs(input, None, None);
         let search = Search::blank(config).done();
 
-        assert_eq!(search.selection, Some("one".to_string()));
+        assert_eq!(search.selection(), Some("one".to_string()));
     }
 
     #[test]
@@ -293,7 +288,7 @@ mod tests {
         let config = Configuration::from_inputs(input, None, None);
         let search = Search::blank(config).append_to_search("n").down();
 
-        assert_eq!(search.selection, Some("one".to_string()));
+        assert_eq!(search.selection(), Some("one".to_string()));
     }
 
     #[test]
@@ -302,6 +297,6 @@ mod tests {
         let config = Configuration::from_inputs(input, None, None);
         let search = Search::blank(config).append_to_search("n").up();
 
-        assert_eq!(search.selection, Some("one".to_string()));
+        assert_eq!(search.selection(), Some("one".to_string()));
     }
 }
