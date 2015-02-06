@@ -28,7 +28,7 @@ impl Renderer {
     }
 
     pub fn header(&self, search: &Search) -> String {
-        format!("{} > {}", search.result.len(), search.query)
+        format!("{} > {}", search.num_matches(), search.query)
     }
 }
 

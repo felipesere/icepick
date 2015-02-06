@@ -12,19 +12,26 @@ pub struct Search<'s> {
     pub query: String,
     pub selection: Option<String>,
     pub result: Vec<String>,
-    choice_stack: Vec<&'s Vec<String>>,
+    choice_stack: Vec<Vec<&'s String>>,
     done: bool,
 }
 
 impl<'s> Search<'s> {
     pub fn blank(config: &'s Configuration) -> Search<'s> {
         let query = config.initial_search.clone();
-        let choice_stack = Vec::new();
+        let mut choice_stack: Vec<Vec<&'s String>> = Vec::new();
         let mut result = Vec::new();
 
         for choice in config.choices.iter().take(config.visible_limit) {
             result.push(choice.clone());
         }
+
+        let mut first_stack_frame = Vec::new();
+        for choice in config.choices.iter() {
+            first_stack_frame.push(choice);
+        }
+
+        choice_stack.push(first_stack_frame);
 
         Search::new(config, query, choice_stack, result, 0, false)
     }
@@ -37,7 +44,7 @@ impl<'s> Search<'s> {
         Search::new(self.config, self.query, self.choice_stack, self.result, self.current, true)
     }
 
-    fn new(config: &'s Configuration, query: String, choice_stack: Vec<&'s Vec<String>>, result: Vec<String>, index: usize, done: bool) -> Search<'s> {
+    fn new(config: &'s Configuration, query: String, choice_stack: Vec<Vec<&'s String>>, result: Vec<String>, index: usize, done: bool) -> Search<'s> {
         let selection = Search::select(&result, index);
 
         Search { config: config,
@@ -53,12 +60,17 @@ impl<'s> Search<'s> {
         Search::new(self.config, self.query, self.choice_stack, self.result, index, self.done)
     }
 
-    fn new_for_query(self, new_query: String) -> Search<'s> {
+    fn new_for_query(mut self, new_query: String) -> Search<'s> {
         let mut results = SortedResultSet::new(self.config.visible_limit);
 
-        Search::iter_matches(new_query.as_slice(), &self.config.choices,
-                        |match_str, quality| results.push(match_str, quality));
+        let mut filtered_choices: Vec<&String> = Vec::new();
 
+        Search::iter_matches(new_query.as_slice(), &self.config.choices,
+                        |match_str, quality| { results.push(match_str, quality);
+                                               filtered_choices.push(match_str)
+                                             });
+
+        self.choice_stack.push(filtered_choices);
         Search::new(self.config, new_query, self.choice_stack, results.as_sorted_vec(), 0, self.done)
     }
 
@@ -76,10 +88,9 @@ impl<'s> Search<'s> {
     }
 
     fn select(result: &Vec<String>, index: usize) -> Option<String> {
-        if result.len() > 0 {
-            Some(result[index].to_string())
-        } else {
-            None
+        match result.get(index) {
+            Some(t) => Some(t.clone()),
+            None => None,
         }
     }
 
@@ -126,7 +137,11 @@ impl<'s> Search<'s> {
     }
 
     fn actual_limit(&self) -> usize {
-        min(self.config.visible_limit, self.result.len())
+        min(self.config.visible_limit, self.num_matches())
+    }
+
+    pub fn num_matches(&self) -> usize {
+        self.choice_stack.last().unwrap().len()
     }
 }
 
@@ -268,7 +283,7 @@ mod tests {
         let config = Configuration::from_inputs(input, None, None);
         let search = Search::blank(&config).append_to_search("t");
 
-        assert_eq!(search.backspace().result.len(), 3);
+        assert_eq!(search.backspace().num_matches(), 3);
     }
 
     #[test]
@@ -322,7 +337,7 @@ mod tests {
         let config = Configuration::from_inputs(input, None, None);
         let search = Search::blank(&config).append_to_search("T");
 
-        assert_eq!(search.result.len(), 2);
+        assert_eq!(search.num_matches(), 2);
     }
 
     #[test]
@@ -331,7 +346,7 @@ mod tests {
         let config = Configuration::from_inputs(input, None, Some(20));
         let search = Search::blank(&config).append_to_search("T");
 
-        assert_eq!(search.result.len(), 20);
+        assert_eq!(search.num_matches(), 20);
     }
 
     fn input_times(n: usize) ->Vec<String> {
