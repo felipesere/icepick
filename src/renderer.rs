@@ -34,7 +34,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_renderes_selected_matches_with_a_highlight() {
+    fn it_renders_selected_matches_with_a_highlight() {
         let config = Configuration::from_inputs(vec!["one".to_string(),
                                                      "two".to_string(),
                                                      "three".to_string()], None, Some(2));
@@ -49,7 +49,7 @@ mod tests {
     }
 
     #[test]
-    fn it_renders_a_missmatch() {
+    fn it_renders_a_mismatch() {
         let config = Configuration::from_inputs(vec!["one".to_string(),
                                                      "two".to_string(),
                                                      "three".to_string()], None, Some(2));
