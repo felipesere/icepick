@@ -19,14 +19,15 @@ pub struct Search<'s> {
 impl<'s> Search<'s> {
     pub fn blank(config: &'s Configuration) -> Search<'s> {
         let query = config.initial_search.clone();
+
         let mut choice_stack: Vec<Vec<&'s String>> = Vec::new();
         let mut result = Vec::new();
+        let mut first_stack_frame = Vec::new();
 
         for choice in config.choices.iter().take(config.visible_limit) {
             result.push(choice.clone());
         }
 
-        let mut first_stack_frame = Vec::new();
         for choice in config.choices.iter() {
             first_stack_frame.push(choice);
         }
@@ -64,8 +65,7 @@ impl<'s> Search<'s> {
         let mut results = SortedResultSet::new(self.config.visible_limit);
 
         let mut filtered_choices: Vec<&String> = Vec::new();
-
-        Search::iter_matches(new_query.as_slice(), &self.config.choices,
+        Search::iter_matches(new_query.as_slice(), &self.choice_stack.last().unwrap(),
                         |match_str, quality| { results.push(match_str, quality);
                                                filtered_choices.push(match_str)
                                              });
@@ -74,7 +74,7 @@ impl<'s> Search<'s> {
         Search::new(self.config, new_query, self.choice_stack, results.as_sorted_vec(), 0, self.done)
     }
 
-    pub fn iter_matches<F: FnMut(&'s String, f32)>(query: &str, choices: &'s Vec<String>, mut f: F) {
+    pub fn iter_matches<F: FnMut(&'s String, f32)>(query: &str, choices: &Vec<&'s String>, mut f: F) {
         let lower_query = query.to_ascii_lowercase();
 
         for choice in choices.iter() {
@@ -157,6 +157,26 @@ mod tests {
         vec!["one".to_string(),
              "two".to_string(),
              "three".to_string()]
+    }
+
+
+    // Move me later
+    #[test]
+    fn it_pushes_to_the_stack_when_appending() {
+        let input = one_two_three();
+        let config = Configuration::from_inputs(input, None, None);
+        let search = Search::blank(&config).append_to_search("t");
+
+        assert_eq!(search.choice_stack.len(), 2);
+    }
+
+    #[test]
+    fn it_pop_from_the_stack_when_backspacing() {
+        let input = one_two_three();
+        let config = Configuration::from_inputs(input, None, None);
+        let search = Search::blank(&config).append_to_search("t").backspace();
+
+        assert_eq!(search.choice_stack.len(), 1);
     }
 
     #[test]
@@ -343,16 +363,23 @@ mod tests {
     #[test]
     fn uses_configs_visible_limit_as_result_size() {
         let input = input_times(30);
-        let config = Configuration::from_inputs(input, None, Some(20));
+
+        let mut bar = Vec::new();
+        for f in input.iter() {
+            bar.push((*f).clone());
+        }
+
+
+        let config = Configuration::from_inputs(bar, None, Some(20));
         let search = Search::blank(&config).append_to_search("T");
 
         assert_eq!(search.num_matches(), 20);
     }
 
-    fn input_times(n: usize) ->Vec<String> {
-        let mut result: Vec<String> = Vec::new();
+    fn input_times<'a>(n: usize) ->Vec<&'a String> {
+        let mut result: Vec<&String> = Vec::new();
         for thing in one_two_three().iter().cycle().take(n) {
-            result.push(thing.clone());
+            result.push(thing);
         }
         result
     }
