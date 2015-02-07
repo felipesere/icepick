@@ -35,7 +35,7 @@ fn main() {
     }
     screen.move_cursor_to_end();
     screen.ansi.io.reset();
-    println!("\n{}", search.selection.unwrap_or("None".to_string()));
+    println!("\n{}", search.selection().unwrap_or("None".to_string()));
 }
 
 fn extract_initial_query() -> Option<String> {

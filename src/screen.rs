@@ -78,7 +78,7 @@ mod tests {
         let input = blank_search();
         let screen = Screen::fake();
         let result = screen.handle_keystroke(input, "\u{e}");
-        assert_eq!(result.selection, Some("two".to_string()));
+        assert_eq!(result.selection(), Some("two".to_string()));
     }
 
     #[test]
@@ -86,7 +86,7 @@ mod tests {
         let input = blank_search().down();
         let screen = Screen::fake();
         let result = screen.handle_keystroke(input, "\u{10}");
-        assert_eq!(result.selection, Some("one".to_string()));
+        assert_eq!(result.selection(), Some("one".to_string()));
     }
 
     #[test]
@@ -94,7 +94,7 @@ mod tests {
         let input = blank_search().append_to_search("w").append_to_search("x");
         let screen = Screen::fake();
         let result = screen.handle_keystroke(input, "\u{7f}");
-        assert_eq!(result.selection, Some("two".to_string()));
+        assert_eq!(result.selection(), Some("two".to_string()));
     }
 
     #[test]
