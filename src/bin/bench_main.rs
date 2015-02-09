@@ -21,7 +21,7 @@ fn main() {
 
     search = search.append_to_search("t").append_to_search("o").append_to_search("a").append_to_search("w").append_to_search("c").backspace().backspace().backspace().append_to_search("w").backspace().append_to_search("a");
 
-    println!("{}\n", search.selection.unwrap_or("None".to_string()));
+    println!("\n{}", search.selection().unwrap_or("None".to_string()));
 }
 
 fn extract_initial_query() -> Option<String> {

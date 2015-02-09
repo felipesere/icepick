@@ -42,12 +42,12 @@ impl <'a> Screen <'a>{
         let result = renderer.render(search);
         self.ansi.hide_cursor();
 
-        let start_line = self.height - search.config.visible_limit - 2;
+        let start_line = self.height - search.config.visible_limit - 1;
 
         for (idx, text) in result.iter().enumerate() {
             self.write(start_line + idx, text);
         };
-        self.ansi.set_position(start_line - 1, renderer.header(search).len());
+        self.ansi.set_position(start_line, renderer.header(search).len());
         self.ansi.show_cursor();
     }
 
@@ -80,7 +80,7 @@ mod tests {
         let search = Search::blank(&config);
         let screen = Screen::fake();
         let result = screen.handle_keystroke(search, "\u{e}");
-        assert_eq!(result.selection, Some("two".to_string()));
+        assert_eq!(result.selection(), Some("two".to_string()));
     }
 
     #[test]
@@ -90,7 +90,7 @@ mod tests {
         let search = Search::blank(&config).down();
         let screen = Screen::fake();
         let result = screen.handle_keystroke(search, "\u{10}");
-        assert_eq!(result.selection, Some("one".to_string()));
+        assert_eq!(result.selection(), Some("one".to_string()));
     }
 
     #[test]
@@ -100,7 +100,7 @@ mod tests {
         let search = Search::blank(&config).append_to_search("w").append_to_search("x");
         let screen = Screen::fake();
         let result = screen.handle_keystroke(search, "\u{7f}");
-        assert_eq!(result.selection, Some("two".to_string()));
+        assert_eq!(result.selection(), Some("two".to_string()));
     }
 
     #[test]
