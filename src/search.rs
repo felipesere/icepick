@@ -161,24 +161,6 @@ mod tests {
              "three".to_string()]
     }
 
-    // Move me later
-    #[test]
-    fn it_pushes_to_the_stack_when_appending() {
-        let input = one_two_three();
-        let config = Configuration::from_inputs(input, None, None);
-        let search = Search::blank(&config).append_to_search("t");
-
-        assert_eq!(search.choice_stack.len(), 2);
-    }
-
-    #[test]
-    fn it_pop_from_the_stack_when_backspacing() {
-        let input = one_two_three();
-        let config = Configuration::from_inputs(input, None, None);
-        let search = Search::blank(&config).append_to_search("t").backspace();
-
-        assert_eq!(search.choice_stack.len(), 1);
-    }
 
     #[test]
     fn it_selects_the_first_choice_by_default() {
