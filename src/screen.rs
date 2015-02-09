@@ -4,19 +4,22 @@ use tty::TTY;
 use fake_tty::FakeIO;
 use renderer::Renderer;
 use text::Text;
+use std::cmp::min;
 
 pub struct Screen <'a> {
     pub ansi: Ansi<'a>,
     height: usize,
+    width: usize,
 }
 
 impl <'a> Screen <'a>{
     pub fn new() -> Screen<'a> {
         let ansi = Ansi { io: Box::new(TTY::new()) };
-        let (_, height) = ansi.io.dimensions();
+        let (width, height) = ansi.io.dimensions();
         Screen {
             ansi: ansi,
             height: height,
+            width: width - 1,
         }
     }
 
@@ -24,6 +27,7 @@ impl <'a> Screen <'a>{
         Screen {
             ansi: Ansi { io: Box::new(FakeIO::new()) },
             height: 20,
+            width: 10,
         }
     }
 
@@ -56,14 +60,24 @@ impl <'a> Screen <'a>{
         self.ansi.set_position(line, 0);
 
         match *text {
-            Text::Normal(ref t) => self.ansi.print(t.as_slice()),
-            Text::Highlight(ref t) => self.ansi.inverted(t.as_slice()),
+            Text::Normal(ref text) => {
+                let printable_length = self.printable_length(text);
+                self.ansi.print(&text[..printable_length]);
+            }
+            Text::Highlight(ref text) => { 
+                let printable_length = self.printable_length(text);
+                self.ansi.inverted(&text[..printable_length]);
+            }
             Text::Blank => self.ansi.print("".as_slice()),
         };
     }
 
     pub fn move_cursor_to_end(&mut self) {
         self.ansi.set_position(self.height - 1, 0);
+    }
+
+    fn printable_length(&self, text: &str) -> usize {
+        min(text.len(), self.width)
     }
 }
 
@@ -72,6 +86,8 @@ mod tests {
     use configuration::Configuration;
     use search::Search;
     use super::*;
+    use ansi::Ansi;
+    use fake_tty::FakeIO;
 
     #[test]
     fn moves_the_selection_down_for_ctrl_n() {
