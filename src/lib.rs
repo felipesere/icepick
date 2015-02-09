@@ -3,6 +3,7 @@
 
 pub mod score;
 pub mod search;
+pub mod sorted_result_set;
 pub mod configuration;
 pub mod renderer;
 

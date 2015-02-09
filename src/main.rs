@@ -15,7 +15,7 @@ fn main() {
     let lines = read_lines();
 
     let config = Configuration::from_inputs(lines, initial_query, Some(20));
-    let mut search = Search::blank(config);
+    let mut search = Search::blank(&config);
 
     let mut screen = Screen::new();
 
@@ -50,6 +50,6 @@ fn extract_initial_query() -> Option<String> {
 
 fn read_lines() -> Vec<String> {
     std::old_io::stdio::stdin().lock().lines().map( |line| {
-        line.unwrap()
+        line.unwrap().trim().to_string()
     }).collect()
 }

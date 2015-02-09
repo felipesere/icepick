@@ -20,7 +20,7 @@ impl Renderer {
     }
 
     pub fn header(&self, search: &Search) -> String {
-        format!("{} > {}", search.result.len(), search.query)
+        format!("{} > {}", search.num_matches(), search.query)
     }
 }
 
@@ -36,7 +36,7 @@ mod tests {
         let config = Configuration::from_inputs(vec!["one".to_string(),
                                                      "one".to_string(),
                                                      "one".to_string()], None, Some(2));
-        let search = Search::blank(config).down();
+        let search = Search::blank(&config).down();
         let renderer = Renderer;
 
         let output = renderer.render(&search);
@@ -52,7 +52,7 @@ mod tests {
                                                      "two".to_string(),
                                                      "three".to_string()], None, Some(2));
 
-        let search = Search::blank(config).append_to_search("z");
+        let search = Search::blank(&config).append_to_search("z");
         let renderer = Renderer;
 
         let output = renderer.render(&search);

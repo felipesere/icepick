@@ -8,36 +8,23 @@ pub struct Configuration {
 }
 
 impl Configuration {
-    pub fn from_inputs(choice: Vec<String>,
+    pub fn from_inputs(choices: Vec<String>,
                        initial_search: Option<String>,
-                       visible_limit: Option<usize>) -> Configuration {
+                       visible_limit: Option<usize>) -> Configuration{
 
-        let cleaned = choice.iter().map(clean as fn(&String) -> String).collect::<Vec<String>>();
-        let limit = visible_limit.unwrap_or(choice.len());
+        let limit = visible_limit.unwrap_or(choices.len());
         let search = initial_search.unwrap_or("".to_string());
 
-        Configuration { choices: cleaned,
+        Configuration { choices: choices,
                         initial_search: search,
                         visible_limit: limit }
     }
 }
 
-fn clean(input: &String) -> String {
-    let slice = input.as_slice();
-    slice.trim().to_string()
-}
 
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn removes_leading_and_trailing_whitespace() {
-        let input = vec![" a choice ".to_string()];
-        let config = Configuration::from_inputs(input, None, None);
-
-        assert_eq!(config.choices, vec!("a choice"));
-    }
 
     #[test]
     fn can_specify_initial_search() {

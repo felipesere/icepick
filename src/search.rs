@@ -1,30 +1,47 @@
 use configuration::Configuration;
 use std::slice::SliceExt;
-use std::cmp::{Ordering, min};
+use std::cmp::min;
 use score::Score;
+use sorted_result_set::SortedResultSet;
+use std::ascii::AsciiExt;
 
 #[derive(Debug)]
-pub struct Search {
-    pub config: Configuration,
+pub struct Search<'s> {
+    pub config: &'s Configuration,
     pub current: usize,
     pub query: String,
     pub result: Vec<String>,
+    choice_stack: Vec<Vec<&'s String>>,
     done: bool,
 }
 
-impl Search {
-    pub fn blank(config: Configuration) -> Search {
+impl<'s> Search<'s> {
+    pub fn blank(config: &'s Configuration) -> Search<'s> {
         let query = config.initial_search.clone();
-        let previous_result = config.choices.clone();
-        Search::new(config, query, previous_result, 0, false)
+
+        let mut choice_stack: Vec<Vec<&'s String>> = Vec::new();
+        let mut result = Vec::new();
+        let mut first_stack_frame = Vec::new();
+
+        for choice in config.choices.iter().take(config.visible_limit) {
+            result.push(choice.clone());
+        }
+
+        for choice in config.choices.iter() {
+            first_stack_frame.push(choice);
+        }
+
+        choice_stack.push(first_stack_frame);
+
+        Search::new(config, query, choice_stack, result, 0, false)
     }
 
     pub fn is_done(&self) -> bool {
         self.done
     }
 
-    pub fn done(self) -> Search {
-        Search::new(self.config, self.query, self.result, self.current, true)
+    pub fn done(self) -> Search<'s> {
+        Search::new(self.config, self.query, self.choice_stack, self.result, self.current, true)
     }
 
     pub fn selection(&self) -> Option<String> {
@@ -35,63 +52,73 @@ impl Search {
         }
     }
 
-    fn new(config: Configuration, query: String, result: Vec<String>, index: usize, done: bool) -> Search {
+    fn new(config: &'s Configuration, query: String, choice_stack: Vec<Vec<&'s String>>, result: Vec<String>, index: usize, done: bool) -> Search<'s> {
         Search { config: config,
                  current: index,
                  query: query,
                  result: result,
+                 choice_stack: choice_stack,
                  done: done}
     }
 
-    fn new_for_index(self, index: usize) -> Search {
-        Search::new(self.config, self.query, self.result, index, self.done)
+    fn new_for_index(self, index: usize) -> Search<'s> {
+        Search::new(self.config, self.query, self.choice_stack, self.result, index, self.done)
     }
 
-    fn new_for_query(self, new_query: String) -> Search {
-        let new_result = Search::filter(new_query.as_slice(), &self.config.choices);
+    pub fn iter_matches<F: FnMut(&'s String, f32)>(query: &str, choices: &Vec<&'s String>, mut f: F) {
+        let lower_query = query.to_ascii_lowercase();
 
-        Search::new(self.config, new_query, new_result, 0, self.done)
+        for choice in choices.iter() {
+            let lower_choice = choice.to_ascii_lowercase();
+
+            match Score::score(&lower_choice, &lower_query) {
+                0.0     => continue,
+                quality => f(choice, quality),
+            };
+        }
     }
 
-    fn filter(query: &str, choices: &Vec<String>) -> Vec<String> {
-        let mut filtered = choices.iter().filter_map( |choice| {
-            let quality = Score::score(choice.as_slice(), query);
-            if quality > 0.0 {
-                Some((quality, choice.to_string()))
-            } else {
-                None
-            }
-        }).collect::<Vec<(f32, String)>>();
 
-        filtered.sort_by( |&(quality_a, _), &(quality_b, _)| {
-            quality_a.partial_cmp(&quality_b).unwrap_or(Ordering::Equal).reverse()
-        });
-
-        filtered.iter().map( |&(_, ref choice)| choice.to_string() ).collect::<Vec<String>>()
-    }
-
-    pub fn down(self) -> Search {
+    pub fn down(self) -> Search<'s> {
         let next_index = self.next_index();
         self.new_for_index(next_index)
     }
 
-    pub fn up(self) -> Search {
+    pub fn up(self) -> Search<'s> {
         let next_index = self.prev_index();
         self.new_for_index(next_index)
     }
 
-    pub fn append_to_search(self, input: &str) -> Search {
+    pub fn append_to_search(mut self, input: &str) -> Search<'s> {
         let mut new_query = self.query.clone();
         new_query.push_str(input.as_slice());
 
-        self.new_for_query(new_query)
+        let mut results = SortedResultSet::new(self.config.visible_limit);
+        let mut filtered_choices: Vec<&String> = Vec::new();
+        Search::iter_matches(new_query.as_slice(), &self.choice_stack.last().unwrap(),
+                        |match_str, quality| {
+                                               results.push(match_str, quality);
+                                               filtered_choices.push(match_str)
+                                             });
+
+        self.choice_stack.push(filtered_choices);
+        Search::new(self.config, new_query, self.choice_stack, results.as_sorted_vec(), 0, self.done)
     }
 
-    pub fn backspace(self) -> Search {
+    pub fn backspace(mut self) -> Search<'s> {
         let mut new_query = self.query.clone();
         new_query.pop();
+        
+        if self.choice_stack.len() > 1 {
+            self.choice_stack.pop();
+        }
 
-        self.new_for_query(new_query)
+        let mut results = SortedResultSet::new(self.config.visible_limit);
+        Search::iter_matches(new_query.as_slice(), &self.choice_stack.last().unwrap(),
+                        |match_str, quality| {
+                                               results.push(match_str, quality);
+                                             });
+        Search::new(self.config, new_query, self.choice_stack, results.as_sorted_vec(), 0, self.done)
     }
 
     fn next_index(&self) -> usize {
@@ -113,7 +140,11 @@ impl Search {
     }
 
     fn actual_limit(&self) -> usize {
-        min(self.config.visible_limit, self.result.len())
+        min(self.config.visible_limit, self.num_matches())
+    }
+
+    pub fn num_matches(&self) -> usize {
+        self.choice_stack.last().unwrap().len()
     }
 }
 
@@ -121,6 +152,7 @@ impl Search {
 mod tests {
     use configuration::Configuration;
     use super::*;
+    use sorted_result_set::SortedResultSet;
 
     fn one_two_three() -> Vec<String> {
         vec!["one".to_string(),
@@ -128,11 +160,19 @@ mod tests {
              "three".to_string()]
     }
 
+    fn input_times(n: usize) ->Vec<String> {
+        let mut result: Vec<String> = Vec::new();
+        for thing in one_two_three().iter().cycle().take(n) {
+            result.push(thing.clone());
+        }
+        result
+    }
+
     #[test]
     fn it_selects_the_first_choice_by_default() {
         let input = one_two_three();
         let config = Configuration::from_inputs(input, None, None);
-        let search = Search::blank(config);
+        let search = Search::blank(&config);
 
         assert_eq!(search.selection(), Some("one".to_string()));
     }
@@ -141,7 +181,7 @@ mod tests {
     fn it_selets_the_second_when_down_is_called() {
         let input = one_two_three();
         let config = Configuration::from_inputs(input, None, None);
-        let search = Search::blank(config);
+        let search = Search::blank(&config);
 
         assert_eq!(search.down().selection(), Some("two".to_string()));
     }
@@ -150,7 +190,7 @@ mod tests {
     fn it_loop_around_when_reaching_end_of_list() {
         let input = one_two_three();
         let config = Configuration::from_inputs(input, None, None);
-        let search = Search::blank(config);
+        let search = Search::blank(&config);
 
         assert_eq!(search.down().down().down().down().selection(), Some("two".to_string()));
     }
@@ -159,7 +199,7 @@ mod tests {
     fn it_loop_around_when_reaching_top_of_list() {
         let input = one_two_three();
         let config = Configuration::from_inputs(input, None, None);
-        let search = Search::blank(config);
+        let search = Search::blank(&config);
 
         assert_eq!(search.up().up().selection(), Some("two".to_string()));
     }
@@ -168,7 +208,7 @@ mod tests {
     fn it_loop_around_when_reaching_visible_limit() {
         let input = one_two_three();
         let config = Configuration::from_inputs(input, None, Some(2));
-        let search = Search::blank(config);
+        let search = Search::blank(&config);
 
         assert_eq!(search.down().down().down().selection(), Some("two".to_string()));
     }
@@ -177,7 +217,7 @@ mod tests {
     fn it_moves_down_the_filtered_search_results() {
         let input = one_two_three();
         let config = Configuration::from_inputs(input, None, None);
-        let search = Search::blank(config);
+        let search = Search::blank(&config);
 
         assert_eq!(search.append_to_search("t").down().selection(), Some("three".to_string()));
     }
@@ -186,7 +226,7 @@ mod tests {
     fn it_moves_down_the_filtered_search_results_twice() {
         let input = one_two_three();
         let config = Configuration::from_inputs(input, None, None);
-        let search = Search::blank(config);
+        let search = Search::blank(&config);
 
         assert_eq!(search.append_to_search("t").append_to_search("w").selection(), Some("two".to_string()));
     }
@@ -195,7 +235,7 @@ mod tests {
     fn it_handles_not_matching_anything() {
         let input = one_two_three();
         let config = Configuration::from_inputs(input, None, None);
-        let search = Search::blank(config);
+        let search = Search::blank(&config);
 
         assert_eq!(search.append_to_search("x").selection(), None);
     }
@@ -204,7 +244,7 @@ mod tests {
     fn up_match_nothing_after_filtering_all_out() {
         let input = one_two_three();
         let config = Configuration::from_inputs(input, None, None);
-        let search = Search::blank(config).append_to_search("x");
+        let search = Search::blank(&config).append_to_search("x");
 
         assert_eq!(search.up().selection(), None);
     }
@@ -213,7 +253,7 @@ mod tests {
     fn down_match_nothing_after_filtering_all_out() {
         let input = one_two_three();
         let config = Configuration::from_inputs(input, None, None);
-        let search = Search::blank(config).append_to_search("x");
+        let search = Search::blank(&config).append_to_search("x");
 
         assert_eq!(search.down().selection(), None);
     }
@@ -222,7 +262,7 @@ mod tests {
     fn backspaces_over_characters() {
         let input = one_two_three();
         let config = Configuration::from_inputs(input, None, None);
-        let search = Search::blank(config).append_to_search("e");
+        let search = Search::blank(&config).append_to_search("e");
 
         assert_eq!(search.query, "e");
         assert_eq!(search.backspace().query, "");
@@ -232,7 +272,7 @@ mod tests {
     fn resets_the_index_when_removing_char_from_search() {
         let input = one_two_three();
         let config = Configuration::from_inputs(input, None, None);
-        let search = Search::blank(config).append_to_search("e");
+        let search = Search::blank(&config).append_to_search("e");
 
         assert_eq!(search.down().backspace().current, 0);
     }
@@ -241,7 +281,7 @@ mod tests {
     fn resets_the_index_when_adding_char_to_seach() {
         let input = one_two_three();
         let config = Configuration::from_inputs(input, None, None);
-        let search = Search::blank(config).down();
+        let search = Search::blank(&config).down();
 
         assert_eq!(search.append_to_search("o").current, 0);
     }
@@ -250,25 +290,34 @@ mod tests {
     fn previous_results_appear_after_backspace() {
         let input = one_two_three();
         let config = Configuration::from_inputs(input, None, None);
-        let search = Search::blank(config).append_to_search("t");
+        let search = Search::blank(&config).append_to_search("t");
 
-        assert_eq!(search.backspace().result.len(), 3);
+        assert_eq!(search.backspace().num_matches(), 3);
     }
 
     #[test]
     fn initial_search_is_not_done() {
         let input = one_two_three();
         let config = Configuration::from_inputs(input, None, None);
-        let search = Search::blank(config);
+        let search = Search::blank(&config);
 
         assert!(!search.is_done());
+    }
+
+    #[test]
+    fn backspace_over_initial_doesnt_crash() {
+        let input = one_two_three();
+        let config = Configuration::from_inputs(input, None, None);
+        let search = Search::blank(&config);
+
+        search.backspace();
     }
 
     #[test]
     fn done_search_is_done() {
         let input = one_two_three();
         let config = Configuration::from_inputs(input, None, None);
-        let search = Search::blank(config).done();
+        let search = Search::blank(&config).done();
 
         assert!(search.is_done());
     }
@@ -277,7 +326,7 @@ mod tests {
     fn done_search_has_selection() {
         let input = one_two_three();
         let config = Configuration::from_inputs(input, None, None);
-        let search = Search::blank(config).done();
+        let search = Search::blank(&config).done();
 
         assert_eq!(search.selection(), Some("one".to_string()));
     }
@@ -286,7 +335,7 @@ mod tests {
     fn loop_around_when_reaching_bottom_of_choices() {
         let input = one_two_three();
         let config = Configuration::from_inputs(input, None, None);
-        let search = Search::blank(config).append_to_search("n").down();
+        let search = Search::blank(&config).append_to_search("n").down();
 
         assert_eq!(search.selection(), Some("one".to_string()));
     }
@@ -295,8 +344,34 @@ mod tests {
     fn loop_around_when_reaching_top_of_choices() {
         let input = one_two_three();
         let config = Configuration::from_inputs(input, None, None);
-        let search = Search::blank(config).append_to_search("n").up();
+        let search = Search::blank(&config).append_to_search("n").up();
 
         assert_eq!(search.selection(), Some("one".to_string()));
     }
+
+    #[test]
+    fn search_is_case_insensitive() {
+        let input = one_two_three();
+        let config = Configuration::from_inputs(input, None, None);
+        let search = Search::blank(&config).append_to_search("T");
+
+        assert_eq!(search.num_matches(), 2);
+    }
+
+    #[test]
+    fn uses_configs_visible_limit_as_result_size() {
+        let input = input_times(30);
+
+        let mut bar = Vec::new();
+        for f in input.iter() {
+            bar.push((*f).clone());
+        }
+
+
+        let config = Configuration::from_inputs(bar, None, Some(20));
+        let search = Search::blank(&config).append_to_search("T");
+
+        assert_eq!(search.num_matches(), 20);
+    }
+
 }
