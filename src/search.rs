@@ -108,7 +108,10 @@ impl<'s> Search<'s> {
     pub fn backspace(mut self) -> Search<'s> {
         let mut new_query = self.query.clone();
         new_query.pop();
-        &self.choice_stack.pop();
+        
+        if self.choice_stack.len() > 1 {
+            self.choice_stack.pop();
+        }
 
         let mut results = SortedResultSet::new(self.config.visible_limit);
         Search::iter_matches(new_query.as_slice(), &self.choice_stack.last().unwrap(),
@@ -299,6 +302,15 @@ mod tests {
         let search = Search::blank(&config);
 
         assert!(!search.is_done());
+    }
+
+    #[test]
+    fn backspace_over_initial_doesnt_crash() {
+        let input = one_two_three();
+        let config = Configuration::from_inputs(input, None, None);
+        let search = Search::blank(&config);
+
+        search.backspace();
     }
 
     #[test]
