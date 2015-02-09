@@ -24,17 +24,22 @@ fn compute_match_length(choice: &String, query: &String) -> Option<usize> {
     let impossible_match = choice.len() + 1;
     let mut shortest_match = impossible_match;
 
-    for (idx, character) in choice.chars().enumerate() {
-        // found beginning of match
-        if character == first {
-            match match_length_from(choice, rest, idx) {
-                Some(length) => shortest_match = min(length, shortest_match),
-                _ => continue,
-            };
-        }
-    }
+    for_each_beginning(choice, first, |beginning| {
+        match match_length_from(choice, rest, beginning) {
+            Some(length) => shortest_match = min(length, shortest_match),
+            None         => {},
+        };
+    });
 
     if shortest_match == impossible_match {None} else {Some(shortest_match)}
+}
+
+fn for_each_beginning<F: FnMut(usize)>(choice: &String, beginning: char, mut f: F) {
+    for (idx, character) in choice.chars().enumerate() {
+        if character == beginning {
+            f(idx);
+        }
+    }
 }
 
 fn match_length_from(choice: &String, query: &str, beginning: usize) -> Option<usize> {
