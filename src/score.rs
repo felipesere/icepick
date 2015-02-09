@@ -62,9 +62,7 @@ fn find_first_after(choice: &String, query: char, offset: usize) -> Option<usize
 
 #[cfg(test)]
 mod tests {
-    extern crate test;
     use super::*;
-    use self::test::Bencher;
 
     #[test]
     fn scores_zero_when_the_choice_is_emtpy() {

@@ -147,10 +147,8 @@ impl<'s> Search<'s> {
 
 #[cfg(test)]
 mod tests {
-    extern crate test;
     use configuration::Configuration;
     use super::*;
-    use self::test::Bencher;
     use sorted_result_set::SortedResultSet;
 
     fn one_two_three() -> Vec<String> {
