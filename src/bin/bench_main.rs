@@ -1,4 +1,4 @@
-#![feature(os, collections, rustc_private)]
+#![feature(io, path)]
 
 extern crate selecta;
 
