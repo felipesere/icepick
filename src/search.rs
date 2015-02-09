@@ -61,19 +61,6 @@ impl<'s> Search<'s> {
         Search::new(self.config, self.query, self.choice_stack, self.result, index, self.done)
     }
 
-    fn new_for_query(mut self, new_query: String) -> Search<'s> {
-        let mut results = SortedResultSet::new(self.config.visible_limit);
-
-        let mut filtered_choices: Vec<&String> = Vec::new();
-        Search::iter_matches(new_query.as_slice(), &self.choice_stack.last().unwrap(),
-                        |match_str, quality| { results.push(match_str, quality);
-                                               filtered_choices.push(match_str)
-                                             });
-
-        self.choice_stack.push(filtered_choices);
-        Search::new(self.config, new_query, self.choice_stack, results.as_sorted_vec(), 0, self.done)
-    }
-
     pub fn iter_matches<F: FnMut(&'s String, f32)>(query: &str, choices: &Vec<&'s String>, mut f: F) {
         let lower_query = query.to_ascii_lowercase();
 
@@ -104,18 +91,33 @@ impl<'s> Search<'s> {
         self.new_for_index(next_index)
     }
 
-    pub fn append_to_search(self, input: &str) -> Search<'s> {
+    pub fn append_to_search(mut self, input: &str) -> Search<'s> {
         let mut new_query = self.query.clone();
         new_query.push_str(input.as_slice());
 
-        self.new_for_query(new_query)
+        let mut results = SortedResultSet::new(self.config.visible_limit);
+        let mut filtered_choices: Vec<&String> = Vec::new();
+        Search::iter_matches(new_query.as_slice(), &self.choice_stack.last().unwrap(),
+                        |match_str, quality| {
+                                               results.push(match_str, quality);
+                                               filtered_choices.push(match_str)
+                                             });
+
+        self.choice_stack.push(filtered_choices);
+        Search::new(self.config, new_query, self.choice_stack, results.as_sorted_vec(), 0, self.done)
     }
 
-    pub fn backspace(self) -> Search<'s> {
+    pub fn backspace(mut self) -> Search<'s> {
         let mut new_query = self.query.clone();
         new_query.pop();
+        &self.choice_stack.pop();
 
-        self.new_for_query(new_query)
+        let mut results = SortedResultSet::new(self.config.visible_limit);
+        Search::iter_matches(new_query.as_slice(), &self.choice_stack.last().unwrap(),
+                        |match_str, quality| {
+                                               results.push(match_str, quality);
+                                             });
+        Search::new(self.config, new_query, self.choice_stack, results.as_sorted_vec(), 0, self.done)
     }
 
     fn next_index(&self) -> usize {
@@ -158,7 +160,6 @@ mod tests {
              "two".to_string(),
              "three".to_string()]
     }
-
 
     // Move me later
     #[test]
@@ -376,10 +377,10 @@ mod tests {
         assert_eq!(search.num_matches(), 20);
     }
 
-    fn input_times<'a>(n: usize) ->Vec<&'a String> {
-        let mut result: Vec<&String> = Vec::new();
+    fn input_times(n: usize) ->Vec<String> {
+        let mut result: Vec<String> = Vec::new();
         for thing in one_two_three().iter().cycle().take(n) {
-            result.push(thing);
+            result.push(thing.clone());
         }
         result
     }
@@ -387,12 +388,17 @@ mod tests {
     //84114 ns/iter (+/- 33515)
     #[bench]
     fn filter_speed(b: &mut Bencher) {
-        let input = input_times(1000);
+        let initial_elements = input_times(1000);
         let query = "t";
+        let mut f = Vec::new();
+        for g in initial_elements.iter() {
+            f.push(g);
+        }
+
 
         b.iter(||{
             let mut results = SortedResultSet::new(20);
-            Search::iter_matches(query, &input,
+            Search::iter_matches(query, &f,
                                     |choice, quality| results.push(choice, quality));
             results
         });
