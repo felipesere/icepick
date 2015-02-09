@@ -16,7 +16,7 @@ fn main() {
     let initial_query = extract_initial_query();
     let lines = read_lines("bench/30000.txt".to_string());
 
-    let config = Configuration::from_inputs(&lines, initial_query, Some(20));
+    let config = Configuration::from_inputs(lines, initial_query, Some(20));
     let mut search = Search::blank(&config);
 
     search = search.append_to_search("t").append_to_search("o").append_to_search("a").append_to_search("w").append_to_search("c").backspace().backspace().backspace().append_to_search("w").backspace().append_to_search("a");
