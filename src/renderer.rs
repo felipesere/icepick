@@ -31,10 +31,6 @@ mod tests {
     use configuration::Configuration;
     use super::*;
 
-    fn input() -> Vec<String> {
-        vec!["one".to_string(), "two".to_string(), "three".to_string()]
-    }
-
     #[test]
     fn it_renders_selected_matches_with_a_highlight() {
         let config = Configuration::from_inputs(vec!["one".to_string(),
