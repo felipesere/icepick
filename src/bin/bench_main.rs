@@ -14,7 +14,7 @@ use std::old_io::{File, BufferedReader};
 #[allow(dead_code)]
 fn main() {
     let initial_query = extract_initial_query();
-    let lines = read_lines("benchmarks/30000.txt".to_string());
+    let lines = read_lines("benches/30000.txt".to_string());
 
     let config = Configuration::from_inputs(lines, initial_query, Some(20));
     let mut search = Search::blank(&config);
@@ -41,7 +41,7 @@ fn read_lines(fname: String) -> Vec<String> {
     loop {
         match file.read_line() {
             Ok(line) => result.push(line),
-            Err(e) => break,
+            Err(_) => break,
         }
     }
     result

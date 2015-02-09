@@ -159,6 +159,13 @@ mod tests {
              "three".to_string()]
     }
 
+    fn input_times(n: usize) ->Vec<String> {
+        let mut result: Vec<String> = Vec::new();
+        for thing in one_two_three().iter().cycle().take(n) {
+            result.push(thing.clone());
+        }
+        result
+    }
 
     #[test]
     fn it_selects_the_first_choice_by_default() {
@@ -357,30 +364,4 @@ mod tests {
         assert_eq!(search.num_matches(), 20);
     }
 
-    fn input_times(n: usize) ->Vec<String> {
-        let mut result: Vec<String> = Vec::new();
-        for thing in one_two_three().iter().cycle().take(n) {
-            result.push(thing.clone());
-        }
-        result
-    }
-
-    //84114 ns/iter (+/- 33515)
-    #[bench]
-    fn filter_speed(b: &mut Bencher) {
-        let initial_elements = input_times(1000);
-        let query = "t";
-        let mut f = Vec::new();
-        for g in initial_elements.iter() {
-            f.push(g);
-        }
-
-
-        b.iter(||{
-            let mut results = SortedResultSet::new(20);
-            Search::iter_matches(query, &f,
-                                    |choice, quality| results.push(choice, quality));
-            results
-        });
-    }
 }
