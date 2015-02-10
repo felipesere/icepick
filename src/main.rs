@@ -1,9 +1,10 @@
-#![feature(io, os, core, collections, rustc_private)]
+#![feature(io, os, env, core, collections, rustc_private)]
 
 extern crate getopts;
 extern crate selecta;
 
 use getopts::{optopt,getopts};
+
 use selecta::configuration::Configuration;
 use selecta::search::Search;
 use selecta::tty::IO;
@@ -35,17 +36,21 @@ fn main() {
     }
     screen.move_cursor_to_end();
     screen.ansi.io.reset();
-    println!("\n{}", search.selection().unwrap_or("None".to_string()));
+    println!("\n{}", search.selection().unwrap_or("".to_string()));
 }
 
 fn extract_initial_query() -> Option<String> {
-    let args = std::os::args();
+    let args: Vec<String> = get_args();
     let opts = &[
         optopt("s", "search", "initial search query", ""),
     ];
     let matches = getopts(args.tail(), opts).unwrap();
 
     matches.opt_str("s")
+}
+
+fn get_args() -> Vec<String> {
+    std::env::args().map( |os| os.into_string().ok().unwrap() ).collect()
 }
 
 fn read_lines() -> Vec<String> {
