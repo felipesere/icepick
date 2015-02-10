@@ -1,8 +1,8 @@
 use configuration::Configuration;
-use std::slice::SliceExt;
-use std::cmp::min;
 use score::Score;
 use sorted_result_set::SortedResultSet;
+use std::slice::SliceExt;
+use std::cmp::min;
 use std::ascii::AsciiExt;
 
 #[derive(Debug)]
@@ -22,10 +22,7 @@ struct ChoiceStack<'s> {
 
 impl <'s>ChoiceStack<'s> {
     pub fn new(input: &'s Vec<String>) -> ChoiceStack<'s> {
-        let mut first_stack_frame = Vec::new();
-        for choice in input.iter() {
-            first_stack_frame.push(choice);
-        }
+        let first_stack_frame = input.iter().map(|x| x).collect();
 
         ChoiceStack { content: vec![first_stack_frame] }
     }
@@ -138,10 +135,8 @@ impl<'s> Search<'s> {
         self.choice_stack.pop();
 
         let mut results = SortedResultSet::new(self.config.visible_limit);
-        Search::iter_matches(new_query.as_slice(), &self.choice_stack.peek(),
-                        |match_str, quality| {
-                                               results.push(match_str, quality);
-                                             });
+        Search::iter_matches(new_query.as_slice(), &self.choice_stack.peek(), |match_str, quality| results.push(match_str, quality) );
+
         Search::new(self.config, new_query, self.choice_stack, results.as_sorted_vec(), 0, self.done)
     }
 
