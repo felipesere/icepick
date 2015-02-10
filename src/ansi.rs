@@ -51,57 +51,41 @@ mod tests {
     use fake_tty::FakeIO;
     use super::*;
 
-    #[test]
-    fn it_escapes_a_str() {
+    fn assert_results_in<F: FnMut(&mut Ansi)> (expected: &str, mut f: F) {
         let mut ansi = Ansi { io: Box::new(FakeIO::new()) };
 
-        ansi.escape("something");
+        f(&mut ansi);
         let inner_box = ansi.io;
-        assert_eq!(inner_box.last(), "\x1b[something");
+        assert_eq!(inner_box.last(), expected);
+    }
+
+    #[test]
+    fn it_escapes_a_str() {
+        assert_results_in("\x1b[something", |ansi| { ansi.escape("something") });
     }
 
     #[test]
     fn it_clears_the_screen() {
-        let mut ansi = Ansi { io: Box::new(FakeIO::new()) };
-
-        ansi.clear();
-        let inner_box = ansi.io;
-        assert_eq!(inner_box.last(), "\x1b[2J");
+        assert_results_in("\x1b[2J", |ansi| { ansi.clear() });
     }
 
     #[test]
-    fn it_hides_the_cursos() {
-        let mut ansi = Ansi { io: Box::new(FakeIO::new()) };
-
-        ansi.hide_cursor();
-        let inner_box = ansi.io;
-        assert_eq!(inner_box.last(), "\x1b[?251");
+    fn it_hides_the_cursor() {
+        assert_results_in("\x1b[?251", |ansi| { ansi.hide_cursor() });
     }
 
     #[test]
     fn it_shows_the_cursor() {
-        let mut ansi = Ansi { io: Box::new(FakeIO::new()) };
-
-        ansi.show_cursor();
-        let inner_box = ansi.io;
-        assert_eq!(inner_box.last(), "\x1b[?25h");
+        assert_results_in("\x1b[?25h", |ansi| { ansi.show_cursor() });
     }
 
     #[test]
     fn it_sets_the_position() {
-        let mut ansi = Ansi { io: Box::new(FakeIO::new()) };
-
-        ansi.set_position(8,12);
-        let inner_box = ansi.io;
-        assert_eq!(inner_box.last(), "\x1b[9;13H");
+        assert_results_in("\x1b[9;13H", |ansi| { ansi.set_position(8,12); });
     }
 
     #[test]
     fn it_prints_inverted() {
-        let mut ansi = Ansi { io: Box::new(FakeIO::new()) };
-
-        ansi.inverted("test");
-        let inner_box = ansi.io;
-        assert_eq!(inner_box.last(), "\x1b[7mtest\x1b[0m");
+        assert_results_in("\x1b[7mtest\x1b[0m", |ansi| { ansi.inverted("test"); });
     }
 }

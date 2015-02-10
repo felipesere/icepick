@@ -108,7 +108,7 @@ impl<'s> Search<'s> {
     pub fn backspace(mut self) -> Search<'s> {
         let mut new_query = self.query.clone();
         new_query.pop();
-        
+
         if self.choice_stack.len() > 1 {
             self.choice_stack.pop();
         }
@@ -168,10 +168,14 @@ mod tests {
         result
     }
 
+    fn basic_configuration() -> Configuration {
+        let input = one_two_three();
+        Configuration::from_inputs(input, None, None)
+    }
+
     #[test]
     fn it_selects_the_first_choice_by_default() {
-        let input = one_two_three();
-        let config = Configuration::from_inputs(input, None, None);
+        let config = basic_configuration();
         let search = Search::blank(&config);
 
         assert_eq!(search.selection(), Some("one".to_string()));
@@ -179,8 +183,7 @@ mod tests {
 
     #[test]
     fn it_selets_the_second_when_down_is_called() {
-        let input = one_two_three();
-        let config = Configuration::from_inputs(input, None, None);
+        let config = basic_configuration();
         let search = Search::blank(&config);
 
         assert_eq!(search.down().selection(), Some("two".to_string()));
@@ -188,8 +191,7 @@ mod tests {
 
     #[test]
     fn it_loop_around_when_reaching_end_of_list() {
-        let input = one_two_three();
-        let config = Configuration::from_inputs(input, None, None);
+        let config = basic_configuration();
         let search = Search::blank(&config);
 
         assert_eq!(search.down().down().down().down().selection(), Some("two".to_string()));
@@ -197,8 +199,7 @@ mod tests {
 
     #[test]
     fn it_loop_around_when_reaching_top_of_list() {
-        let input = one_two_three();
-        let config = Configuration::from_inputs(input, None, None);
+        let config = basic_configuration();
         let search = Search::blank(&config);
 
         assert_eq!(search.up().up().selection(), Some("two".to_string()));
@@ -206,17 +207,15 @@ mod tests {
 
     #[test]
     fn it_loop_around_when_reaching_visible_limit() {
-        let input = one_two_three();
-        let config = Configuration::from_inputs(input, None, Some(2));
+        let config = basic_configuration();
         let search = Search::blank(&config);
 
-        assert_eq!(search.down().down().down().selection(), Some("two".to_string()));
+        assert_eq!(search.down().down().down().down().selection(), Some("two".to_string()));
     }
 
     #[test]
     fn it_moves_down_the_filtered_search_results() {
-        let input = one_two_three();
-        let config = Configuration::from_inputs(input, None, None);
+        let config = basic_configuration();
         let search = Search::blank(&config);
 
         assert_eq!(search.append_to_search("t").down().selection(), Some("three".to_string()));
@@ -224,8 +223,7 @@ mod tests {
 
     #[test]
     fn it_moves_down_the_filtered_search_results_twice() {
-        let input = one_two_three();
-        let config = Configuration::from_inputs(input, None, None);
+        let config = basic_configuration();
         let search = Search::blank(&config);
 
         assert_eq!(search.append_to_search("t").append_to_search("w").selection(), Some("two".to_string()));
@@ -233,8 +231,7 @@ mod tests {
 
     #[test]
     fn it_handles_not_matching_anything() {
-        let input = one_two_three();
-        let config = Configuration::from_inputs(input, None, None);
+        let config = basic_configuration();
         let search = Search::blank(&config);
 
         assert_eq!(search.append_to_search("x").selection(), None);
@@ -242,8 +239,7 @@ mod tests {
 
     #[test]
     fn up_match_nothing_after_filtering_all_out() {
-        let input = one_two_three();
-        let config = Configuration::from_inputs(input, None, None);
+        let config = basic_configuration();
         let search = Search::blank(&config).append_to_search("x");
 
         assert_eq!(search.up().selection(), None);
@@ -251,8 +247,7 @@ mod tests {
 
     #[test]
     fn down_match_nothing_after_filtering_all_out() {
-        let input = one_two_three();
-        let config = Configuration::from_inputs(input, None, None);
+        let config = basic_configuration();
         let search = Search::blank(&config).append_to_search("x");
 
         assert_eq!(search.down().selection(), None);
@@ -260,8 +255,7 @@ mod tests {
 
     #[test]
     fn backspaces_over_characters() {
-        let input = one_two_three();
-        let config = Configuration::from_inputs(input, None, None);
+        let config = basic_configuration();
         let search = Search::blank(&config).append_to_search("e");
 
         assert_eq!(search.query, "e");
@@ -270,8 +264,7 @@ mod tests {
 
     #[test]
     fn resets_the_index_when_removing_char_from_search() {
-        let input = one_two_three();
-        let config = Configuration::from_inputs(input, None, None);
+        let config = basic_configuration();
         let search = Search::blank(&config).append_to_search("e");
 
         assert_eq!(search.down().backspace().current, 0);
@@ -279,8 +272,7 @@ mod tests {
 
     #[test]
     fn resets_the_index_when_adding_char_to_seach() {
-        let input = one_two_three();
-        let config = Configuration::from_inputs(input, None, None);
+        let config = basic_configuration();
         let search = Search::blank(&config).down();
 
         assert_eq!(search.append_to_search("o").current, 0);
@@ -288,8 +280,7 @@ mod tests {
 
     #[test]
     fn previous_results_appear_after_backspace() {
-        let input = one_two_three();
-        let config = Configuration::from_inputs(input, None, None);
+        let config = basic_configuration();
         let search = Search::blank(&config).append_to_search("t");
 
         assert_eq!(search.backspace().num_matches(), 3);
@@ -297,8 +288,7 @@ mod tests {
 
     #[test]
     fn initial_search_is_not_done() {
-        let input = one_two_three();
-        let config = Configuration::from_inputs(input, None, None);
+        let config = basic_configuration();
         let search = Search::blank(&config);
 
         assert!(!search.is_done());
@@ -306,8 +296,7 @@ mod tests {
 
     #[test]
     fn backspace_over_initial_doesnt_crash() {
-        let input = one_two_three();
-        let config = Configuration::from_inputs(input, None, None);
+        let config = basic_configuration();
         let search = Search::blank(&config);
 
         search.backspace();
@@ -315,8 +304,7 @@ mod tests {
 
     #[test]
     fn done_search_is_done() {
-        let input = one_two_three();
-        let config = Configuration::from_inputs(input, None, None);
+        let config = basic_configuration();
         let search = Search::blank(&config).done();
 
         assert!(search.is_done());
@@ -324,8 +312,7 @@ mod tests {
 
     #[test]
     fn done_search_has_selection() {
-        let input = one_two_three();
-        let config = Configuration::from_inputs(input, None, None);
+        let config = basic_configuration();
         let search = Search::blank(&config).done();
 
         assert_eq!(search.selection(), Some("one".to_string()));
@@ -333,8 +320,7 @@ mod tests {
 
     #[test]
     fn loop_around_when_reaching_bottom_of_choices() {
-        let input = one_two_three();
-        let config = Configuration::from_inputs(input, None, None);
+        let config = basic_configuration();
         let search = Search::blank(&config).append_to_search("n").down();
 
         assert_eq!(search.selection(), Some("one".to_string()));
@@ -342,8 +328,7 @@ mod tests {
 
     #[test]
     fn loop_around_when_reaching_top_of_choices() {
-        let input = one_two_three();
-        let config = Configuration::from_inputs(input, None, None);
+        let config = basic_configuration();
         let search = Search::blank(&config).append_to_search("n").up();
 
         assert_eq!(search.selection(), Some("one".to_string()));
@@ -351,8 +336,7 @@ mod tests {
 
     #[test]
     fn search_is_case_insensitive() {
-        let input = one_two_three();
-        let config = Configuration::from_inputs(input, None, None);
+        let config = basic_configuration();
         let search = Search::blank(&config).append_to_search("T");
 
         assert_eq!(search.num_matches(), 2);
