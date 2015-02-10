@@ -15,7 +15,7 @@ pub struct Search<'s> {
     done: bool,
 }
 
-#[derive(Show)]
+#[derive(Debug)]
 struct ChoiceStack<'s> {
     content: Vec<Vec<&'s String>>,
 }
@@ -53,15 +53,14 @@ impl<'s> Search<'s> {
     pub fn blank(config: &'s Configuration) -> Search<'s> {
         let query = config.initial_search.clone();
 
-        let mut result = Vec::new();
-
         let choice_stack = ChoiceStack::new(&config.choices);
-
-        for choice in config.choices.iter().take(config.visible_limit) {
-            result.push(choice.clone());
-        }
+        let result = Search::copy_items(&config.choices, config.visible_limit);
 
         Search::new(config, query, choice_stack, result, 0, false)
+    }
+
+    fn copy_items(input: &Vec<String>, size: usize) -> Vec<String> {
+        input.iter().take(size).map(|x| x.clone() ).collect()
     }
 
     fn new(config: &'s Configuration, query: String, choice_stack: ChoiceStack<'s>, result: Vec<String>, index: usize, done: bool) -> Search<'s> {
@@ -105,7 +104,6 @@ impl<'s> Search<'s> {
             };
         }
     }
-
 
     pub fn down(self) -> Search<'s> {
         let next_index = self.next_index();
@@ -381,5 +379,4 @@ mod tests {
 
         assert_eq!(search.num_matches(), 20);
     }
-
 }
