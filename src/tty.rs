@@ -1,4 +1,4 @@
-use std::old_io::{stdio, File, Open, ReadWrite, Command};
+use std::old_io::{File, Open, ReadWrite, Command};
 use std::old_io::process::StdioContainer;
 use std::os::unix::AsRawFd;
 use libc::{c_ushort, c_int, c_ulong};

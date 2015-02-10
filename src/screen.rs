@@ -64,7 +64,7 @@ impl <'a> Screen <'a>{
                 let printable_length = self.printable_length(text);
                 self.ansi.print(&text[..printable_length]);
             }
-            Text::Highlight(ref text) => { 
+            Text::Highlight(ref text) => {
                 let printable_length = self.printable_length(text);
                 self.ansi.inverted(&text[..printable_length]);
             }
@@ -86,8 +86,6 @@ mod tests {
     use configuration::Configuration;
     use search::Search;
     use super::*;
-    use ansi::Ansi;
-    use fake_tty::FakeIO;
 
     #[test]
     fn moves_the_selection_down_for_ctrl_n() {

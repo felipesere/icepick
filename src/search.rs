@@ -152,7 +152,6 @@ impl<'s> Search<'s> {
 mod tests {
     use configuration::Configuration;
     use super::*;
-    use sorted_result_set::SortedResultSet;
 
     fn one_two_three() -> Vec<String> {
         vec!["one".to_string(),
