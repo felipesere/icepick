@@ -36,6 +36,15 @@ impl<'s> Search<'s> {
         Search::new(config, query, choice_stack, result, 0, false)
     }
 
+    fn new(config: &'s Configuration, query: String, choice_stack: Vec<Vec<&'s String>>, result: Vec<String>, index: usize, done: bool) -> Search<'s> {
+        Search { config: config,
+                 current: index,
+                 query: query,
+                 result: result,
+                 choice_stack: choice_stack,
+                 done: done}
+    }
+
     pub fn is_done(&self) -> bool {
         self.done
     }
@@ -50,15 +59,6 @@ impl<'s> Search<'s> {
         } else {
             None
         }
-    }
-
-    fn new(config: &'s Configuration, query: String, choice_stack: Vec<Vec<&'s String>>, result: Vec<String>, index: usize, done: bool) -> Search<'s> {
-        Search { config: config,
-                 current: index,
-                 query: query,
-                 result: result,
-                 choice_stack: choice_stack,
-                 done: done}
     }
 
     fn new_for_index(self, index: usize) -> Search<'s> {
@@ -350,7 +350,6 @@ mod tests {
         for f in input.iter() {
             bar.push((*f).clone());
         }
-
 
         let config = Configuration::from_inputs(bar, None, Some(20));
         let search = Search::blank(&config).append_to_search("T");
