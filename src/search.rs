@@ -11,10 +11,11 @@ pub struct Search<'s> {
     pub current: usize,
     pub query: String,
     pub result: Vec<String>,
-    choice_stack: Vec<Vec<&'s String>>,
+    choice_stack: ChoiceStack<'s>,
     done: bool,
 }
 
+#[derive(Show)]
 struct ChoiceStack<'s> {
     content: Vec<Vec<&'s String>>,
 }
@@ -43,7 +44,7 @@ impl <'s>ChoiceStack<'s> {
         self.content.last().unwrap()
     }
 
-    pub fn last_size(&self) -> uint {
+    pub fn last_size(&self) -> usize {
         self.peek().len()
     }
 }
@@ -52,27 +53,18 @@ impl<'s> Search<'s> {
     pub fn blank(config: &'s Configuration) -> Search<'s> {
         let query = config.initial_search.clone();
 
-        let mut choice_stack: Vec<Vec<&'s String>> = Vec::new();
         let mut result = Vec::new();
-        let mut first_stack_frame = Vec::new();
 
-        let f = ChoiceStack::new(&config.choices);
-
+        let choice_stack = ChoiceStack::new(&config.choices);
 
         for choice in config.choices.iter().take(config.visible_limit) {
             result.push(choice.clone());
         }
 
-        for choice in config.choices.iter() {
-            first_stack_frame.push(choice);
-        }
-
-        choice_stack.push(first_stack_frame);
-
         Search::new(config, query, choice_stack, result, 0, false)
     }
 
-    fn new(config: &'s Configuration, query: String, choice_stack: Vec<Vec<&'s String>>, result: Vec<String>, index: usize, done: bool) -> Search<'s> {
+    fn new(config: &'s Configuration, query: String, choice_stack: ChoiceStack<'s>, result: Vec<String>, index: usize, done: bool) -> Search<'s> {
         Search { config: config,
                  current: index,
                  query: query,
@@ -131,7 +123,7 @@ impl<'s> Search<'s> {
 
         let mut results = SortedResultSet::new(self.config.visible_limit);
         let mut filtered_choices: Vec<&String> = Vec::new();
-        Search::iter_matches(new_query.as_slice(), &self.choice_stack.last().unwrap(),
+        Search::iter_matches(new_query.as_slice(), &self.choice_stack.peek(),
                         |match_str, quality| {
                                                results.push(match_str, quality);
                                                filtered_choices.push(match_str)
@@ -145,12 +137,10 @@ impl<'s> Search<'s> {
         let mut new_query = self.query.clone();
         new_query.pop();
 
-        if self.choice_stack.len() > 1 {
-            self.choice_stack.pop();
-        }
+        self.choice_stack.pop();
 
         let mut results = SortedResultSet::new(self.config.visible_limit);
-        Search::iter_matches(new_query.as_slice(), &self.choice_stack.last().unwrap(),
+        Search::iter_matches(new_query.as_slice(), &self.choice_stack.peek(),
                         |match_str, quality| {
                                                results.push(match_str, quality);
                                              });
@@ -180,7 +170,7 @@ impl<'s> Search<'s> {
     }
 
     pub fn num_matches(&self) -> usize {
-        self.choice_stack.last().unwrap().len()
+        self.choice_stack.last_size()
     }
 }
 
