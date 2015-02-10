@@ -92,7 +92,7 @@ impl TTY {
         if unsafe { ioctl(path.as_raw_fd(), TIOCGWINSZ, &size) } == 0 {
             (size.cols as usize, size.rows as usize)
         } else {
-            panic!("Whaaaat")
+            panic!("Could not read winsize from /dev/tty")
         }
     }
 
