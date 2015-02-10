@@ -15,6 +15,39 @@ pub struct Search<'s> {
     done: bool,
 }
 
+struct ChoiceStack<'s> {
+    content: Vec<Vec<&'s String>>,
+}
+
+impl <'s>ChoiceStack<'s> {
+    pub fn new(input: &'s Vec<String>) -> ChoiceStack<'s> {
+        let mut first_stack_frame = Vec::new();
+        for choice in input.iter() {
+            first_stack_frame.push(choice);
+        }
+
+        ChoiceStack { content: vec![first_stack_frame] }
+    }
+
+    pub fn push(&mut self, frame: Vec<&'s String>) {
+        self.content.push(frame);
+    }
+
+    pub fn pop(&mut self) {
+        if self.content.len() > 1 {
+            self.content.pop();
+        }
+    }
+
+    pub fn peek(&self) -> &Vec<&'s String> {
+        self.content.last().unwrap()
+    }
+
+    pub fn last_size(&self) -> uint {
+        self.peek().len()
+    }
+}
+
 impl<'s> Search<'s> {
     pub fn blank(config: &'s Configuration) -> Search<'s> {
         let query = config.initial_search.clone();
@@ -22,6 +55,9 @@ impl<'s> Search<'s> {
         let mut choice_stack: Vec<Vec<&'s String>> = Vec::new();
         let mut result = Vec::new();
         let mut first_stack_frame = Vec::new();
+
+        let f = ChoiceStack::new(&config.choices);
+
 
         for choice in config.choices.iter().take(config.visible_limit) {
             result.push(choice.clone());
