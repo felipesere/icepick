@@ -22,9 +22,9 @@ struct ChoiceStack<'s> {
 
 impl <'s>ChoiceStack<'s> {
     pub fn new(input: &'s Vec<String>) -> ChoiceStack<'s> {
-        let first_stack_frame = input.iter().map(|x| x).collect();
+        let initial_choices = input.iter().map(|x| x).collect();
 
-        ChoiceStack { content: vec![first_stack_frame] }
+        ChoiceStack { content: vec![initial_choices] }
     }
 
     pub fn push(&mut self, frame: Vec<&'s String>) {
