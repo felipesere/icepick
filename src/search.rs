@@ -1,5 +1,5 @@
 use configuration::Configuration;
-use score::Score;
+use score;
 use sorted_result_set::SortedResultSet;
 use std::slice::SliceExt;
 use std::cmp::min;
@@ -95,7 +95,7 @@ impl<'s> Search<'s> {
         for choice in choices.iter() {
             let lower_choice = choice.to_ascii_lowercase();
 
-            match Score::score(&lower_choice, &lower_query) {
+            match score::score(&lower_choice, &lower_query) {
                 0.0     => continue,
                 quality => f(choice, quality),
             };

@@ -12,7 +12,7 @@ impl<'s> SortedResultSet<'s> {
             results:  BinaryHeap::with_capacity(size + 1),
             size:     size}
     }
-    
+
     pub fn push(&mut self, choice: &'s String, quality: f32) {
         let result = ScoreResult { quality: quality, choice: choice};
 

@@ -1,17 +1,14 @@
 use std::cmp::min;
-pub struct Score;
 
-impl Score {
-    pub fn score(choice: &String, query: &String) -> f32 {
-        let choice_length = choice.len() as f32;
-        let query_length = query.len() as f32;
+pub fn score(choice: &String, query: &String) -> f32 {
+    let choice_length = choice.len() as f32;
+    let query_length = query.len() as f32;
 
-        if query_length == 0.0 { return 1.0 }
+    if query_length == 0.0 { return 1.0 }
 
-        match compute_match_length(choice, query) {
-            Some(match_length) => (query_length / match_length as f32) / choice_length,
-            None => 0.0,
-        }
+    match compute_match_length(choice, query) {
+        Some(match_length) => (query_length / match_length as f32) / choice_length,
+        None => 0.0,
     }
 }
 
@@ -62,7 +59,6 @@ fn find_first_after(choice: &String, query: char, offset: usize) -> Option<usize
 
 #[cfg(test)]
 mod tests {
-    use super::*;
 
     #[test]
     fn scores_zero_when_the_choice_is_emtpy() {
@@ -72,7 +68,7 @@ mod tests {
     fn score(choice: &str, query: &str) -> f32 {
         let choice_stirng = choice.to_string();
         let query_stirng = query.to_string();
-        Score::score(&choice_stirng,  &query_stirng)
+       super:: score(&choice_stirng,  &query_stirng)
     }
 
     #[test]

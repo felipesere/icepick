@@ -1,12 +1,12 @@
 extern crate test;
 extern crate selecta;
 use self::test::Bencher;
-use selecta::score::Score;
+use selecta::score;
 
 fn score(choice: &str, query: &str) -> f32 {
     let choice_stirng = choice.to_string();
     let query_stirng = query.to_string();
-    Score::score(&choice_stirng,  &query_stirng)
+    score::score(&choice_stirng,  &query_stirng)
 }
 
 
