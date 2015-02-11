@@ -363,13 +363,7 @@ mod tests {
     #[test]
     fn uses_configs_visible_limit_as_result_size() {
         let input = input_times(30);
-
-        let mut bar = Vec::new();
-        for f in input.iter() {
-            bar.push((*f).clone());
-        }
-
-        let config = Configuration::from_inputs(bar, None, Some(20));
+        let config = Configuration::from_inputs(input, None, Some(20));
         let search = Search::blank(&config).append_to_search("T");
 
         assert_eq!(search.num_matches(), 20);
