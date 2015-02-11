@@ -78,11 +78,8 @@ impl<'s> Search<'s> {
     }
 
     pub fn selection(&self) -> Option<String> {
-        if self.result.len() > 0 {
-            Some(self.result[self.current].to_string())
-        } else {
-            None
-        }
+        self.result.get(self.current)
+                   .map( |t| t.clone())
     }
 
     fn new_for_index(self, index: usize) -> Search<'s> {

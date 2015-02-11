@@ -28,8 +28,8 @@ fn main() {
         screen.print(&search);
         let input = screen.ansi.io.read();
         match input {
-            Some(n) => {
-                search = screen.handle_keystroke(search, n.as_slice());
+            Some(character) => {
+                search = screen.handle_keystroke(search, character.as_slice());
             },
             None => break,
         };

@@ -54,7 +54,7 @@ fn match_length_from(choice: &String, query: &str, beginning: usize) -> Option<u
 fn find_first_after(choice: &String, query: char, offset: usize) -> Option<usize> {
     choice[offset..]
         .find(query)
-        .and_then(|index| Some(index + offset))
+        .map(|index| index + offset)
 }
 
 #[cfg(test)]
@@ -66,8 +66,8 @@ mod tests {
     }
 
     fn score(choice: &str, query: &str) -> f32 {
-        let choice_stirng = choice.to_string();
-        let query_stirng = query.to_string();
+       let choice_stirng = choice.to_string();
+       let query_stirng = query.to_string();
        super:: score(&choice_stirng,  &query_stirng)
     }
 
