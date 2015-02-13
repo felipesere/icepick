@@ -4,6 +4,7 @@ extern crate getopts;
 extern crate selecta;
 
 use getopts::{optopt,getopts};
+use std::cmp::min;
 
 use selecta::configuration::Configuration;
 use selecta::search::Search;
@@ -14,15 +15,13 @@ use selecta::screen::Screen;
 fn main() {
     let initial_query = extract_initial_query();
     let lines = read_lines();
-
-    let config = Configuration::from_inputs(lines, initial_query, Some(20));
-    let mut search = Search::blank(&config);
-
     let mut screen = Screen::new();
 
-    for _ in 0..(search.config.visible_limit) {
-        screen.ansi.io.write("\n");
-    }
+    let height = min(20, screen.height);
+    let config = Configuration::from_inputs(lines, initial_query, Some(height));
+    let mut search = Search::blank(&config);
+
+    screen.blank(search.config.visible_limit);
 
     while !search.is_done() {
         screen.print(&search);

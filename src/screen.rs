@@ -8,8 +8,8 @@ use std::cmp::min;
 
 pub struct Screen <'a> {
     pub ansi: Ansi<'a>,
-    height: usize,
-    width: usize,
+    pub height: usize,
+    pub width: usize,
 }
 
 impl <'a> Screen <'a>{
@@ -72,6 +72,12 @@ impl <'a> Screen <'a>{
         };
     }
 
+    pub fn blank(&mut self, lines: usize) {
+        for _ in 0..lines {
+            self.ansi.print("\n");
+        }
+    }
+
     pub fn move_cursor_to_end(&mut self) {
         self.ansi.set_position(self.height - 1, 0);
     }
@@ -125,6 +131,19 @@ mod tests {
         let screen = Screen::fake();
         let result = screen.handle_keystroke(search, "\n");
         assert!(result.is_done());
+    }
+
+    #[test]
+    fn blanks_amount_of_lines() {
+        let mut screen = Screen::fake();
+        screen.blank(4);
+        let lines = screen.ansi.io.lines();
+        let expected_lines = vec!["\n",
+                                  "\n",
+                                  "\n",
+                                  "\n"];
+
+        assert_eq!(lines, expected_lines);
     }
 
     fn input() -> Vec<String> {
