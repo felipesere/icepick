@@ -5,6 +5,7 @@ extern crate selecta;
 
 use getopts::{optopt,getopts};
 use std::cmp::min;
+use std::old_io::stdio;
 
 use selecta::search::Search;
 use selecta::tty::IO;
@@ -51,7 +52,9 @@ fn get_args() -> Vec<String> {
 }
 
 fn read_lines() -> Vec<String> {
-    std::old_io::stdio::stdin().lock().lines().map( |line| {
+    let mut stdin = stdio::stdin();
+    let mut reader = stdin.lock();
+    reader.lines().map( |line| {
         line.unwrap().trim().to_string()
     }).collect()
 }
