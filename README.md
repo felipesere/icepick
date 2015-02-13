@@ -13,7 +13,7 @@ Currently requires a rustc 1.0.0-alpha nightly and compatible cargo.
 Run:
 
 ```
-cargo build
+cargo build --release
 ```
 
-and put the resulting `target/selecta` executable on your PATH.
+and put the resulting `target/release/selecta` executable on your PATH.
