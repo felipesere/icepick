@@ -6,7 +6,6 @@ extern crate selecta;
 use getopts::{optopt,getopts};
 use std::cmp::min;
 
-use selecta::configuration::Configuration;
 use selecta::search::Search;
 use selecta::tty::IO;
 use selecta::screen::Screen;
@@ -18,10 +17,9 @@ fn main() {
     let mut screen = Screen::new();
 
     let height = min(20, screen.height);
-    let config = Configuration::from_inputs(lines, initial_query, Some(height));
-    let mut search = Search::blank(&config);
+    let mut search = Search::blank(&lines, initial_query, Some(height));
 
-    screen.blank(search.config.visible_limit);
+    screen.blank(search.visible_limit);
 
     while !search.is_done() {
         screen.print(&search);

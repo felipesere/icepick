@@ -46,7 +46,7 @@ impl <'a> Screen <'a>{
         let result = renderer.render(search);
         self.ansi.hide_cursor();
 
-        let start_line = self.height - search.config.visible_limit - 1;
+        let start_line = self.height - search.visible_limit - 1;
 
         for (idx, text) in result.iter().enumerate() {
             self.write(start_line + idx, text);
@@ -89,15 +89,13 @@ impl <'a> Screen <'a>{
 
 #[cfg(test)]
 mod tests {
-    use configuration::Configuration;
     use search::Search;
     use super::*;
 
     #[test]
     fn moves_the_selection_down_for_ctrl_n() {
         let input = input();
-        let config = Configuration::from_inputs(input, None, Some(10));
-        let search = Search::blank(&config);
+        let search = Search::blank(&input, None, Some(10));
         let screen = Screen::fake();
         let result = screen.handle_keystroke(search, "\u{e}");
         assert_eq!(result.selection(), Some("two".to_string()));
@@ -106,8 +104,7 @@ mod tests {
     #[test]
     fn moves_the_selection_up_for_ctrl_p() {
         let input = input();
-        let config = Configuration::from_inputs(input, None, Some(10));
-        let search = Search::blank(&config).down();
+        let search = Search::blank(&input, None, Some(10)).down();
         let screen = Screen::fake();
         let result = screen.handle_keystroke(search, "\u{10}");
         assert_eq!(result.selection(), Some("one".to_string()));
@@ -116,8 +113,7 @@ mod tests {
     #[test]
     fn removes_the_last_character_for_delete() {
         let input = input();
-        let config = Configuration::from_inputs(input, None, Some(10));
-        let search = Search::blank(&config).append_to_search("w").append_to_search("x");
+        let search = Search::blank(&input, None, Some(10)).append_to_search("w").append_to_search("x");
         let screen = Screen::fake();
         let result = screen.handle_keystroke(search, "\u{7f}");
         assert_eq!(result.selection(), Some("two".to_string()));
@@ -126,8 +122,7 @@ mod tests {
     #[test]
     fn marks_a_search_as_done_for_enter() {
         let input = input();
-        let config = Configuration::from_inputs(input, None, Some(10));
-        let search = Search::blank(&config);
+        let search = Search::blank(&input, None, Some(10));
         let screen = Screen::fake();
         let result = screen.handle_keystroke(search, "\n");
         assert!(result.is_done());

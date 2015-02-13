@@ -8,7 +8,7 @@ impl Renderer {
         let mut result = Vec::new();
         result.push(Text::Normal(self.header(search)));
 
-        for position in 0..search.config.visible_limit {
+        for position in 0..search.visible_limit {
             let element = match search.result.get(position) {
                 Some(choice) if position == search.current => Text::Highlight(choice.clone()),
                 Some(choice) => Text::Normal(choice.clone()),
@@ -28,15 +28,15 @@ impl Renderer {
 mod tests {
     use search::Search;
     use text::Text;
-    use configuration::Configuration;
     use super::*;
 
     #[test]
     fn it_renders_selected_matches_with_a_highlight() {
-        let config = Configuration::from_inputs(vec!["one".to_string(),
-                                                     "one".to_string(),
-                                                     "one".to_string()], None, Some(2));
-        let search = Search::blank(&config).down();
+        let input = vec!["one".to_string(),
+                         "one".to_string(),
+                         "one".to_string()];
+
+        let search = Search::blank(&input, None, Some(2)).down();
         let renderer = Renderer;
 
         let output = renderer.render(&search);
@@ -48,11 +48,11 @@ mod tests {
 
     #[test]
     fn it_renders_a_mismatch() {
-        let config = Configuration::from_inputs(vec!["one".to_string(),
-                                                     "two".to_string(),
-                                                     "three".to_string()], None, Some(2));
+        let input = vec!["one".to_string(),
+                         "two".to_string(),
+                         "three".to_string()];
 
-        let search = Search::blank(&config).append_to_search("z");
+        let search = Search::blank(&input, None, Some(2)).append_to_search("z");
         let renderer = Renderer;
 
         let output = renderer.render(&search);
