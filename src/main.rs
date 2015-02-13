@@ -47,7 +47,7 @@ fn extract_initial_query() -> Option<String> {
 }
 
 fn get_args() -> Vec<String> {
-    std::env::args().map( |os| os.into_string().ok().unwrap() ).collect()
+    std::env::args().collect()
 }
 
 fn read_lines() -> Vec<String> {
