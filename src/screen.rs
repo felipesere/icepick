@@ -24,8 +24,12 @@ impl <'a> Screen <'a>{
     }
 
     pub fn fake() -> Screen<'a> {
+        Screen::fake_with_input(vec![])
+    }
+
+    pub fn fake_with_input(input: Vec<&str>) -> Screen<'a> {
         Screen {
-            ansi: Ansi { io: Box::new(FakeIO::new()) },
+            ansi: Ansi { io: Box::new(FakeIO::new_with_input(input)) },
             height: 20,
             width: 10,
         }
@@ -78,6 +82,10 @@ impl <'a> Screen <'a>{
         }
     }
 
+    pub fn reset(&mut self) {
+        self.ansi.io.reset();
+    }
+
     pub fn move_cursor_to_end(&mut self) {
         self.ansi.set_position(self.height - 1, 0);
     }
@@ -85,12 +93,47 @@ impl <'a> Screen <'a>{
     fn printable_length(&self, text: &str) -> usize {
         min(text.len(), self.width)
     }
+
+    pub fn run_search(&mut self, lines: Vec<String>, initial_query: Option<String>) -> Option<String> {
+        let height = min(20, self.height);
+        let mut search = Search::blank(&lines, initial_query, Some(height));
+
+        self.blank(height);
+
+        while !search.is_done() {
+            self.print(&search);
+            let input = self.ansi.io.read();
+            match input {
+                Some(character) => {
+                    search = self.handle_keystroke(search, character.as_slice());
+                },
+                None => break,
+            };
+        }
+        search.selection()
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use search::Search;
     use super::*;
+
+    #[test]
+    fn test_run_search_and_look_for_t() {
+        let mut screen = Screen::fake_with_input(vec!["t"]);
+        let input = input();
+        let result = screen.run_search(input, None);
+        assert_eq!(result.unwrap().as_slice(), "two")
+    }
+
+    #[test]
+    fn run_search_immediatly_done() {
+        let mut screen = Screen::fake_with_input(vec!["\n"]);
+        let input = input();
+        let result = screen.run_search(input, None);
+        assert_eq!(result.unwrap().as_slice(), "one")
+    }
 
     #[test]
     fn moves_the_selection_down_for_ctrl_n() {

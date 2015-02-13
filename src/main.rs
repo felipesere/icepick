@@ -1,14 +1,11 @@
-#![feature(io, os, env, core, collections, rustc_private)]
+#![feature(io, env, collections, rustc_private)]
 
 extern crate getopts;
 extern crate selecta;
 
 use getopts::{optopt,getopts};
-use std::cmp::min;
 use std::old_io::stdio;
 
-use selecta::search::Search;
-use selecta::tty::IO;
 use selecta::screen::Screen;
 
 #[allow(dead_code)]
@@ -17,24 +14,10 @@ fn main() {
     let lines = read_lines();
     let mut screen = Screen::new();
 
-    let height = min(20, screen.height);
-    let mut search = Search::blank(&lines, initial_query, Some(height));
-
-    screen.blank(search.visible_limit);
-
-    while !search.is_done() {
-        screen.print(&search);
-        let input = screen.ansi.io.read();
-        match input {
-            Some(character) => {
-                search = screen.handle_keystroke(search, character.as_slice());
-            },
-            None => break,
-        };
-    }
+    let result = screen.run_search(lines, initial_query);
     screen.move_cursor_to_end();
-    screen.ansi.io.reset();
-    println!("{}", search.selection().unwrap_or("".to_string()));
+    screen.reset();
+    println!("{}", result.unwrap_or("".to_string()));
 }
 
 fn extract_initial_query() -> Option<String> {

@@ -3,13 +3,20 @@ use tty::IO;
 pub struct FakeIO {
     last: String,
     lines: Vec<String>,
+    input: Vec<String>,
 }
 
 impl FakeIO {
     pub fn new() -> FakeIO {
+        FakeIO::new_with_input(vec![])
+    }
+
+    pub fn new_with_input(input: Vec<&str>) -> FakeIO {
+        let actual = input.iter().map( |s| s.to_string()).collect();
         FakeIO {
             last: "fail".to_string(),
             lines: Vec::new(),
+            input: actual,
         }
     }
 }
@@ -21,7 +28,7 @@ impl IO for FakeIO {
    }
 
    fn read(&mut self) -> Option<String> {
-       None
+        self.input.pop()
    }
 
    fn lines(&self) -> Vec<String> {
