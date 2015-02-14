@@ -1,4 +1,12 @@
 [root]
 name = "athena"
 version = "0.0.1"
+dependencies = [
+ "stainless 0.0.14 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "stainless"
+version = "0.0.14"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 

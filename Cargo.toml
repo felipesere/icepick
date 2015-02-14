@@ -11,5 +11,8 @@ doctest = false
 test = true
 doc = false
 
+[dependencies]
+stainless = "0.0.14"
+
 [profile.release]
 opt-level = 3
