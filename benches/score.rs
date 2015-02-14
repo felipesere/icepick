@@ -1,9 +1,9 @@
 #![feature(test)]
 
 extern crate test;
-extern crate selecta;
+extern crate athena;
 use self::test::Bencher;
-use selecta::score;
+use athena::score;
 
 fn score(choice: &str, query: &str) -> f32 {
     let choice_stirng = choice.to_string();
@@ -3663,8 +3663,8 @@ static PATHS: &'static [&'static str] =
         "./LICENSE.txt",
         "./README.md",
         "./readygo.rb",
-        "./selecta",
-        "./selecta.gemspec",
+        "./athena",
+        "./athena.gemspec",
         "./spec",
         "./spec/configuration_spec.rb",
         "./spec/invalid_utf8.txt",

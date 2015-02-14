@@ -1,4 +1,4 @@
-# Selecta reimplemented in Rust
+# Athena is a reimplementation of Selecta in Rust
 
 [![Build Status](https://travis-ci.org/felipesere/selecta.svg?branch=master)](https://travis-ci.org/felipesere/selecta)
 
@@ -16,4 +16,4 @@ Run:
 cargo build
 ```
 
-and put the resulting `target/selecta` executable on your PATH.
+and put the resulting `target/athena` executable on your PATH.

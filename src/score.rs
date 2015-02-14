@@ -115,7 +115,7 @@ mod tests {
 
     #[test]
     fn scores_higher_for_better_matches() {
-          assert!(score("selecta.gemspec", "asp") > score("algorithm4_spec.rb", "asp"));
+          assert!(score("ahtena.gemspec", "asp") > score("algorithm4_spec.rb", "asp"));
           assert!(score("readme.md", "em") > score("benchmark.rb", "em"));
           assert!(score("search.rb", "sear") > score("spec/search_spec.rb", "sear"));
     }

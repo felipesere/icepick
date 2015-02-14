@@ -1,10 +1,10 @@
 [package]
-name = "selecta"
+name = "athena"
 version = "0.0.1"
 authors = ["Felipe Sere <felipesere@gmail.com>"]
 
 [lib]
-name = "selecta"
+name = "athena"
 doctest = false
 test = true
 doc = false

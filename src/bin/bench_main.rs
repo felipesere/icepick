@@ -1,8 +1,8 @@
 #![feature(io, path)]
 
-extern crate selecta;
+extern crate athena;
 
-use selecta::search::Search;
+use athena::search::Search;
 use std::old_io::{File, BufferedReader};
 
 #[allow(dead_code)]

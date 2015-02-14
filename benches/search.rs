@@ -1,11 +1,10 @@
 #![feature(test)]
-#![feature(core)]
 
 extern crate test;
-extern crate selecta;
+extern crate athena;
 use self::test::Bencher;
-use selecta::search::Search;
-use selecta::sorted_result_set::SortedResultSet;
+use athena::search::Search;
+use athena::sorted_result_set::SortedResultSet;
 
 fn one_two_three() -> Vec<String> {
     vec!["one".to_string(),
