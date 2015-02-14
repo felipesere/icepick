@@ -113,16 +113,19 @@ impl<'s> Search<'s> {
         let mut new_query = self.query.clone();
         new_query.push_str(input.as_slice());
 
-        let mut results = SortedResultSet::new(self.visible_limit);
+        let mut heap = SortedResultSet::new(self.visible_limit);
         let mut filtered_choices: Vec<&String> = Vec::new();
         Search::iter_matches(new_query.as_slice(), &self.choice_stack.peek(),
                         |match_str, quality| {
-                                               results.push(match_str, quality);
+                                               heap.push(match_str, quality);
                                                filtered_choices.push(match_str)
                                              });
 
         self.choice_stack.push(filtered_choices);
-        Search::new(new_query, self.choice_stack, results.as_sorted_vec(), 0, self.visible_limit, self.done)
+
+        let result =  heap.as_sorted_vec().iter().map( |s| s.to_string()).collect();
+
+        Search::new(new_query, self.choice_stack, result, 0, self.visible_limit, self.done)
     }
 
     pub fn backspace(mut self) -> Search<'s> {
@@ -131,10 +134,12 @@ impl<'s> Search<'s> {
 
         self.choice_stack.pop();
 
-        let mut results = SortedResultSet::new(self.visible_limit);
-        Search::iter_matches(new_query.as_slice(), &self.choice_stack.peek(), |match_str, quality| results.push(match_str, quality) );
+        let mut heap = SortedResultSet::new(self.visible_limit);
+        Search::iter_matches(new_query.as_slice(), &self.choice_stack.peek(), |match_str, quality| heap.push(match_str, quality) );
 
-        Search::new(new_query, self.choice_stack, results.as_sorted_vec(), 0, self.visible_limit, self.done)
+        let result =  heap.as_sorted_vec().iter().map( |s| s.to_string()).collect();
+
+        Search::new(new_query, self.choice_stack, result, 0, self.visible_limit, self.done)
     }
 
     fn next_index(&self) -> usize {
