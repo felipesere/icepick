@@ -20,7 +20,7 @@ mod test {
         }
 
         it "renders_selected_matches_with_a_highlight" {
-            let search = Search::blank(&choices, None, Some(2)).down();
+            let search = Search::blank(&choices, None, 2).down();
             let output = renderer.render(&search);
 
             assert_eq!(vec![Text::Normal("3 > ".to_string()),
@@ -30,7 +30,7 @@ mod test {
 
        
         it "renders_a_mismatch" {
-            let search = Search::blank(&choices, None, Some(2)).append_to_search("z");
+            let search = Search::blank(&choices, None, 2).append_to_search("z");
             let output = renderer.render(&search);
 
             assert_eq!(vec![Text::Normal("0 > z".to_string()),

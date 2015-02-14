@@ -23,7 +23,7 @@ mod tests {
             let choices = vec!["one".to_string(),
                              "two".to_string(),
                              "three".to_string()];
-            let mut search = Search::blank(&choices, None, None);
+            let mut search = Search::blank(&choices, None, 20);
         }
 
         it "it_selects_the_first_choice_by_default" {
@@ -115,7 +115,7 @@ mod tests {
 
         it "uses_configs_visible_limit_as_result_size" {
             let many_choices = input_times(30);
-            let search = Search::blank(&many_choices, None, Some(20)).append_to_search("c");
+            let search = Search::blank(&many_choices, None, 20).append_to_search("c");
 
             assert_eq!(search.result.len(), 20);
         }

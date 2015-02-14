@@ -96,7 +96,7 @@ impl <'a> Screen <'a>{
 
     pub fn run_search(&mut self, lines: Vec<String>, initial_query: Option<String>) -> Option<String> {
         let height = min(20, self.height);
-        let mut search = Search::blank(&lines, initial_query, Some(height));
+        let mut search = Search::blank(&lines, initial_query, height);
 
         self.blank(height);
 

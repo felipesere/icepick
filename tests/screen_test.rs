@@ -20,25 +20,25 @@ mod test {
         }
 
         it "moves_the_selection_down_for_ctrl_n" {
-            let search = Search::blank(&choices, None, Some(10));
+            let search = Search::blank(&choices, None, 10);
             let result = screen.handle_keystroke(search, "\u{e}");
             assert_eq!(result.selection(), Some("two".to_string()));
         }
 
         it "moves_the_selection_up_for_ctrl_p" {
-            let search = Search::blank(&choices, None, Some(10)).down();
+            let search = Search::blank(&choices, None, 10).down();
             let result = screen.handle_keystroke(search, "\u{10}");
             assert_eq!(result.selection(), Some("one".to_string()));
         }
 
         it "removes_the_last_character_for_delete" {
-            let search = Search::blank(&choices, None, Some(10)).append_to_search("w").append_to_search("x");
+            let search = Search::blank(&choices, None, 10).append_to_search("w").append_to_search("x");
             let result = screen.handle_keystroke(search, "\u{7f}");
             assert_eq!(result.selection(), Some("two".to_string()));
         }
 
         it "marks_a_search_as_done_for_enter" {
-            let search = Search::blank(&choices, None, Some(10));
+            let search = Search::blank(&choices, None, 10);
             let result = screen.handle_keystroke(search, "\n");
             assert!(result.is_done());
         }

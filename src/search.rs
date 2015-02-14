@@ -48,13 +48,12 @@ impl <'s>ChoiceStack<'s> {
 impl<'s> Search<'s> {
     pub fn blank(choices: &'s Vec<String>,
                  initial_search: Option<String>,
-                 visible_limit: Option<usize>) -> Search<'s> {
+                 visible_limit: usize) -> Search<'s> {
         let query = initial_search.unwrap_or("".to_string());
-        let limit = visible_limit.unwrap_or(choices.len());
 
         let choice_stack = ChoiceStack::new(&choices);
-        let result = Search::copy_items(&choices, limit);
-        Search::new(query, choice_stack, result, 0, limit, false)
+        let result = Search::copy_items(&choices, visible_limit);
+        Search::new(query, choice_stack, result, 0, visible_limit, false)
     }
 
     fn copy_items(input: &Vec<String>, size: usize) -> Vec<String> {
