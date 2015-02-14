@@ -44,7 +44,7 @@ mod test {
         }
 
         it "blanks_amount_of_lines" {
-            screen.blank(4);
+            screen.clear(4);
             let lines = screen.ansi.io.lines();
             let expected_lines = vec!["\n", "\n", "\n", "\n"];
 

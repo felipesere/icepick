@@ -76,7 +76,7 @@ impl <'a> Screen <'a>{
         };
     }
 
-    pub fn blank(&mut self, lines: usize) {
+    pub fn clear(&mut self, lines: usize) {
         for _ in 0..lines {
             self.ansi.print("\n");
         }
@@ -98,7 +98,7 @@ impl <'a> Screen <'a>{
         let height = min(20, self.height);
         let mut search = Search::blank(&lines, initial_query, height);
 
-        self.blank(height);
+        self.clear(height);
 
         while !search.is_done() {
             self.print(&search);
