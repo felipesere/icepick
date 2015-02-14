@@ -1,5 +1,6 @@
 #![feature(plugin)]
 #![plugin(stainless)]
+#![allow(unused_mut)]
 
 extern crate stainless;
 extern crate athena;
