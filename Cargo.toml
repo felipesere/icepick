@@ -1,7 +1,9 @@
 [package]
 name = "athena"
 version = "0.0.1"
-authors = ["Felipe Sere <felipesere@gmail.com>"]
+authors = ["Felipe Sere <felipesere@gmail.com>",
+           "Uku Taht <uku.taht@gmail.com>",
+           "Carol Nichols"]
 
 [lib]
 name = "athena"
