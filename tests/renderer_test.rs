@@ -12,15 +12,15 @@ mod test {
 
     describe! renderer_test {
         before_each {
-            let input = vec!["one".to_string(),
+            let choices = vec!["one".to_string(),
                              "one".to_string(),
                              "one".to_string()];
 
-            let mut search = Search::blank(&input, None, Some(2)).down();
             let renderer = Renderer;
         }
 
         it "renders_selected_matches_with_a_highlight" {
+            let search = Search::blank(&choices, None, Some(2)).down();
             let output = renderer.render(&search);
 
             assert_eq!(vec![Text::Normal("3 > ".to_string()),
@@ -30,7 +30,7 @@ mod test {
 
        
         it "renders_a_mismatch" {
-            search = search.append_to_search("z");
+            let search = Search::blank(&choices, None, Some(2)).append_to_search("z");
             let output = renderer.render(&search);
 
             assert_eq!(vec![Text::Normal("0 > z".to_string()),
