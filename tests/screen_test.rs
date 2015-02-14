@@ -12,7 +12,7 @@ mod test {
     pub use athena::search::Search;
     pub use athena::screen::Screen;
     pub use athena::tty::TTY;
-    
+
     describe! screen_test {
         before_each {
             let choices = vec!["one".to_string(), "two".to_string()];

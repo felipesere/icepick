@@ -28,7 +28,6 @@ mod test {
                             Text::Highlight("one".to_string())], output);
         }
 
-       
         it "renders_a_mismatch" {
             let search = Search::blank(&choices, None, 2).append_to_search("z");
             let output = renderer.render(&search);

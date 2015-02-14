@@ -3,7 +3,17 @@ name = "athena"
 version = "0.0.1"
 authors = ["Felipe Sere <felipesere@gmail.com>",
            "Uku Taht <uku.taht@gmail.com>",
-           "Carol Nichols"]
+           "Carol Nichols <cnichols@thinkthroughmath.com>"]
+
+description = "A command-line fuzzy matcher based on Gary Bernheards selecta"
+homepage = "http://github.com/felipesere/athena"
+repository = "http://github.com/felipesere/athena"
+
+readme = "README.md"
+
+keywords = ["search", "command-line", "tool"]
+
+license = "MIT"
 
 [lib]
 name = "athena"
