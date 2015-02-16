@@ -40,10 +40,10 @@ pub fn score<'a>(choice: &'a String, query: &String) -> Option<Match<'a>> {
 }
 
 fn new_compute_match_length(choice: &String, query: &String) -> Option<(usize, usize)> {
-    let (first, rest) = match query.slice_shift_char() {
-        Some((c, r)) => (c,r),
-        None => return None,
-    };
+    if query.len() == 0 {
+        return None;
+    }
+    let (first, rest) = query.slice_shift_char().unwrap();
 
     let impossible_match = choice.len() + 1;
     let mut shortest_match = impossible_match;
@@ -55,7 +55,7 @@ fn new_compute_match_length(choice: &String, query: &String) -> Option<(usize, u
                              shortest_match = min(length, shortest_match);
                              shortest_start = beginning;
             },
-            None         => {},
+            None => {},
         };
     });
 
