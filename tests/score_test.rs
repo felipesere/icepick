@@ -8,7 +8,7 @@ mod test {
     use athena::score;
     use athena::score::Match;
 
-    pub fn do_new_score<'a>(choice: &'a String, query: &str) -> Option<Match<'a>> {
+    pub fn do_score<'a>(choice: &'a String, query: &str) -> Option<Match<'a>> {
        let query_stirng = query.to_string();
        score::score(&choice,  &query_stirng)
     }
@@ -49,22 +49,22 @@ mod test {
         describe! mismatch {
             it "no_match_when_the_choice_is_emtpy" {
                 let input = "".to_string();
-                assert_eq!(do_new_score(&input, "a"), None);
+                assert_eq!(do_score(&input, "a"), None);
             }
 
             it "no_match_if_query_is_longer_than_the_choice" {
                 let input = "a".to_string();
-                assert_eq!(do_new_score(&input, "aaaaa"), None);
+                assert_eq!(do_score(&input, "aaaaa"), None);
             }
 
             it "no_match_if_query_does_not_match_at_all" {
                 let input = "a".to_string();
-                assert_eq!(do_new_score(&input, "b"), None);
+                assert_eq!(do_score(&input, "b"), None);
             }
 
             it "repeated_character_does_not_match" {
                 let input = "a".to_string();
-                assert_eq!(do_new_score(&input,  "aa"), None);
+                assert_eq!(do_score(&input,  "aa"), None);
             }
         }
 
