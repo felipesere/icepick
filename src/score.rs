@@ -29,7 +29,7 @@ pub fn score<'a>(choice: &'a String, query: &String) -> Option<Match<'a>> {
 
     if query_length == 0.0 { return Some(Match::new(Quality(1.0), Substring(0,0), choice)) }
 
-    match new_compute_match_length(choice, query) {
+    match compute_match_length(choice, query) {
         Some((start, match_length)) => {
             let quality = Quality( (query_length / match_length as f32) / choice_length);
             let substring = Substring(start, start+match_length);
@@ -39,7 +39,7 @@ pub fn score<'a>(choice: &'a String, query: &String) -> Option<Match<'a>> {
     }
 }
 
-fn new_compute_match_length(choice: &String, query: &String) -> Option<(usize, usize)> {
+fn compute_match_length(choice: &String, query: &String) -> Option<(usize, usize)> {
     if query.len() == 0 {
         return None;
     }
