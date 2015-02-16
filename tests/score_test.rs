@@ -8,16 +8,25 @@ mod test {
     use athena::score;
     use athena::score::Match;
 
-    pub fn do_new_score(choice: &str, query: &str) -> Option<Match> {
-       let choice_stirng = choice.to_string();
+    pub fn do_new_score<'a>(choice: &'a String, query: &str) -> Option<Match<'a>> {
        let query_stirng = query.to_string();
-       score::score(&choice_stirng,  &query_stirng)
+       score::score(&choice,  &query_stirng)
     }
 
     pub fn match_quality(choice: &str, query: &str) -> f32 {
-        let m = do_new_score(choice, query);
+        let choice_stirng = choice.to_string();
+        let query_stirng = query.to_string();
+        let m = score::score(&choice_stirng, &query_stirng);
         let Quality(quality) = m.unwrap().quality;
         quality
+    }
+
+    pub fn match_substring(choice: &str, query: &str) -> (usize, usize) {
+        let choice_stirng = choice.to_string();
+        let query_stirng = query.to_string();
+        let m = score::score(&choice_stirng, &query_stirng);
+        let Substring(start,end) = m.unwrap().range;
+        (start,end)
     }
 
     pub use athena::score::Substring;
@@ -25,37 +34,37 @@ mod test {
 
     describe! score_and_match {
         it "scores_greater_than_zero_and_shows_match" {
-            let it = do_new_score("a", "a").unwrap();
-            let Substring(a,b) = it.range;
-            assert_eq!((a,b), (0,1));
+            let range =  match_substring("a", "a");
+            assert_eq!(range, (0,1));
         }
 
         it "match_range_ends_in_non_inclusive" {
-            //                     0123456789
-            let it = do_new_score("ana.gemspec", "asp").unwrap();
-            let Quality(q) = it.quality;
-            let Substring(a,b) = it.range;
-            assert!(q > 0.0);
-            assert_eq!((a,b), (2,9));
+            //                           0123456789
+            let range = match_substring("ana.gemspec", "asp");
+            assert_eq!(range, (2,9));
         }
     }
 
     describe! score_test {
         describe! mismatch {
             it "no_match_when_the_choice_is_emtpy" {
-                assert_eq!(do_new_score("", "a"), None);
+                let input = "".to_string();
+                assert_eq!(do_new_score(&input, "a"), None);
             }
 
             it "no_match_if_query_is_longer_than_the_choice" {
-                assert_eq!(do_new_score("a", "aaaaa"), None);
+                let input = "a".to_string();
+                assert_eq!(do_new_score(&input, "aaaaa"), None);
             }
 
             it "no_match_if_query_does_not_match_at_all" {
-                assert_eq!(do_new_score("a", "b"), None);
+                let input = "a".to_string();
+                assert_eq!(do_new_score(&input, "b"), None);
             }
 
             it "repeated_character_does_not_match" {
-                assert_eq!(do_new_score("a", "aa"), None);
+                let input = "a".to_string();
+                assert_eq!(do_new_score(&input,  "aa"), None);
             }
         }
 
