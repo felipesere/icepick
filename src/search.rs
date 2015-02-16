@@ -1,4 +1,6 @@
 use score;
+use score::Match;
+use score::Quality;
 use sorted_result_set::SortedResultSet;
 use std::slice::SliceExt;
 use std::cmp::min;
@@ -93,8 +95,8 @@ impl<'s> Search<'s> {
             let lower_choice = choice.to_ascii_lowercase();
 
             match score::score(&lower_choice, &lower_query) {
-                0.0     => continue,
-                quality => f(choice, quality),
+                None     => continue,
+                Some(Match { quality: Quality(q), ..}) => f(choice, q),
             };
         }
     }
