@@ -14,6 +14,15 @@ impl Quality {
 #[derive(Clone, Debug,PartialEq)]
 pub struct Substring(pub usize,pub usize);
 
+impl Substring {
+    pub fn slice(&self, input: &String) -> (String, String, String) {
+       let Substring(start, end) = *self;
+       (input[0..start].to_string(),
+        input[start..end].to_string(),
+        input[end..].to_string())
+    }
+}
+
 #[derive(Clone, Debug,PartialEq)]
 pub struct Match<'a> {
     pub quality: Quality,
