@@ -45,7 +45,7 @@ pub fn score<'a>(choice: &'a String, query: &String) -> Option<Match<'a>> {
     let choice_length = choice.len() as f32;
     let query_length = query.len() as f32;
 
-    if query_length == 0.0 { return Some(Match::new(Quality(1.0), Substring(0,0), choice)) }
+    if query_length == 0.0 { return Some(Match::origin_only(choice)) }
     let lower_choice = choice.to_ascii_lowercase();
 
     match compute_match_length(&lower_choice, query) {
