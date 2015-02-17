@@ -10,8 +10,8 @@ impl Renderer {
 
         for position in 0..search.visible_limit {
             let element = match search.result.get(position) {
-                Some(choice) if position == search.current => Text::Highlight(choice.clone()),
-                Some(choice) => Text::Normal(choice.clone()),
+                Some(choice) if position == search.current => Text::Highlight(choice.original.clone()),
+                Some(choice) => Text::Normal(choice.original.clone()),
                 None => Text::Blank
             };
             result.push(element);

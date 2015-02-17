@@ -1,15 +1,20 @@
 use std::cmp::min;
+use std::ascii::AsciiExt;
 
-#[derive(Debug)]
-#[derive(PartialEq)]
+#[derive(Clone, Debug,PartialEq)]
 pub struct Quality(pub f32);
 
-#[derive(Debug)]
-#[derive(PartialEq)]
+impl Quality {
+    pub fn to_f32(&self) -> f32 {
+        let Quality(q) = *self;
+        q
+    }
+}
+
+#[derive(Clone, Debug,PartialEq)]
 pub struct Substring(pub usize,pub usize);
 
-#[derive(Debug)]
-#[derive(PartialEq)]
+#[derive(Clone, Debug,PartialEq)]
 pub struct Match<'a> {
     pub quality: Quality,
     pub range: Substring,
@@ -21,6 +26,10 @@ impl <'a>Match<'a>{
     pub fn new(quality: Quality, range: Substring, original: &'a String) -> Match<'a> {
         Match { quality: quality, range: range, original: original }
     }
+
+    pub fn origin_only(original: &'a String) -> Match<'a> {
+        Match::new(Quality(1.0), Substring(0,0), original)
+    }
 }
 
 pub fn score<'a>(choice: &'a String, query: &String) -> Option<Match<'a>> {
@@ -28,8 +37,9 @@ pub fn score<'a>(choice: &'a String, query: &String) -> Option<Match<'a>> {
     let query_length = query.len() as f32;
 
     if query_length == 0.0 { return Some(Match::new(Quality(1.0), Substring(0,0), choice)) }
+    let lower_choice = choice.to_ascii_lowercase();
 
-    match compute_match_length(choice, query) {
+    match compute_match_length(&lower_choice, query) {
         Some((start, match_length)) => {
             let quality = Quality( (query_length / match_length as f32) / choice_length);
             let substring = Substring(start, start+match_length);
