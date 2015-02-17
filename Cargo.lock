@@ -2,8 +2,14 @@
 name = "athena"
 version = "0.0.1"
 dependencies = [
+ "ansi_term 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "stainless 0.0.14 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
+
+[[package]]
+name = "ansi_term"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "stainless"
