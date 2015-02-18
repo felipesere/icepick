@@ -4,10 +4,10 @@
 #![allow(unused_mut)]
 
 extern crate stainless;
-extern crate athena;
+extern crate icepick;
 
 mod tests {
-    pub use athena::search::Search;
+    pub use icepick::search::Search;
 
     pub fn input_times(n: usize) ->Vec<String> {
         let choices = vec!["choice".to_string()];

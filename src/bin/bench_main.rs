@@ -1,8 +1,8 @@
 #![feature(io, path)]
 
-extern crate athena;
+extern crate icepick;
 
-use athena::search::Search;
+use icepick::search::Search;
 use std::old_io::{File, BufferedReader};
 
 #[allow(dead_code)]

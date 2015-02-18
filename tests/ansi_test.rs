@@ -2,12 +2,12 @@
 #![plugin(stainless)]
 
 extern crate stainless;
-extern crate athena;
+extern crate icepick;
 
 mod test {
-    use athena::fake_tty::FakeIO;
-    use athena::tty::IO;
-    use athena::ansi::Ansi;
+    use icepick::fake_tty::FakeIO;
+    use icepick::tty::IO;
+    use icepick::ansi::Ansi;
 
     pub fn assert_results_in<F: FnMut(&mut Ansi)> (expected: &str, mut f: F) {
         let mut ansi = Ansi { io: Box::new(FakeIO::new()) };

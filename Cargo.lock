@@ -1,5 +1,5 @@
 [root]
-name = "athena"
+name = "icepick"
 version = "0.0.1"
 dependencies = [
  "ansi_term 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",

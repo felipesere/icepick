@@ -3,15 +3,15 @@
 #![allow(unused_mut)]
 
 extern crate stainless;
-extern crate athena;
+extern crate icepick;
 
 mod test {
-    pub use athena::search::Search;
-    pub use athena::score::Match;
-    pub use athena::score::Quality;
-    pub use athena::score::Substring;
-    pub use athena::text::Text;
-    pub use athena::renderer::Renderer;
+    pub use icepick::search::Search;
+    pub use icepick::text::Text;
+    pub use icepick::renderer::Renderer;
+    pub use icepick::score::Match;
+    pub use icepick::score::Quality;
+    pub use icepick::score::Substring;
 
     describe! renderer_test {
         before_each {

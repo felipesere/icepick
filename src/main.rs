@@ -1,12 +1,12 @@
 #![feature(io, env, collections, rustc_private)]
 
 extern crate getopts;
-extern crate athena;
+extern crate icepick;
 
 use getopts::{optopt,getopts};
 use std::old_io::stdio;
 
-use athena::screen::Screen;
+use icepick::screen::Screen;
 
 #[allow(dead_code)]
 fn main() {

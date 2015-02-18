@@ -1,10 +1,10 @@
 #![feature(test)]
 
 extern crate test;
-extern crate athena;
+extern crate icepick;
 use self::test::Bencher;
-use athena::search::Search;
-use athena::sorted_result_set::SortedResultSet;
+use icepick::search::Search;
+use icepick::sorted_result_set::SortedResultSet;
 
 fn one_two_three() -> Vec<String> {
     vec!["one".to_string(),

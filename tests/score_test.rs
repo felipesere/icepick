@@ -2,11 +2,11 @@
 #![plugin(stainless)]
 
 extern crate stainless;
-extern crate athena;
+extern crate icepick;
 
 mod test {
-    use athena::score;
-    use athena::score::Match;
+    use icepick::score;
+    use icepick::score::Match;
 
     pub fn do_score<'a>(choice: &'a String, query: &str) -> Option<Match<'a>> {
        let query_stirng = query.to_string();
