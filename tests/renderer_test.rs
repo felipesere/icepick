@@ -3,12 +3,12 @@
 #![allow(unused_mut)]
 
 extern crate stainless;
-extern crate athena;
+extern crate icepick;
 
 mod test {
-    pub use athena::search::Search;
-    pub use athena::text::Text;
-    pub use athena::renderer::Renderer;
+    pub use icepick::search::Search;
+    pub use icepick::text::Text;
+    pub use icepick::renderer::Renderer;
 
     describe! renderer_test {
         before_each {

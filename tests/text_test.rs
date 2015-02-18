@@ -3,10 +3,10 @@
 #![feature(core)]
 
 extern crate stainless;
-extern crate athena;
+extern crate icepick;
 
 mod test {
-    pub use athena::text::Text;
+    pub use icepick::text::Text;
 
     describe! text_test {
         it "normal_is_a_simple_string" {

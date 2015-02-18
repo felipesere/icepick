@@ -1,5 +1,5 @@
 [root]
-name = "athena"
+name = "icepick"
 version = "0.0.1"
 dependencies = [
  "stainless 0.0.14 (registry+https://github.com/rust-lang/crates.io-index)",

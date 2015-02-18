@@ -2,10 +2,10 @@
 #![plugin(stainless)]
 
 extern crate stainless;
-extern crate athena;
+extern crate icepick;
 
 mod test {
-    use athena::score::score;
+    use icepick::score::score;
 
     pub fn do_score(choice: &str, query: &str) -> f32 {
        let choice_stirng = choice.to_string();

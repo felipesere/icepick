@@ -1,13 +1,13 @@
 [package]
-name = "athena"
+name = "icepick"
 version = "0.0.1"
 authors = ["Felipe Sere <felipesere@gmail.com>",
            "Uku Taht <uku.taht@gmail.com>",
            "Carol Nichols <cnichols@thinkthroughmath.com>"]
 
 description = "A command-line fuzzy matcher based on Gary Bernheards selecta"
-homepage = "http://github.com/felipesere/athena"
-repository = "http://github.com/felipesere/athena"
+homepage = "http://github.com/felipesere/icepick"
+repository = "http://github.com/felipesere/icepick"
 
 readme = "README.md"
 
@@ -16,7 +16,7 @@ keywords = ["search", "command-line", "tool"]
 license = "MIT"
 
 [lib]
-name = "athena"
+name = "icepick"
 doctest = false
 test = true
 doc = false

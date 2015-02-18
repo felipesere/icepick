@@ -1,9 +1,9 @@
 #![feature(test)]
 
 extern crate test;
-extern crate athena;
+extern crate icepick;
 use self::test::Bencher;
-use athena::score;
+use icepick::score;
 
 fn score(choice: &str, query: &str) -> f32 {
     let choice_stirng = choice.to_string();
@@ -3663,8 +3663,8 @@ static PATHS: &'static [&'static str] =
         "./LICENSE.txt",
         "./README.md",
         "./readygo.rb",
-        "./athena",
-        "./athena.gemspec",
+        "./icepick",
+        "./icepick.gemspec",
         "./spec",
         "./spec/configuration_spec.rb",
         "./spec/invalid_utf8.txt",

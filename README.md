@@ -1,4 +1,4 @@
-# Athena is a reimplementation of Selecta in Rust
+#Icepick is a reimplementation of Selecta in Rust
 
 [![Build Status](https://travis-ci.org/felipesere/athena.svg?branch=master)](https://travis-ci.org/felipesere/athena)
 
@@ -16,4 +16,4 @@ Run:
 cargo build
 ```
 
-and put the resulting `target/athena` executable on your PATH.
+and put the resulting `target/icepick` executable on your PATH.

@@ -6,12 +6,12 @@
 #![feature(core)]
 
 extern crate stainless;
-extern crate athena;
+extern crate icepick;
 
 mod test {
-    pub use athena::search::Search;
-    pub use athena::screen::Screen;
-    pub use athena::tty::TTY;
+    pub use icepick::search::Search;
+    pub use icepick::screen::Screen;
+    pub use icepick::tty::TTY;
 
     describe! screen_test {
         before_each {
