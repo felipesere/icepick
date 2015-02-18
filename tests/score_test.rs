@@ -29,8 +29,8 @@ mod test {
         (start,end)
     }
 
-    pub use athena::score::Substring;
-    pub use athena::score::Quality;
+    pub use icepick::score::Substring;
+    pub use icepick::score::Quality;
 
     describe! score_and_match {
         it "scores_greater_than_zero_and_shows_match" {
