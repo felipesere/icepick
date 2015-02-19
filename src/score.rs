@@ -36,7 +36,7 @@ impl <'a>Match<'a>{
         Match { quality: quality, range: range, original: original }
     }
 
-    pub fn origin_only(original: &'a String) -> Match<'a> {
+    pub fn with_empty_range(original: &'a String) -> Match<'a> {
         Match::new(Quality(1.0), Range{start: 0,end: 0}, original)
     }
 }
@@ -45,7 +45,7 @@ pub fn score<'a>(choice: &'a String, query: &String) -> Option<Match<'a>> {
     let choice_length = choice.len() as f32;
     let query_length = query.len() as f32;
 
-    if query_length == 0.0 { return Some(Match::origin_only(choice)) }
+    if query_length == 0.0 { return Some(Match::with_empty_range(choice)) }
     let lower_choice = choice.to_ascii_lowercase();
 
     match compute_match_length(&lower_choice, query) {

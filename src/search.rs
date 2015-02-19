@@ -54,7 +54,7 @@ impl<'s> Search<'s> {
 
         let choice_stack = ChoiceStack::new(&choices);
 
-        let result = choices.iter().take(visible_limit).map(|x| Match::origin_only(x)).collect();
+        let result = choices.iter().take(visible_limit).map(|x| Match::with_empty_range(x)).collect();
 
         Search::new(query, choice_stack, result, 0, visible_limit, false)
     }

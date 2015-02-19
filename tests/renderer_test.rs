@@ -27,7 +27,7 @@ mod test {
             let ref text = choices[1];
 
             assert_eq!(vec![Text::Normal("3 > ".to_string()),
-                            Text::Colored(Match::origin_only(text)),
+                            Text::Colored(Match::with_empty_range(text)),
                             Text::Highlight("one".to_string())], output);
 
         }
