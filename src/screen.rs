@@ -66,7 +66,7 @@ impl <'a> Screen <'a>{
 
         match *text {
             Text::Colored(ref matching) => {
-                let (start, middle, end) = matching.range.slice(&matching.original);
+                let (start, middle, end) = matching.parts();
                 let text = format!("{}{}{}", start, Blue.paint(middle.as_slice()), end);
                 let printable_length = self.printable_length(text.as_slice());
                 self.ansi.print(&text[..printable_length]);

@@ -11,7 +11,6 @@ mod test {
     pub use icepick::renderer::Renderer;
     pub use icepick::score::Match;
     pub use icepick::score::Quality;
-    pub use icepick::score::Substring;
 
     describe! renderer_test {
         before_each {

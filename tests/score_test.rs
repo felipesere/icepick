@@ -16,32 +16,29 @@ mod test {
     pub fn match_quality(choice: &str, query: &str) -> f32 {
         let choice_stirng = choice.to_string();
         let query_stirng = query.to_string();
-        let m = score::score(&choice_stirng, &query_stirng);
-        let Quality(quality) = m.unwrap().quality;
+        let matching = score::score(&choice_stirng, &query_stirng);
+        let Quality(quality) = matching.unwrap().quality;
         quality
     }
 
-    pub fn match_substring(choice: &str, query: &str) -> (usize, usize) {
+    pub fn match_substring(choice: &str, query: &str) -> String {
         let choice_stirng = choice.to_string();
         let query_stirng = query.to_string();
-        let m = score::score(&choice_stirng, &query_stirng);
-        let Substring(start,end) = m.unwrap().range;
-        (start,end)
+        let (_,substring,_) = score::score(&choice_stirng, &query_stirng).unwrap().parts();
+        substring
     }
 
-    pub use icepick::score::Substring;
     pub use icepick::score::Quality;
 
     describe! score_and_match {
         it "scores_greater_than_zero_and_shows_match" {
             let range =  match_substring("a", "a");
-            assert_eq!(range, (0,1));
+            assert_eq!(&range[], "a");
         }
 
         it "match_range_ends_in_non_inclusive" {
-            //                           0123456789
             let range = match_substring("ana.gemspec", "asp");
-            assert_eq!(range, (2,9));
+            assert_eq!(&range[], "a.gemsp");
         }
     }
 

@@ -1,5 +1,6 @@
 use std::cmp::min;
 use std::ascii::AsciiExt;
+use std::ops::Range;
 
 #[derive(Clone, Debug,PartialEq)]
 pub struct Quality(pub f32);
@@ -12,32 +13,31 @@ impl Quality {
 }
 
 #[derive(Clone, Debug,PartialEq)]
-pub struct Substring(pub usize,pub usize);
+pub struct Match<'a> {
+    pub quality: Quality,
+    pub range: Range<usize>,
+    pub original: &'a String,
 
-impl Substring {
-    pub fn slice(&self, input: &String) -> (String, String, String) {
-       let Substring(start, end) = *self;
+}
+
+impl <'a> Match<'a> {
+    pub fn parts(&self) -> (String, String, String) {
+       let start = self.range.start;
+       let end = self.range.end;
+       let input = self.original;
        (input[0..start].to_string(),
         input[start..end].to_string(),
         input[end..].to_string())
     }
 }
 
-#[derive(Clone, Debug,PartialEq)]
-pub struct Match<'a> {
-    pub quality: Quality,
-    pub range: Substring,
-    pub original: &'a String,
-
-}
-
 impl <'a>Match<'a>{
-    pub fn new(quality: Quality, range: Substring, original: &'a String) -> Match<'a> {
+    pub fn new(quality: Quality, range: Range<usize>, original: &'a String) -> Match<'a> {
         Match { quality: quality, range: range, original: original }
     }
 
     pub fn origin_only(original: &'a String) -> Match<'a> {
-        Match::new(Quality(1.0), Substring(0,0), original)
+        Match::new(Quality(1.0), Range{start: 0,end: 0}, original)
     }
 }
 
@@ -51,7 +51,7 @@ pub fn score<'a>(choice: &'a String, query: &String) -> Option<Match<'a>> {
     match compute_match_length(&lower_choice, query) {
         Some((start, match_length)) => {
             let quality = Quality( (query_length / match_length as f32) / choice_length);
-            let substring = Substring(start, start+match_length);
+            let substring = Range {start: start, end: start+match_length};
             Some(Match::new(quality, substring, choice))
         },
         None => None,
