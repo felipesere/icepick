@@ -52,7 +52,5 @@ fn match_length_from(choice: &String, query: &str, beginning: usize) -> Option<u
 }
 
 fn find_first_after(choice: &String, query: char, offset: usize) -> Option<usize> {
-    choice[offset..]
-        .find(query)
-        .map(|index| index + offset)
+    choice.chars().skip(offset).position(|x| x == query).map(|index| index + offset)
 }

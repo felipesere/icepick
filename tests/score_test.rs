@@ -11,6 +11,11 @@ mod test {
        let query_stirng = query.to_string();
        score(&choice_stirng,  &query_stirng)
     }
+    describe! handle_unicode {
+        it "handles unicode correctly" {
+            do_score("./rust/x86_64-apple-darwin/test/run-pass/process-spawn-with-unicode-params-πЯ音æ∞/child.stage2-x86_64-apple-darwin", "he");
+        }
+    }
 
     describe! score_test {
         it "scores_zero_when_the_choice_is_emtpy" {
