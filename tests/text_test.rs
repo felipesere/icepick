@@ -2,7 +2,6 @@
 #![plugin(stainless)]
 #![feature(core)]
 
-extern crate stainless;
 extern crate icepick;
 
 mod test {
