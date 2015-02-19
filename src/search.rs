@@ -109,21 +109,19 @@ impl<'s> Search<'s> {
         let mut new_query = self.query.clone();
         new_query.push_str(input.as_slice());
 
-        let mut heap = SortedResultSet::new(self.visible_limit);
+        let mut result = SortedResultSet::new(self.visible_limit);
         let mut filtered_choices: Vec<&String> = Vec::new();
         Search::iter_matches(new_query.as_slice(), &self.choice_stack.peek(),
                         |matching| {
                                                let quality = matching.quality.to_f32();
                                                let choice = matching.original;
-                                               heap.push(matching.clone(), quality);
+                                               result.push(matching.clone(), quality);
                                                filtered_choices.push(&choice)
                                              });
 
         self.choice_stack.push(filtered_choices);
 
-        let result =  heap.as_sorted_vec();
-
-        Search::new(new_query, self.choice_stack, result, 0, self.visible_limit, self.done)
+        Search::new(new_query, self.choice_stack, result.as_sorted_vec(), 0, self.visible_limit, self.done)
     }
 
     pub fn backspace(mut self) -> Search<'s> {
@@ -132,16 +130,14 @@ impl<'s> Search<'s> {
 
         self.choice_stack.pop();
 
-        let mut heap = SortedResultSet::new(self.visible_limit);
+        let mut result = SortedResultSet::new(self.visible_limit);
         Search::iter_matches(new_query.as_slice(), &self.choice_stack.peek(),
                              |matching| {
                                  let quality = matching.quality.to_f32();
-                                 heap.push(matching, quality)
+                                 result.push(matching, quality)
                              } );
 
-        let result =  heap.as_sorted_vec();
-
-        Search::new(new_query, self.choice_stack, result, 0, self.visible_limit, self.done)
+        Search::new(new_query, self.choice_stack, result.as_sorted_vec(), 0, self.visible_limit, self.done)
     }
 
     fn next_index(&self) -> usize {
