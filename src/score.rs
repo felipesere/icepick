@@ -25,7 +25,7 @@ impl <'a> Match<'a> {
        let start = self.range.start;
        let end = self.range.end;
        let input = self.original;
-       (input[0..start].to_string(),
+       (input[..start].to_string(),
         input[start..end].to_string(),
         input[end..].to_string())
     }
