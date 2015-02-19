@@ -3,7 +3,6 @@
 #![allow(unused_variables)]
 #![allow(unused_mut)]
 
-extern crate stainless;
 extern crate icepick;
 
 mod tests {
