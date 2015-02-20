@@ -5,7 +5,7 @@ extern crate icepick;
 use icepick::search::Search;
 use std::io::prelude::*;
 use std::io::BufReader;
-use std::fs::{File, OpenOptions};
+use std::fs::{OpenOptions};
 use std::path::Path;
 
 

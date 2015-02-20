@@ -32,12 +32,12 @@ mod test {
     describe! score_and_match {
         it "scores_greater_than_zero_and_shows_match" {
             let range =  match_substring("a", "a");
-            assert_eq!(&range[], "a");
+            assert_eq!(&range[..], "a");
         }
 
         it "match_range_ends_in_non_inclusive" {
             let range = match_substring("ana.gemspec", "asp");
-            assert_eq!(&range[], "a.gemsp");
+            assert_eq!(&range[..], "a.gemsp");
         }
     }
 
