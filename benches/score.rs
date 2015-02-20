@@ -8,9 +8,11 @@ use icepick::score;
 fn score(choice: &str, query: &str) -> f32 {
     let choice_stirng = choice.to_string();
     let query_stirng = query.to_string();
-    score::score(&choice_stirng,  &query_stirng)
+    match score::score(&choice_stirng,  &query_stirng) {
+        Some(ref matching) => matching.quality.to_f32(),
+        None => 0.0,
+    }
 }
-
 
 fn get_scores(query: &str, choices: &[&str]) -> Vec<f32> {
     let mut result: Vec<f32> = Vec::new();

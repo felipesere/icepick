@@ -1,3 +1,4 @@
+use ansi_term::Colour::Blue;
 use search::Search;
 use ansi::Ansi;
 use tty::TTY;
@@ -64,6 +65,12 @@ impl <'a> Screen <'a>{
         self.ansi.set_position(line, 0);
 
         match *text {
+            Text::Colored(ref matching) => {
+                let (start, middle, end) = matching.parts();
+                let text = format!("{}{}{}", start, Blue.paint(middle.as_slice()), end);
+                let printable_length = self.printable_length(text.as_slice());
+                self.ansi.print(&text[..printable_length]);
+            }
             Text::Normal(ref text) => {
                 let printable_length = self.printable_length(text);
                 self.ansi.print(&text[..printable_length]);

@@ -23,6 +23,7 @@ doc = false
 
 [dependencies]
 stainless = "0.0.14"
+ansi_term = "0.5.0"
 
 [profile.release]
 opt-level = 3

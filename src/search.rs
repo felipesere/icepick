@@ -1,4 +1,5 @@
 use score;
+use score::Match;
 use sorted_result_set::SortedResultSet;
 use std::slice::SliceExt;
 use std::cmp::min;
@@ -8,7 +9,7 @@ use std::ascii::AsciiExt;
 pub struct Search<'s> {
     pub query: String,
     pub current: usize,
-    pub result: Vec<String>,
+    pub result: Vec<Match<'s>>,
     choice_stack: ChoiceStack<'s>,
     pub visible_limit: usize,
     done: bool,
@@ -52,15 +53,13 @@ impl<'s> Search<'s> {
         let query = initial_search.unwrap_or("".to_string());
 
         let choice_stack = ChoiceStack::new(&choices);
-        let result = Search::copy_items(&choices, visible_limit);
+
+        let result = choices.iter().take(visible_limit).map(|x| Match::with_empty_range(x)).collect();
+
         Search::new(query, choice_stack, result, 0, visible_limit, false)
     }
 
-    fn copy_items(input: &Vec<String>, size: usize) -> Vec<String> {
-        input.iter().take(size).map(|x| x.clone() ).collect()
-    }
-
-    fn new(query: String, choice_stack: ChoiceStack<'s>, result: Vec<String>, index: usize, visible_limit: usize, done: bool) -> Search<'s> {
+    fn new(query: String, choice_stack: ChoiceStack<'s>, result: Vec<Match<'s>>, index: usize, visible_limit: usize, done: bool) -> Search<'s> {
         Search { current: index,
                  query: query,
                  result: result,
@@ -78,23 +77,20 @@ impl<'s> Search<'s> {
     }
 
     pub fn selection(&self) -> Option<String> {
-        self.result.get(self.current)
-                   .map( |t| t.clone())
+        self.result.get(self.current).map( |t| t.original.clone())
     }
 
     fn new_for_index(self, index: usize) -> Search<'s> {
         Search::new(self.query, self.choice_stack, self.result, index,self.visible_limit, self.done)
     }
 
-    pub fn iter_matches<F: FnMut(&'s String, f32)>(query: &str, choices: &Vec<&'s String>, mut f: F) {
+    pub fn iter_matches<F: FnMut(Match<'s>)>(query: &str, choices: &Vec<&'s String>, mut f: F) {
         let lower_query = query.to_ascii_lowercase();
 
         for choice in choices.iter() {
-            let lower_choice = choice.to_ascii_lowercase();
-
-            match score::score(&lower_choice, &lower_query) {
-                0.0     => continue,
-                quality => f(choice, quality),
+            match score::score(&choice, &lower_query) {
+                None     => continue,
+                Some(m) => f(m),
             };
         }
     }
@@ -113,16 +109,19 @@ impl<'s> Search<'s> {
         let mut new_query = self.query.clone();
         new_query.push_str(input.as_slice());
 
-        let mut results = SortedResultSet::new(self.visible_limit);
+        let mut result = SortedResultSet::new(self.visible_limit);
         let mut filtered_choices: Vec<&String> = Vec::new();
         Search::iter_matches(new_query.as_slice(), &self.choice_stack.peek(),
-                        |match_str, quality| {
-                                               results.push(match_str, quality);
-                                               filtered_choices.push(match_str)
+                        |matching| {
+                                               let quality = matching.quality.to_f32();
+                                               let choice = matching.original;
+                                               result.push(matching.clone(), quality);
+                                               filtered_choices.push(&choice)
                                              });
 
         self.choice_stack.push(filtered_choices);
-        Search::new(new_query, self.choice_stack, results.as_sorted_vec(), 0, self.visible_limit, self.done)
+
+        Search::new(new_query, self.choice_stack, result.as_sorted_vec(), 0, self.visible_limit, self.done)
     }
 
     pub fn backspace(mut self) -> Search<'s> {
@@ -131,10 +130,14 @@ impl<'s> Search<'s> {
 
         self.choice_stack.pop();
 
-        let mut results = SortedResultSet::new(self.visible_limit);
-        Search::iter_matches(new_query.as_slice(), &self.choice_stack.peek(), |match_str, quality| results.push(match_str, quality) );
+        let mut result = SortedResultSet::new(self.visible_limit);
+        Search::iter_matches(new_query.as_slice(), &self.choice_stack.peek(),
+                             |matching| {
+                                 let quality = matching.quality.to_f32();
+                                 result.push(matching, quality)
+                             } );
 
-        Search::new(new_query, self.choice_stack, results.as_sorted_vec(), 0, self.visible_limit, self.done)
+        Search::new(new_query, self.choice_stack, result.as_sorted_vec(), 0, self.visible_limit, self.done)
     }
 
     fn next_index(&self) -> usize {

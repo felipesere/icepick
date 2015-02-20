@@ -33,7 +33,10 @@ fn filter_speed(b: &mut Bencher) {
     b.iter(||{
         let mut results = SortedResultSet::new(20);
         Search::iter_matches(query, &f,
-                                |choice, quality| results.push(choice, quality));
+                                |matching| {
+                                    let quality = matching.quality.to_f32();
+                                    results.push(matching, quality)
+                                });
         results
     });
 }

@@ -2,6 +2,7 @@
 #![feature(io, std_misc, core, collections, libc, path)]
 
 extern crate libc;
+extern crate ansi_term;
 
 pub mod score;
 pub mod search;
