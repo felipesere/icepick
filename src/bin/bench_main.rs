@@ -3,11 +3,16 @@
 extern crate icepick;
 
 use icepick::search::Search;
-use std::old_io::{File, BufferedReader};
+use std::io::prelude::*;
+use std::io::BufReader;
+use std::fs::{File, OpenOptions};
+use std::path::Path;
+
+
 
 #[allow(dead_code)]
 fn main() {
-    let lines = read_lines("benches/30000.txt".to_string());
+    let lines = read_lines("benches/30000.txt");
 
     let mut search = Search::blank(&lines, None, 20);
 
@@ -16,13 +21,14 @@ fn main() {
     println!("\n{}", search.selection().unwrap_or("None".to_string()));
 }
 
-fn read_lines(fname: String) -> Vec<String> {
+fn read_lines(fname: &str) -> Vec<String> {
     let path = Path::new(fname);
-    let mut file = BufferedReader::new(File::open(&path));
+    let mut file = BufReader::new(OpenOptions::new().read(true).write(true).open(&path).unwrap());
     let mut result = Vec::new();
     loop {
-        match file.read_line() {
-            Ok(line) => result.push(line),
+        let mut buf = String::new();
+        match file.read_line(&mut buf) {
+            Ok(_) => result.push(buf),
             Err(_) => break,
         }
     }
