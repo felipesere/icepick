@@ -1,7 +1,11 @@
-use std::old_io::{File, Open, ReadWrite, Command};
+use std::io::prelude::*;
+use std::fs::{File, OpenOptions};
+use std::old_io::{Open, ReadWrite, Command};
 use std::old_io::process::StdioContainer;
 use std::os::unix::AsRawFd;
 use libc::{c_ushort, c_int, c_ulong};
+use std::str;
+
 
 pub struct TTY {
     file: File,
@@ -21,16 +25,16 @@ pub trait IO {
 impl IO for TTY {
     fn write(&mut self, line: &str) {
         let it = format!("{}", line);
-        self.file.write_str(it.as_slice()).unwrap();
+        self.file.write(it.as_bytes()).unwrap();
     }
 
     fn read(&mut self) -> Option<String> {
-        let res = match self.file.read_byte() {
-            Ok(c) => {
-                let character = c as char;
-                Some(character.to_string())
+        let mut buffer = [0] ;
+        let res = match self.file.read(&mut buffer) {
+            Ok(c) if  c > 0 => {
+                str::from_utf8(&buffer).ok().map(|x| x.to_string())
             },
-            Err(_) => None,
+            _ => None,
         };
         res
     }
@@ -57,7 +61,7 @@ impl IO for TTY {
 impl TTY {
     pub fn new() -> TTY {
         let path = Path::new("/dev/tty");
-        let file = File::open_mode(&path, Open, ReadWrite).unwrap();
+        let file = OpenOptions::new().read(true).write(true).open(&path).unwrap();
         let dimension = TTY::get_window_size(&file);
         let orig_state = TTY::previous_state(&file);
 
