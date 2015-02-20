@@ -1,4 +1,4 @@
-#![feature(io, path)]
+#![feature(io, path, fs)]
 
 extern crate icepick;
 

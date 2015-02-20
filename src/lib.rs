@@ -1,5 +1,5 @@
 #![allow(missing_copy_implementations)]
-#![feature(io, std_misc, core, collections, libc, path)]
+#![feature(io, std_misc, core, collections, libc, path, fs, process)]
 
 extern crate libc;
 extern crate ansi_term;

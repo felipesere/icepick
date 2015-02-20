@@ -1,4 +1,4 @@
-#![feature(io, env, collections, rustc_private)]
+#![feature(old_io, env, collections, rustc_private)]
 
 extern crate getopts;
 extern crate icepick;
