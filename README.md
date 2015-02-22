@@ -9,7 +9,7 @@ Use it from vim, from the command line, or anywhere you can run a shell command.
 
 Currently requires a rustc nightly and compatible cargo.
 
-Run:
+Clone the repo and then run:
 
 ```
 cargo build --release
