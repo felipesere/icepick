@@ -4,7 +4,6 @@ use std::process::{Command, Stdio};
 use std::os::unix::AsRawFd;
 use libc::{c_ushort, c_int, c_ulong};
 use std::str;
-use std::path::Path;
 
 
 pub struct TTY {
@@ -54,7 +53,7 @@ impl IO for TTY {
     }
 
     fn reset(&self) {
-        TTY::stty(&[self.original_state.as_slice()]);
+        TTY::stty(&self.file, &[self.original_state.as_slice()]);
     }
 }
 
@@ -63,9 +62,9 @@ impl TTY {
         let path = Path::new("/dev/tty");
         let file = OpenOptions::new().read(true).write(true).open(&path).unwrap();
         let dimension = TTY::get_window_size(&file);
-        let orig_state = TTY::previous_state();
+        let orig_state = TTY::previous_state(&file);
 
-        TTY::no_echo_no_escaping();
+        TTY::no_echo_no_escaping(&file);
 
         TTY {
             original_state: orig_state,
@@ -100,16 +99,16 @@ impl TTY {
         }
     }
 
-    fn stty(args: &[&str]) -> Option<String> {
+    fn stty(file: &File, args: &[&str]) -> Option<String> {
         let output = Command::new("stty").args(args).stdin(Stdio::capture()).output().unwrap();
         String::from_utf8(output.stdout).ok()
     }
 
-    fn no_echo_no_escaping() {
-        TTY::stty(&["-echo", "-icanon"]);
+    fn no_echo_no_escaping(file: &File) {
+        TTY::stty(file, &["-echo", "-icanon"]);
     }
 
-    fn previous_state() -> String {
-        TTY::stty(&["-g"]).unwrap_or("".to_string())
+    fn previous_state(file: &File) -> String {
+        TTY::stty(file, &["-g"]).unwrap_or("".to_string())
     }
 }
