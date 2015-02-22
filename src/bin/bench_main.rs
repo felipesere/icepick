@@ -23,13 +23,15 @@ fn main() {
 
 fn read_lines(fname: &str) -> Vec<String> {
     let path = Path::new(fname);
-    let mut file = BufReader::new(OpenOptions::new().read(true).write(true).open(&path).unwrap());
+    let mut file = BufReader::new(OpenOptions::new().read(true).open(&path).unwrap());
     let mut result = Vec::new();
     loop {
         let mut buf = String::new();
         match file.read_line(&mut buf) {
-            Ok(_) => result.push(buf),
-            Err(_) => break,
+            Ok(_) if buf.len() > 0  => {
+                result.push(buf);
+            },
+            _ => break,
         }
     }
     result
