@@ -42,7 +42,7 @@ If you have an idea to improve performance, run `cargo bench` and see how the re
 
 ## Contributors:
 
-felipesere
-heruku
-carols10cents
+@felipesere
+@heruku
+@carols10cents
 
