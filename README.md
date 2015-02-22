@@ -36,13 +36,13 @@ For more uses see [the original Ruby implementation](https://github.com/garybern
 * Open a pull request
 
 All kinds of fixes and improvements are welcome, from improvements in the algorithm to more idomatic rust or documentation improvement.
+Even adding an issue for something that is broken is awesome!
 
 If you have an idea to improve performance, run `cargo bench` and see how the results compare.
 
-
 ## Contributors:
 
-@felipesere
-@heruku
-@carols10cents
+felipesere
+heruku
+carols10cents
 
