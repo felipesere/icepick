@@ -3,7 +3,7 @@ name = "icepick"
 version = "0.0.1"
 dependencies = [
  "ansi_term 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "stainless 0.0.14 (registry+https://github.com/rust-lang/crates.io-index)",
+ "stainless 0.0.14 (git+https://github.com/reem/stainless)",
 ]
 
 [[package]]
@@ -14,5 +14,5 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "stainless"
 version = "0.0.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
+source = "git+https://github.com/reem/stainless#112d5565bf668271fdca902806f0ccbd0fa57d34"
 
