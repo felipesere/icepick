@@ -38,7 +38,7 @@ mod tests {
         let choices = vec!["one".to_string(),
                            "two".to_string(),
                            "three".to_string()];
-        let  search = Search::blank(&choices, None, 20);
+        let search = Search::blank(&choices, None, 20);
 
         assert_eq!(search.down().down().down().down().selection(), Some("two".to_string()));
     }
@@ -48,7 +48,7 @@ mod tests {
         let choices = vec!["one".to_string(),
                            "two".to_string(),
                            "three".to_string()];
-        let  search = Search::blank(&choices, None, 20);
+        let search = Search::blank(&choices, None, 20);
 
         assert_eq!(search.up().up().selection(), Some("two".to_string()));
     }
@@ -58,7 +58,7 @@ mod tests {
         let choices = vec!["one".to_string(),
         "two".to_string(),
         "three".to_string()];
-        let  search = Search::blank(&choices, None, 20);
+        let search = Search::blank(&choices, None, 20);
 
         assert_eq!(search.down().down().down().down().selection(), Some("two".to_string()));
     }
@@ -68,7 +68,7 @@ mod tests {
         let choices = vec!["one".to_string(),
         "two".to_string(),
         "three".to_string()];
-        let  search = Search::blank(&choices, None, 20);
+        let search = Search::blank(&choices, None, 20);
 
         assert_eq!(search.append_to_search("t").down().selection(), Some("three".to_string()));
     }
@@ -78,7 +78,7 @@ mod tests {
         let choices = vec!["one".to_string(),
         "two".to_string(),
         "three".to_string()];
-        let  search = Search::blank(&choices, None, 20);
+        let search = Search::blank(&choices, None, 20);
 
         assert_eq!(search.append_to_search("t").append_to_search("w").selection(), Some("two".to_string()));
     }
@@ -88,15 +88,18 @@ mod tests {
         let choices = vec!["one".to_string(),
         "two".to_string(),
         "three".to_string()];
-        let  search = Search::blank(&choices, None, 20);
+        let search = Search::blank(&choices, None, 20);
 
         assert_eq!(search.append_to_search("x").selection(), None);
     }
 
     #[test]
     fn up_match_nothing_after_filtering_all_out() {
-        let choices = vec!["one".to_string(), "two".to_string(), "three".to_string()];
-        let  search = Search::blank(&choices, None, 20);
+        let choices = vec!["one".to_string(), 
+                           "two".to_string(), 
+                           "three".to_string()];
+
+        let search = Search::blank(&choices, None, 20);
 
         assert_eq!(search.append_to_search("x").up().selection(), None);
     }
@@ -106,7 +109,7 @@ mod tests {
         let choices = vec!["one".to_string(),
         "two".to_string(),
         "three".to_string()];
-        let  search = Search::blank(&choices, None, 20);
+        let search = Search::blank(&choices, None, 20);
 
         assert_eq!(search.append_to_search("x").down().selection(), None);
     }
@@ -129,7 +132,7 @@ mod tests {
         let choices = vec!["one".to_string(),
         "two".to_string(),
         "three".to_string()];
-        let  search = Search::blank(&choices, None, 20);
+        let search = Search::blank(&choices, None, 20);
 
         assert_eq!(search.append_to_search("e").down().backspace().current, 0);
     }
@@ -139,7 +142,7 @@ mod tests {
         let choices = vec!["one".to_string(),
         "two".to_string(),
         "three".to_string()];
-        let  search = Search::blank(&choices, None, 20);
+        let search = Search::blank(&choices, None, 20);
 
         assert_eq!(search.down().append_to_search("o").current, 0);
     }
@@ -149,7 +152,7 @@ mod tests {
         let choices = vec!["one".to_string(),
         "two".to_string(),
         "three".to_string()];
-        let  search = Search::blank(&choices, None, 20);
+        let search = Search::blank(&choices, None, 20);
 
         assert_eq!(search.append_to_search("t").backspace().num_matches(), 3);
     }
@@ -159,7 +162,7 @@ mod tests {
         let choices = vec!["one".to_string(),
         "two".to_string(),
         "three".to_string()];
-        let  search = Search::blank(&choices, None, 20);
+        let search = Search::blank(&choices, None, 20);
 
         assert!(!search.is_done());
     }
@@ -169,7 +172,7 @@ mod tests {
         let choices = vec!["one".to_string(),
         "two".to_string(),
         "three".to_string()];
-        let  search = Search::blank(&choices, None, 20);
+        let search = Search::blank(&choices, None, 20);
 
         search.backspace();
     }
@@ -179,7 +182,7 @@ mod tests {
         let choices = vec!["one".to_string(),
         "two".to_string(),
         "three".to_string()];
-        let  search = Search::blank(&choices, None, 20);
+        let search = Search::blank(&choices, None, 20);
 
         assert!(search.done().is_done());
     }
@@ -189,7 +192,7 @@ mod tests {
         let choices = vec!["one".to_string(),
         "two".to_string(),
         "three".to_string()];
-        let  search = Search::blank(&choices, None, 20);
+        let search = Search::blank(&choices, None, 20);
 
         assert_eq!(search.done().selection(), Some("one".to_string()));
     }
@@ -197,7 +200,7 @@ mod tests {
     #[test]
     fn loop_around_when_reaching_bottom_of_choices() {
         let choices = vec!["one".to_string(), "two".to_string(), "three".to_string()];
-        let  search = Search::blank(&choices, None, 20);
+        let search = Search::blank(&choices, None, 20);
 
         assert_eq!(search.append_to_search("n").down().selection(), Some("one".to_string()));
     }
@@ -207,7 +210,7 @@ mod tests {
         let choices = vec!["one".to_string(),
         "two".to_string(),
         "three".to_string()];
-        let  search = Search::blank(&choices, None, 20);
+        let search = Search::blank(&choices, None, 20);
 
         assert_eq!(search.append_to_search("n").up().selection(), Some("one".to_string()));
     }
@@ -217,7 +220,7 @@ mod tests {
         let choices = vec!["one".to_string(),
         "two".to_string(),
         "three".to_string()];
-        let  search = Search::blank(&choices, None, 20);
+        let search = Search::blank(&choices, None, 20);
 
         assert_eq!(search.append_to_search("T").num_matches(), 2);
     }

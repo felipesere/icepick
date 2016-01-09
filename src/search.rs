@@ -1,7 +1,6 @@
 use score;
 use score::Match;
 use sorted_result_set::SortedResultSet;
-use std::cmp::min;
 use std::ascii::AsciiExt;
 
 #[derive(Debug)]
@@ -140,25 +139,26 @@ impl<'s> Search<'s> {
     }
 
     fn next_index(&self) -> usize {
-        let next_index = self.current + 1;
-
-        if next_index >= self.actual_limit() {
+        // TODO: fix this!
+        // current is an index -> zero based
+        // num_matches is a length -> 1 based
+        if self.num_matches() == 0 {
+            0
+        } else if self.current == self.num_matches()-1 {
             0
         } else {
-            next_index
+            self.current+1
         }
     }
 
     fn prev_index(&self) -> usize {
-        if self.current == 0 {
-            self.actual_limit() - 1
+        if self.num_matches() == 0 {
+            0
+        } else if self.current == 0 {
+            self.num_matches() -1
         } else {
-            self.current - 1
+            self.current-1
         }
-    }
-
-    fn actual_limit(&self) -> usize {
-        min(self.visible_limit, self.num_matches())
     }
 
     pub fn num_matches(&self) -> usize {
