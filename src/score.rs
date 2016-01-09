@@ -48,6 +48,8 @@ pub fn score<'a>(choice: &'a String, query: &String) -> Option<Match<'a>> {
     if query_length == 0.0 { return Some(Match::with_empty_range(choice)) }
     let lower_choice = choice.to_ascii_lowercase();
 
+
+    // TODO convert this over to compute_match_length(...).map(...)
     match compute_match_length(&lower_choice, query) {
         Some((start, match_length)) => {
             let quality = Quality( (query_length / match_length as f32) / choice_length);
@@ -58,11 +60,23 @@ pub fn score<'a>(choice: &'a String, query: &String) -> Option<Match<'a>> {
     }
 }
 
+fn slice_shift_char(line: &str) -> Option<(char, &str)> {
+    if line.is_empty() {
+        None
+    } else {
+        let mut chars = line.chars();
+        let ch = chars.next().unwrap();
+        let len = line.len();
+        let next_s = &line[ch.len_utf8().. len];
+        Some((ch, next_s))
+    }
+}
+
 fn compute_match_length(choice: &String, query: &String) -> Option<(usize, usize)> {
     if query.len() == 0 {
         return None;
     }
-    let (first, rest) = query.slice_shift_char().unwrap();
+    let (first, rest) = slice_shift_char(query).unwrap();
 
     let impossible_match = choice.len() + 1;
     let mut shortest_match = impossible_match;

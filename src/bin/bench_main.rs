@@ -1,5 +1,3 @@
-#![feature(io, path, fs)]
-
 extern crate icepick;
 
 use icepick::search::Search;

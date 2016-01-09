@@ -7,7 +7,7 @@ pub struct Ansi<'a> {
 impl <'a> Ansi<'a> {
     pub fn escape(&mut self, message: &str) {
         let out = Ansi::esc(message);
-        self.io.write(out.as_slice());
+        self.io.write(out.as_ref());
     }
 
     fn esc(input: &str) -> String {
@@ -28,12 +28,12 @@ impl <'a> Ansi<'a> {
 
     pub fn set_position(&mut self, line: usize, column: usize) {
         let message = format!("{};{}H", line + 1, column + 1);
-        self.escape(message.as_slice());
+        self.escape(message.as_ref());
     }
 
     pub fn inverted(&mut self, line: &str) {
         let compound = format!("{}{}{}", Ansi::esc("7m"), line, Ansi::esc("0m"));
-        self.io.write(compound.as_slice());
+        self.io.write(compound.as_ref());
     }
 
     pub fn print(&mut self, line: &str) {

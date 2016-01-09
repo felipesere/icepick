@@ -1,10 +1,7 @@
-#![feature(plugin)]
-#![plugin(stainless)]
-#![feature(core)]
-
 extern crate icepick;
 
-mod test {
+#[cfg(tests)]
+mod tests {
     pub use icepick::text::Text;
 
     describe! text_test {

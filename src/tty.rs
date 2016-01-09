@@ -1,8 +1,9 @@
 use std::io::prelude::*;
 use std::fs::{File, OpenOptions};
-use std::old_io::{Command};
-use std::old_io::process::StdioContainer;
-use std::os::unix::AsRawFd;
+use std::process::Command;
+use std::process::Stdio;
+use std::path::Path;
+use std::os::unix::prelude::AsRawFd;
 use libc::{c_ushort, c_int, c_ulong};
 use std::str;
 
@@ -54,7 +55,7 @@ impl IO for TTY {
     }
 
     fn reset(&self) {
-        TTY::stty(&self.file, &[self.original_state.as_slice()]);
+        TTY::stty(&self.file, &[self.original_state.as_ref()]);
     }
 }
 
@@ -101,9 +102,11 @@ impl TTY {
     }
 
     fn stty(file: &File, args: &[&str]) -> Option<String> {
-        let container = StdioContainer::InheritFd(file.as_raw_fd());
+        // let container = StdioContainer::InheritFd(file.as_raw_fd());
+        let container = Stdio::inherit();
+
         let output = Command::new("stty").args(args).stdin(container).output().unwrap();
-        String::from_utf8(output.output).ok()
+        String::from_utf8(output.stdout).ok()
     }
 
     fn no_echo_no_escaping(file: &File) {

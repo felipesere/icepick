@@ -1,10 +1,9 @@
-#![feature(old_io, env, collections, rustc_private)]
-
 extern crate getopts;
 extern crate icepick;
 
-use getopts::{optopt,getopts};
-use std::old_io::stdio;
+use getopts::Options;
+use std::io::BufRead;
+use std::io;
 
 use icepick::screen::Screen;
 
@@ -22,10 +21,13 @@ fn main() {
 
 fn extract_initial_query() -> Option<String> {
     let args: Vec<String> = get_args();
-    let opts = &[
-        optopt("s", "search", "initial search query", ""),
-    ];
-    let matches = getopts(args.tail(), opts).unwrap();
+    let mut opts = Options::new();
+    opts.optopt("s", "search", "initial search query", "");
+
+    let matches = match opts.parse(&args[1..]) {
+        Ok(m) => { m }
+        Err(f) => { panic!(f.to_string()) }
+    };
 
     matches.opt_str("s")
 }
@@ -35,9 +37,10 @@ fn get_args() -> Vec<String> {
 }
 
 fn read_lines() -> Vec<String> {
-    let mut stdin = stdio::stdin();
-    let mut reader = stdin.lock();
-    reader.lines().map( |line| {
+    let stdin = io::stdin();
+    let reader = stdin.lock();
+    let l = reader.lines().map( |line| {
         line.unwrap().trim().to_string()
-    }).collect()
+    }).collect();
+    l
 }

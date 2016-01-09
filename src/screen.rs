@@ -51,7 +51,7 @@ impl <'a> Screen <'a>{
         let result = renderer.render(search);
         self.ansi.hide_cursor();
 
-        let start_line = self.height - search.visible_limit - 1;
+        let start_line = self.height - search.visible_limit;
 
         for (idx, text) in result.iter().enumerate() {
             self.write(start_line + idx, text);
@@ -67,8 +67,8 @@ impl <'a> Screen <'a>{
         match *text {
             Text::Colored(ref matching) => {
                 let (start, middle, end) = matching.parts();
-                let text = format!("{}{}{}", start, Blue.paint(middle.as_slice()), end);
-                let printable_length = self.printable_length(text.as_slice());
+                let text = format!("{}{}{}", start, Blue.paint(middle.as_ref()), end);
+                let printable_length = self.printable_length(text.as_ref());
                 self.ansi.print(&text[..printable_length]);
             }
             Text::Normal(ref text) => {
@@ -79,7 +79,7 @@ impl <'a> Screen <'a>{
                 let printable_length = self.printable_length(text);
                 self.ansi.inverted(&text[..printable_length]);
             }
-            Text::Blank => self.ansi.print("".as_slice()),
+            Text::Blank => self.ansi.print("".as_ref()),
         };
     }
 
@@ -112,7 +112,7 @@ impl <'a> Screen <'a>{
             let input = self.ansi.io.read();
             match input {
                 Some(character) => {
-                    search = self.handle_keystroke(search, character.as_slice());
+                    search = self.handle_keystroke(search, character.as_ref());
                 },
                 None => break,
             };

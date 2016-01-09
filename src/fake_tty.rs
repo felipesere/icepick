@@ -36,7 +36,7 @@ impl IO for FakeIO {
    }
 
    fn last(&self) -> &str {
-       self.last.as_slice()
+       self.last.as_ref()
    }
 
    fn dimensions(&self) -> (usize, usize) {

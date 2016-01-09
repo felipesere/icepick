@@ -1,7 +1,6 @@
 use score;
 use score::Match;
 use sorted_result_set::SortedResultSet;
-use std::slice::SliceExt;
 use std::cmp::min;
 use std::ascii::AsciiExt;
 
@@ -107,11 +106,11 @@ impl<'s> Search<'s> {
 
     pub fn append_to_search(mut self, input: &str) -> Search<'s> {
         let mut new_query = self.query.clone();
-        new_query.push_str(input.as_slice());
+        new_query.push_str(input.as_ref());
 
         let mut result = SortedResultSet::new(self.visible_limit);
         let mut filtered_choices: Vec<&String> = Vec::new();
-        Search::iter_matches(new_query.as_slice(), &self.choice_stack.peek(),
+        Search::iter_matches(new_query.as_ref(), &self.choice_stack.peek(),
                         |matching| {
                                                let quality = matching.quality.to_f32();
                                                let choice = matching.original;
@@ -131,7 +130,7 @@ impl<'s> Search<'s> {
         self.choice_stack.pop();
 
         let mut result = SortedResultSet::new(self.visible_limit);
-        Search::iter_matches(new_query.as_slice(), &self.choice_stack.peek(),
+        Search::iter_matches(new_query.as_ref(), &self.choice_stack.peek(),
                              |matching| {
                                  let quality = matching.quality.to_f32();
                                  result.push(matching, quality)

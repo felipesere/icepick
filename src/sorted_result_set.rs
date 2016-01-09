@@ -18,7 +18,7 @@ impl<T:Clone> SortedResultSet<T> {
         let result = ScoreResult { quality: quality, choice: choice};
 
         if self.is_full() {
-            self.results.push_pop(result);
+            self.push_pop(result);
         } else {
             self.results.push(result);
         }
@@ -31,7 +31,13 @@ impl<T:Clone> SortedResultSet<T> {
     pub fn as_sorted_vec(self) -> Vec<T> {
         self.results.into_sorted_vec().iter().map(|score_result| score_result.choice.clone()).collect()
     }
+
+    fn push_pop(&mut self, result: ScoreResult<T>) {
+        self.results.pop();
+        self.results.push(result);
+    }
 }
+
 
 pub struct ScoreResult<T> {
     pub quality: f32,
