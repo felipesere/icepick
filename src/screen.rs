@@ -53,18 +53,18 @@ impl <'a> Screen <'a>{
 
         let start_line = self.height - search.visible_limit;
 
-        for (idx, text) in result.iter().enumerate() {
+        for (idx, text) in result.into_iter().enumerate() {
             self.write(start_line + idx, text);
         };
         self.ansi.set_position(start_line, renderer.header(search).len());
         self.ansi.show_cursor();
     }
 
-    pub fn write(&mut self, line: usize, text: &Text) {
+    pub fn write(&mut self, line: usize, text: Text) {
         self.ansi.blank_line(line);
         self.ansi.set_position(line, 0);
 
-        match *text {
+        match text {
             Text::Colored(ref matching) => {
                 let (start, middle, end) = matching.parts();
                 let text = format!("{}{}{}", start, Blue.paint(middle.as_ref()), end);
