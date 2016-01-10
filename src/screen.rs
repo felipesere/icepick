@@ -65,7 +65,7 @@ impl <'a> Screen <'a>{
         self.ansi.blank_line(line);
         self.ansi.set_position(line, 0);
 
-        text.print(&mut self.ansi, self.width);
+        text.print(&mut self.ansi);
     }
 
     pub fn clear(&mut self, lines: usize) {
@@ -80,10 +80,6 @@ impl <'a> Screen <'a>{
 
     pub fn move_cursor_to_end(&mut self) {
         self.ansi.set_position(self.height - 1, 0);
-    }
-
-    fn printable_length(&self, text: &str) -> usize {
-        min(text.len(), self.width)
     }
 
     pub fn run_search(&mut self, lines: Vec<String>, initial_query: Option<String>) -> Option<String> {

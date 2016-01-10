@@ -25,8 +25,12 @@ pub trait IO {
 
 impl IO for TTY {
     fn write(&mut self, line: &str) {
-        let it = format!("{}", line);
-        self.file.write(it.as_bytes()).unwrap();
+
+        let it = self.trim(line);
+        match self.file.write(it.as_bytes()) {
+            Ok(k) => { k },
+            Err(e) => { panic!(e.to_string()) }
+        };
     }
 
     fn read(&mut self) -> Option<String> {
@@ -75,7 +79,10 @@ impl TTY {
         }
     }
 
-    fn get_window_size(path: &File) -> (usize, usize) {
+    fn trim(&self, line: &str) -> String {
+        let actual = min(line.len(), self.dimensions.0);
+        line[..actual].into()
+    }
         extern {
             fn ioctl(fd: c_int, request: c_ulong, ...) -> c_int;
         }

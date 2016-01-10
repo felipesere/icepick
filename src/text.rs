@@ -1,6 +1,5 @@
 use score::Match;
 use ansi::Ansi;
-use std::cmp::min;
 use ansi_term::Colour::Blue;
 
 #[derive(PartialEq, Debug)]
@@ -18,34 +17,27 @@ impl<'a> Text<'a> {
             _ => panic!("only normal is plrintable?")
         }
     }
-
-    fn printable_length(&self, text: &str, max_width: usize) -> usize {
-        min(text.len(), max_width)
-    }
 }
 
 pub trait Printable {
-    fn print(self, ansi: &mut Ansi, max_width: usize);
+    fn print(self, ansi: &mut Ansi);
 }
 
 impl <'a> Printable for Text<'a> {
-    fn print(self, ansi: &mut Ansi , max_width: usize) {
+    fn print(self, ansi: &mut Ansi) {
         match self {
             Text::Colored(ref matching) => {
                 let (start, middle, end) = matching.parts();
                 let text = format!("{}{}{}", start, Blue.paint(middle.as_ref()), end);
-                let printable_length = self.printable_length(text.as_ref(), max_width);
-                ansi.print(&text[..printable_length]);
+                ansi.print(&text);
             }
             Text::Normal(ref text) => {
-                let printable_length = self.printable_length(text, max_width);
-                ansi.print(&text[..printable_length]);
+                ansi.print(&text);
             }
             Text::Highlight(ref text) => {
-                let printable_length = self.printable_length(text, max_width);
-                ansi.inverted(&text[..printable_length]);
+                ansi.inverted(&text);
             }
-            Text::Blank => ansi.print("".as_ref()),
+            Text::Blank => ansi.print(""),
         };
     }
 }
