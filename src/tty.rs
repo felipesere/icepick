@@ -6,6 +6,8 @@ use std::path::Path;
 use std::os::unix::prelude::AsRawFd;
 use libc::{c_ushort, c_int, c_ulong};
 use std::str;
+use std::os::unix::prelude::FromRawFd;
+use std::cmp::min;
 
 
 pub struct TTY {
@@ -66,7 +68,7 @@ impl IO for TTY {
 impl TTY {
     pub fn new() -> TTY {
         let path = Path::new("/dev/tty");
-        let file = OpenOptions::new().read(true).write(true).open(&path).unwrap();
+        let file = OpenOptions::new().read(true).write(true).append(true).open(&path).unwrap();
         let dimension = TTY::get_window_size(&file);
         let orig_state = TTY::previous_state(&file);
 
@@ -83,6 +85,8 @@ impl TTY {
         let actual = min(line.len(), self.dimensions.0);
         line[..actual].into()
     }
+
+    fn get_window_size(file: &File) -> (usize, usize) {
         extern {
             fn ioctl(fd: c_int, request: c_ulong, ...) -> c_int;
         }
@@ -101,7 +105,7 @@ impl TTY {
         }
 
         let size = TermSize { rows: 0, cols: 0, x: 0, y: 0 };
-        if unsafe { ioctl(path.as_raw_fd(), TIOCGWINSZ, &size) } == 0 {
+        if unsafe { ioctl(file.as_raw_fd(), TIOCGWINSZ, &size) } == 0 {
             (size.cols as usize, size.rows as usize)
         } else {
             panic!("Could not read winsize from /dev/tty")
@@ -109,11 +113,14 @@ impl TTY {
     }
 
     fn stty(file: &File, args: &[&str]) -> Option<String> {
-        // let container = StdioContainer::InheritFd(file.as_raw_fd());
-        let container = Stdio::inherit();
-
-        let output = Command::new("stty").args(args).stdin(container).output().unwrap();
-        String::from_utf8(output.stdout).ok()
+        unsafe {
+            let raw_fd = file.as_raw_fd();
+            let stdin =  Stdio::from_raw_fd(raw_fd);
+            match Command::new("stty").args(args).stdin(stdin).output() {
+                Err(k) => { panic!("something got fucked when reading stty") }
+                Ok(output) => { String::from_utf8(output.stdout).ok() }
+            }
+        }
     }
 
     fn no_echo_no_escaping(file: &File) {

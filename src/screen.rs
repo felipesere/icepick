@@ -1,4 +1,3 @@
-use ansi_term::Colour::Blue;
 use search::Search;
 use ansi::Ansi;
 use tty::TTY;
