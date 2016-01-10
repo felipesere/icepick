@@ -12,7 +12,7 @@ impl<'a> Text<'a> {
     pub fn printable(self) -> String {
         match self {
             Text::Normal(t) => t,
-            _ => "fail".to_string(),
+            _ => panic!("only normal is plrintable?")
         }
     }
 }
