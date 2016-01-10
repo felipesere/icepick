@@ -1,6 +1,6 @@
 extern crate icepick;
 
-#[cfg(tests)]
+#[cfg(test)]
 mod tests {
     use icepick::score;
     use icepick::score::Match;

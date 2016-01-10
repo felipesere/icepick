@@ -1,6 +1,6 @@
 extern crate icepick;
 
-#[cfg(tests)]
+#[cfg(test)]
 mod tests {
     pub use icepick::search::Search;
     pub use icepick::text::Text;

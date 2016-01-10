@@ -9,7 +9,7 @@ mod tests {
     #[test]
     fn moves_the_selection_down_for_ctrl_n() {
         let choices = vec!["one".to_string(), "two".to_string()];
-        let mut screen = Screen::fake();
+        let screen = Screen::fake();
 
         let search = Search::blank(&choices, None, 10);
         let result = screen.handle_keystroke(search, "\u{e}");
@@ -19,7 +19,7 @@ mod tests {
     #[test]
     fn moves_the_selection_up_for_ctrl_p() {
         let choices = vec!["one".to_string(), "two".to_string()];
-        let mut screen = Screen::fake();
+        let screen = Screen::fake();
 
         let search = Search::blank(&choices, None, 10).down();
         let result = screen.handle_keystroke(search, "\u{10}");
@@ -29,7 +29,7 @@ mod tests {
     #[test]
     fn removes_the_last_character_for_delete() {
         let choices = vec!["one".to_string(), "two".to_string()];
-        let mut screen = Screen::fake();
+        let screen = Screen::fake();
 
         let search = Search::blank(&choices, None, 10).append_to_search("w").append_to_search("x");
         let result = screen.handle_keystroke(search, "\u{7f}");
@@ -39,7 +39,7 @@ mod tests {
     #[test]
     fn marks_a_search_as_done_for_enter() {
         let choices = vec!["one".to_string(), "two".to_string()];
-        let mut screen = Screen::fake();
+        let screen = Screen::fake();
 
         let search = Search::blank(&choices, None, 10);
         let result = screen.handle_keystroke(search, "\n");
@@ -48,7 +48,6 @@ mod tests {
 
     #[test]
     fn blanks_amount_of_lines() {
-        let choices = vec!["one".to_string(), "two".to_string()];
         let mut screen = Screen::fake();
 
         screen.clear(4);
@@ -61,9 +60,8 @@ mod tests {
     #[test]
     fn test_run_search_and_look_for_t() {
         let choices = vec!["one".to_string(), "two".to_string()];
-        let mut screen = Screen::fake();
+        let mut screen = Screen::fake_with_input(vec!["t"]);
 
-        screen = Screen::fake_with_input(vec!["t"]);
         let result = screen.run_search(choices, None);
         assert_eq!(result.unwrap(), "two")
     }
@@ -71,9 +69,7 @@ mod tests {
     #[test]
     fn run_search_immediatly_done() {
         let choices = vec!["one".to_string(), "two".to_string()];
-        let mut screen = Screen::fake();
-
-        screen = Screen::fake_with_input(vec!["\n"]);
+        let mut screen = Screen::fake_with_input(vec!["\n"]);
         let result = screen.run_search(choices, None);
         assert_eq!(result.unwrap(), "one")
     }
