@@ -113,10 +113,12 @@ impl TTY {
     }
 
     fn stty(file: &File, args: &[&str]) -> Option<String> {
+        extern { fn dup2(src: c_int, dst: c_int) -> c_int;  }
         unsafe {
+            // This is a hack until a replacement for InheritFd from old_io is available.
             let raw_fd = file.as_raw_fd();
-            let stdin =  Stdio::from_raw_fd(raw_fd);
-            match Command::new("stty").args(args).stdin(stdin).output() {
+            dup2(raw_fd, 0);
+            match Command::new("stty").args(args).stdin(Stdio::inherit()).output() {
                 Err(k) => { panic!("something got fucked when reading stty") }
                 Ok(output) => { String::from_utf8(output.stdout).ok() }
             }
