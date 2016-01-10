@@ -142,9 +142,7 @@ impl<'s> Search<'s> {
         // TODO: fix this!
         // current is an index -> zero based
         // num_matches is a length -> 1 based
-        if self.num_matches() == 0 {
-            0
-        } else if self.current == self.num_matches()-1 {
+        if self.current + 1 == self.num_matches() {
             0
         } else {
             self.current+1
@@ -155,7 +153,7 @@ impl<'s> Search<'s> {
         if self.num_matches() == 0 {
             0
         } else if self.current == 0 {
-            self.num_matches() -1
+            self.num_matches() - 1
         } else {
             self.current-1
         }
