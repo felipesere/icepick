@@ -6,7 +6,6 @@ use std::path::Path;
 use std::os::unix::prelude::AsRawFd;
 use libc::{c_ushort, c_int, c_ulong};
 use std::str;
-use std::os::unix::prelude::FromRawFd;
 use std::cmp::min;
 
 
@@ -119,7 +118,7 @@ impl TTY {
             let raw_fd = file.as_raw_fd();
             dup2(raw_fd, 0);
             match Command::new("stty").args(args).stdin(Stdio::inherit()).output() {
-                Err(k) => { panic!("something got fucked when reading stty") }
+                Err(k) => { panic!(k.to_string()) }
                 Ok(output) => { String::from_utf8(output.stdout).ok() }
             }
         }
