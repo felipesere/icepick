@@ -6,6 +6,7 @@ use fake_tty::FakeIO;
 use renderer::Renderer;
 use text::Text;
 use std::cmp::min;
+use text::Printable;
 
 pub struct Screen <'a> {
     pub ansi: Ansi<'a>,
@@ -64,23 +65,7 @@ impl <'a> Screen <'a>{
         self.ansi.blank_line(line);
         self.ansi.set_position(line, 0);
 
-        match text {
-            Text::Colored(ref matching) => {
-                let (start, middle, end) = matching.parts();
-                let text = format!("{}{}{}", start, Blue.paint(middle.as_ref()), end);
-                let printable_length = self.printable_length(text.as_ref());
-                self.ansi.print(&text[..printable_length]);
-            }
-            Text::Normal(ref text) => {
-                let printable_length = self.printable_length(text);
-                self.ansi.print(&text[..printable_length]);
-            }
-            Text::Highlight(ref text) => {
-                let printable_length = self.printable_length(text);
-                self.ansi.inverted(&text[..printable_length]);
-            }
-            Text::Blank => self.ansi.print("".as_ref()),
-        };
+        text.print(&mut self.ansi, self.width);
     }
 
     pub fn clear(&mut self, lines: usize) {
@@ -110,6 +95,7 @@ impl <'a> Screen <'a>{
         while !search.is_done() {
             self.print(&search);
             let input = self.ansi.io.read();
+
             match input {
                 Some(character) => {
                     search = self.handle_keystroke(search, character.as_ref());
