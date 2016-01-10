@@ -10,15 +10,6 @@ pub enum Text<'a> {
     Blank,
 }
 
-impl<'a> Text<'a> {
-    pub fn printable(self) -> String {
-        match self {
-            Text::Normal(t) => t,
-            _ => panic!("only normal is plrintable?")
-        }
-    }
-}
-
 pub trait Printable {
     fn print(self, ansi: &mut Ansi);
 }
