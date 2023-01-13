@@ -1,7 +1,6 @@
-use score;
-use score::Match;
-use sorted_result_set::SortedResultSet;
-use std::ascii::AsciiExt;
+use crate::score;
+use crate::score::Match;
+use crate::sorted_result_set::SortedResultSet;
 
 #[derive(Debug)]
 pub struct Search<'s> {
@@ -18,11 +17,13 @@ struct ChoiceStack<'s> {
     content: Vec<Vec<&'s String>>,
 }
 
-impl <'s>ChoiceStack<'s> {
+impl<'s> ChoiceStack<'s> {
     pub fn new(input: &'s Vec<String>) -> ChoiceStack<'s> {
         let initial_choices = input.iter().map(|x| x).collect();
 
-        ChoiceStack { content: vec![initial_choices] }
+        ChoiceStack {
+            content: vec![initial_choices],
+        }
     }
 
     pub fn push(&mut self, frame: Vec<&'s String>) {
@@ -45,25 +46,40 @@ impl <'s>ChoiceStack<'s> {
 }
 
 impl<'s> Search<'s> {
-    pub fn blank(choices: &'s Vec<String>,
-                 initial_search: Option<String>,
-                 visible_limit: usize) -> Search<'s> {
+    pub fn blank(
+        choices: &'s Vec<String>,
+        initial_search: Option<String>,
+        visible_limit: usize,
+    ) -> Search<'s> {
         let query = initial_search.unwrap_or("".to_string());
 
         let choice_stack = ChoiceStack::new(&choices);
 
-        let result = choices.iter().take(visible_limit).map(|x| Match::with_empty_range(x)).collect();
+        let result = choices
+            .iter()
+            .take(visible_limit)
+            .map(|x| Match::with_empty_range(x))
+            .collect();
 
         Search::new(query, choice_stack, result, 0, visible_limit, false)
     }
 
-    fn new(query: String, choice_stack: ChoiceStack<'s>, result: Vec<Match<'s>>, index: usize, visible_limit: usize, done: bool) -> Search<'s> {
-        Search { current: index,
-                 query: query,
-                 result: result,
-                 choice_stack: choice_stack,
-                 visible_limit: visible_limit,
-                 done: done}
+    fn new(
+        query: String,
+        choice_stack: ChoiceStack<'s>,
+        result: Vec<Match<'s>>,
+        index: usize,
+        visible_limit: usize,
+        done: bool,
+    ) -> Search<'s> {
+        Search {
+            current: index,
+            query: query,
+            result: result,
+            choice_stack: choice_stack,
+            visible_limit: visible_limit,
+            done: done,
+        }
     }
 
     pub fn is_done(&self) -> bool {
@@ -71,15 +87,29 @@ impl<'s> Search<'s> {
     }
 
     pub fn done(self) -> Search<'s> {
-        Search::new(self.query, self.choice_stack, self.result, self.current, self.visible_limit, true)
+        Search::new(
+            self.query,
+            self.choice_stack,
+            self.result,
+            self.current,
+            self.visible_limit,
+            true,
+        )
     }
 
     pub fn selection(&self) -> Option<String> {
-        self.result.get(self.current).map( |t| t.original.clone())
+        self.result.get(self.current).map(|t| t.original.clone())
     }
 
     fn new_for_index(self, index: usize) -> Search<'s> {
-        Search::new(self.query, self.choice_stack, self.result, index,self.visible_limit, self.done)
+        Search::new(
+            self.query,
+            self.choice_stack,
+            self.result,
+            index,
+            self.visible_limit,
+            self.done,
+        )
     }
 
     pub fn iter_matches<F: FnMut(Match<'s>)>(query: &str, choices: &Vec<&'s String>, mut f: F) {
@@ -87,7 +117,7 @@ impl<'s> Search<'s> {
 
         for choice in choices.iter() {
             match score::score(&choice, &lower_query) {
-                None     => continue,
+                None => continue,
                 Some(m) => f(m),
             };
         }
@@ -109,17 +139,23 @@ impl<'s> Search<'s> {
 
         let mut result = SortedResultSet::new(self.visible_limit);
         let mut filtered_choices: Vec<&String> = Vec::new();
-        Search::iter_matches(new_query.as_ref(), &self.choice_stack.peek(),
-                        |matching| {
-                                               let quality = matching.quality.to_f32();
-                                               let choice = matching.original;
-                                               result.push(matching.clone(), quality);
-                                               filtered_choices.push(&choice)
-                                             });
+        Search::iter_matches(new_query.as_ref(), &self.choice_stack.peek(), |matching| {
+            let quality = matching.quality.to_f32();
+            let choice = matching.original;
+            result.push(matching.clone(), quality);
+            filtered_choices.push(&choice)
+        });
 
         self.choice_stack.push(filtered_choices);
 
-        Search::new(new_query, self.choice_stack, result.as_sorted_vec(), 0, self.visible_limit, self.done)
+        Search::new(
+            new_query,
+            self.choice_stack,
+            result.as_sorted_vec(),
+            0,
+            self.visible_limit,
+            self.done,
+        )
     }
 
     pub fn backspace(mut self) -> Search<'s> {
@@ -129,13 +165,19 @@ impl<'s> Search<'s> {
         self.choice_stack.pop();
 
         let mut result = SortedResultSet::new(self.visible_limit);
-        Search::iter_matches(new_query.as_ref(), &self.choice_stack.peek(),
-                             |matching| {
-                                 let quality = matching.quality.to_f32();
-                                 result.push(matching, quality)
-                             } );
+        Search::iter_matches(new_query.as_ref(), &self.choice_stack.peek(), |matching| {
+            let quality = matching.quality.to_f32();
+            result.push(matching, quality)
+        });
 
-        Search::new(new_query, self.choice_stack, result.as_sorted_vec(), 0, self.visible_limit, self.done)
+        Search::new(
+            new_query,
+            self.choice_stack,
+            result.as_sorted_vec(),
+            0,
+            self.visible_limit,
+            self.done,
+        )
     }
 
     fn next_index(&self) -> usize {
@@ -145,7 +187,7 @@ impl<'s> Search<'s> {
         if self.current + 1 == self.num_matches() {
             0
         } else {
-            self.current+1
+            self.current + 1
         }
     }
 
@@ -155,7 +197,7 @@ impl<'s> Search<'s> {
         } else if self.current == 0 {
             self.num_matches() - 1
         } else {
-            self.current-1
+            self.current - 1
         }
     }
 

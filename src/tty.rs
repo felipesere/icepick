@@ -1,18 +1,17 @@
-use std::io::prelude::*;
+use libc::{c_int, c_ulong, c_ushort};
+use std::cmp::min;
 use std::fs::{File, OpenOptions};
+use std::io::prelude::*;
+use std::os::unix::prelude::AsRawFd;
+use std::path::Path;
 use std::process::Command;
 use std::process::Stdio;
-use std::path::Path;
-use std::os::unix::prelude::AsRawFd;
-use libc::{c_ushort, c_int, c_ulong};
 use std::str;
-use std::cmp::min;
-
 
 pub struct TTY {
     file: File,
     dimensions: (usize, usize),
-    original_state: String
+    original_state: String,
 }
 
 pub trait IO {
@@ -26,20 +25,19 @@ pub trait IO {
 
 impl IO for TTY {
     fn write(&mut self, line: &str) {
-
         let it = self.trim(line);
         match self.file.write(it.as_bytes()) {
-            Ok(k) => { k },
-            Err(e) => { panic!(e.to_string()) }
+            Ok(k) => k,
+            Err(e) => {
+                panic!("{}", e)
+            }
         };
     }
 
     fn read(&mut self) -> Option<String> {
-        let mut buffer = [0] ;
+        let mut buffer = [0];
         let res = match self.file.read(&mut buffer) {
-            Ok(c) if  c > 0 => {
-                str::from_utf8(&buffer).ok().map(|x| x.to_string())
-            },
+            Ok(c) if c > 0 => str::from_utf8(&buffer).ok().map(|x| x.to_string()),
             _ => None,
         };
         res
@@ -67,7 +65,12 @@ impl IO for TTY {
 impl TTY {
     pub fn new() -> TTY {
         let path = Path::new("/dev/tty");
-        let file = OpenOptions::new().read(true).write(true).append(true).open(&path).unwrap();
+        let file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .append(true)
+            .open(&path)
+            .unwrap();
         let dimension = TTY::get_window_size(&file);
         let orig_state = TTY::previous_state(&file);
 
@@ -86,7 +89,7 @@ impl TTY {
     }
 
     fn get_window_size(file: &File) -> (usize, usize) {
-        extern {
+        extern "C" {
             fn ioctl(fd: c_int, request: c_ulong, ...) -> c_int;
         }
         #[cfg(any(target_os = "macos", target_os = "freebsd"))]
@@ -103,7 +106,12 @@ impl TTY {
             y: c_ushort,
         }
 
-        let size = TermSize { rows: 0, cols: 0, x: 0, y: 0 };
+        let size = TermSize {
+            rows: 0,
+            cols: 0,
+            x: 0,
+            y: 0,
+        };
         if unsafe { ioctl(file.as_raw_fd(), TIOCGWINSZ, &size) } == 0 {
             (size.cols as usize, size.rows as usize)
         } else {
@@ -112,14 +120,22 @@ impl TTY {
     }
 
     fn stty(file: &File, args: &[&str]) -> Option<String> {
-        extern { fn dup2(src: c_int, dst: c_int) -> c_int;  }
+        extern "C" {
+            fn dup2(src: c_int, dst: c_int) -> c_int;
+        }
         unsafe {
             // This is a hack until a replacement for InheritFd from old_io is available.
             let raw_fd = file.as_raw_fd();
             dup2(raw_fd, 0);
-            match Command::new("stty").args(args).stdin(Stdio::inherit()).output() {
-                Err(k) => { panic!(k.to_string()) }
-                Ok(output) => { String::from_utf8(output.stdout).ok() }
+            match Command::new("stty")
+                .args(args)
+                .stdin(Stdio::inherit())
+                .output()
+            {
+                Err(k) => {
+                    panic!("{}", k)
+                }
+                Ok(output) => String::from_utf8(output.stdout).ok(),
             }
         }
     }

@@ -1,5 +1,5 @@
-use search::Search;
-use text::Text;
+use crate::search::Search;
+use crate::text::Text;
 
 pub struct Renderer;
 

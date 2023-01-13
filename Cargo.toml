@@ -24,9 +24,7 @@ doc = false
 [dependencies]
 libc = "0.2.139"
 getopts = "0.2.21"
-
-[dependencies.ansi_term]
-git = "https://github.com/ogham/rust-ansi-term.git"
+ansi_term = "0.12"
 
 [profile.release]
 opt-level = 3

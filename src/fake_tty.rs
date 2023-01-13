@@ -1,4 +1,4 @@
-use tty::IO;
+use crate::tty::IO;
 
 pub struct FakeIO {
     last: String,
