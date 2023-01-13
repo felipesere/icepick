@@ -1,6 +1,6 @@
 [package]
 name = "icepick"
-version = "0.0.1"
+version = "0.0.2"
 authors = ["Felipe Sere <felipesere@gmail.com>",
            "Uku Taht <uku.taht@gmail.com>",
            "Carol Nichols <cnichols@thinkthroughmath.com>"]
