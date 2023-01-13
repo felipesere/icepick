@@ -1,11 +1,11 @@
-use search::Search;
-use ansi::Ansi;
-use tty::TTY;
-use fake_tty::FakeIO;
-use renderer::Renderer;
-use text::Text;
+use crate::search::Search;
+use crate::ansi::Ansi;
+use crate::tty::TTY;
+use crate::fake_tty::FakeIO;
+use crate::renderer::Renderer;
+use crate::text::Text;
 use std::cmp::min;
-use text::Printable;
+use crate::text::Printable;
 
 pub struct Screen <'a> {
     pub ansi: Ansi<'a>,

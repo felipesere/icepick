@@ -1,10 +1,10 @@
-use tty::IO;
+use crate::tty::IO;
 
 pub struct Ansi<'a> {
-    pub io: Box<(IO + 'a)>,
+    pub io: Box<(dyn IO + 'a)>,
 }
 
-impl <'a> Ansi<'a> {
+impl<'a> Ansi<'a> {
     pub fn escape(&mut self, message: &str) {
         let out = Ansi::esc(message);
         self.io.write(out.as_ref());

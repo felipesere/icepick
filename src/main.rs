@@ -2,8 +2,8 @@ extern crate getopts;
 extern crate icepick;
 
 use getopts::Options;
-use std::io::BufRead;
 use std::io;
+use std::io::BufRead;
 
 use icepick::screen::Screen;
 
@@ -25,8 +25,10 @@ fn extract_initial_query() -> Option<String> {
     opts.optopt("s", "search", "initial search query", "");
 
     let matches = match opts.parse(&args[1..]) {
-        Ok(m) => { m }
-        Err(f) => { panic!(f.to_string()) }
+        Ok(m) => m,
+        Err(f) => {
+            panic!("{}", f)
+        }
     };
 
     matches.opt_str("s")
@@ -39,8 +41,9 @@ fn get_args() -> Vec<String> {
 fn read_lines() -> Vec<String> {
     let stdin = io::stdin();
     let reader = stdin.lock();
-    let l = reader.lines().map( |line| {
-        line.unwrap().trim().to_string()
-    }).collect();
+    let l = reader
+        .lines()
+        .map(|line| line.unwrap().trim().to_string())
+        .collect();
     l
 }
