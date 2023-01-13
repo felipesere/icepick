@@ -22,8 +22,8 @@ test = true
 doc = false
 
 [dependencies]
-libc = "0.2.4"
-getopts = "0.2.14"
+libc = "0.2.139"
+getopts = "0.2.21"
 
 [dependencies.ansi_term]
 git = "https://github.com/ogham/rust-ansi-term.git"
