@@ -2,6 +2,7 @@ use libc::{c_int, c_ulong, c_ushort};
 use std::cmp::min;
 use std::fs::{File, OpenOptions};
 use std::io::prelude::*;
+use std::io::Result;
 use std::os::unix::prelude::AsRawFd;
 use std::path::Path;
 use std::process::Command;
@@ -15,7 +16,7 @@ pub struct TTY {
 }
 
 pub trait IO {
-    fn write(&mut self, line: &str);
+    fn write(&mut self, line: &str) -> Result<()>;
     fn read(&mut self) -> Option<String>;
     fn last(&self) -> &str;
     fn lines(&self) -> Vec<String>;
@@ -24,14 +25,10 @@ pub trait IO {
 }
 
 impl IO for TTY {
-    fn write(&mut self, line: &str) {
+    fn write(&mut self, line: &str) -> Result<()> {
         let it = self.trim(line);
-        match self.file.write(it.as_bytes()) {
-            Ok(k) => k,
-            Err(e) => {
-                panic!("{}", e)
-            }
-        };
+        self.file.write_all(it.as_bytes())?;
+        Ok(())
     }
 
     fn read(&mut self) -> Option<String> {
@@ -48,9 +45,7 @@ impl IO for TTY {
     }
 
     fn lines(&self) -> Vec<String> {
-        let mut lines: Vec<String> = Vec::new();
-        lines.push("fail".to_string());
-        lines
+        vec!["fail".to_string()]
     }
 
     fn dimensions(&self) -> (usize, usize) {
@@ -69,7 +64,7 @@ impl TTY {
             .read(true)
             .write(true)
             .append(true)
-            .open(&path)
+            .open(path)
             .unwrap();
         let dimension = TTY::get_window_size(&file);
         let orig_state = TTY::previous_state(&file);
@@ -79,7 +74,7 @@ impl TTY {
         TTY {
             original_state: orig_state,
             dimensions: dimension,
-            file: file,
+            file,
         }
     }
 
@@ -145,6 +140,12 @@ impl TTY {
     }
 
     fn previous_state(file: &File) -> String {
-        TTY::stty(file, &["-g"]).unwrap_or("".to_string())
+        TTY::stty(file, &["-g"]).unwrap_or_default()
+    }
+}
+
+impl Default for TTY {
+    fn default() -> Self {
+        Self::new()
     }
 }

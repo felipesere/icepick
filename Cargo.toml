@@ -1,9 +1,10 @@
 [package]
 name = "icepick"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["Felipe Sere <felipesere@gmail.com>",
            "Uku Taht <uku.taht@gmail.com>",
-           "Carol Nichols <cnichols@thinkthroughmath.com>"]
+           "Carol Nichols <cnichols@thinkthroughmath.com>",
+           "Erwin van Eijk <erwinvaneijk@gmail.com>"]
 
 description = "A command-line fuzzy matcher based on Gary Bernheards selecta"
 homepage = "http://github.com/felipesere/icepick"

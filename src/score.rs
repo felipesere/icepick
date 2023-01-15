@@ -34,9 +34,9 @@ impl<'a> Match<'a> {
 impl<'a> Match<'a> {
     pub fn new(quality: Quality, range: Range<usize>, original: &'a String) -> Match<'a> {
         Match {
-            quality: quality,
-            range: range,
-            original: original,
+            quality,
+            range,
+            original,
         }
     }
 
@@ -59,7 +59,7 @@ pub fn score<'a>(choice: &'a String, query: &String) -> Option<Match<'a>> {
         Some((start, match_length)) => {
             let quality = Quality((query_length / match_length as f32) / choice_length);
             let substring = Range {
-                start: start,
+                start,
                 end: start + match_length,
             };
             Some(Match::new(quality, substring, choice))
@@ -80,8 +80,8 @@ fn slice_shift_char(line: &str) -> Option<(char, &str)> {
     }
 }
 
-fn compute_match_length(choice: &String, query: &String) -> Option<(usize, usize)> {
-    if query.len() == 0 {
+fn compute_match_length(choice: &str, query: &str) -> Option<(usize, usize)> {
+    if query.is_empty() {
         return None;
     }
     let (first, rest) = slice_shift_char(query).unwrap();
@@ -91,12 +91,9 @@ fn compute_match_length(choice: &String, query: &String) -> Option<(usize, usize
     let mut shortest_start = impossible_match;
 
     for_each_beginning(choice, first, |beginning| {
-        match match_length_from(choice, rest, beginning) {
-            Some(length) => {
-                shortest_match = min(length, shortest_match);
-                shortest_start = beginning;
-            }
-            None => {}
+        if let Some(length) = match_length_from(choice, rest, beginning) {
+            shortest_match = min(length, shortest_match);
+            shortest_start = beginning;
         };
     });
 
@@ -107,7 +104,7 @@ fn compute_match_length(choice: &String, query: &String) -> Option<(usize, usize
     }
 }
 
-fn for_each_beginning<F: FnMut(usize)>(choice: &String, beginning: char, mut f: F) {
+fn for_each_beginning<F: FnMut(usize)>(choice: &str, beginning: char, mut f: F) {
     for (idx, character) in choice.chars().enumerate() {
         if character == beginning {
             f(idx);
@@ -115,7 +112,7 @@ fn for_each_beginning<F: FnMut(usize)>(choice: &String, beginning: char, mut f: 
     }
 }
 
-fn match_length_from(choice: &String, query: &str, beginning: usize) -> Option<usize> {
+fn match_length_from(choice: &str, query: &str, beginning: usize) -> Option<usize> {
     let mut match_index = beginning;
 
     for query_char in query.chars() {
@@ -127,6 +124,6 @@ fn match_length_from(choice: &String, query: &str, beginning: usize) -> Option<u
     Some(match_index - beginning + 1)
 }
 
-fn find_first_after(choice: &String, query: char, offset: usize) -> Option<usize> {
+fn find_first_after(choice: &str, query: char, offset: usize) -> Option<usize> {
     choice[offset..].find(query).map(|index| index + offset)
 }

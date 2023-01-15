@@ -16,7 +16,7 @@ fn main() {
     let result = screen.run_search(lines, initial_query);
     screen.move_cursor_to_end();
     screen.reset();
-    println!("{}", result.unwrap_or("".to_string()));
+    println!("{}", result.unwrap_or_default());
 }
 
 fn extract_initial_query() -> Option<String> {
@@ -41,9 +41,8 @@ fn get_args() -> Vec<String> {
 fn read_lines() -> Vec<String> {
     let stdin = io::stdin();
     let reader = stdin.lock();
-    let l = reader
+    reader
         .lines()
         .map(|line| line.unwrap().trim().to_string())
-        .collect();
-    l
+        .collect()
 }

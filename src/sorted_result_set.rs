@@ -1,21 +1,22 @@
-use std::collections::BinaryHeap;
-use std::cmp::Ordering;
 use std::clone::Clone;
+use std::cmp::Ordering;
+use std::collections::BinaryHeap;
 
-pub struct SortedResultSet<T:Clone> {
+pub struct SortedResultSet<T: Clone> {
     results: BinaryHeap<ScoreResult<T>>,
     size: usize,
 }
 
-impl<T:Clone> SortedResultSet<T> {
+impl<T: Clone> SortedResultSet<T> {
     pub fn new(size: usize) -> SortedResultSet<T> {
         SortedResultSet {
-            results:  BinaryHeap::with_capacity(size + 1),
-            size:     size}
+            results: BinaryHeap::with_capacity(size + 1),
+            size,
+        }
     }
 
     pub fn push(&mut self, choice: T, quality: f32) {
-        let result = ScoreResult { quality: quality, choice: choice};
+        let result = ScoreResult { quality, choice };
 
         if self.is_full() {
             self.push_pop(result);
@@ -29,7 +30,11 @@ impl<T:Clone> SortedResultSet<T> {
     }
 
     pub fn as_sorted_vec(self) -> Vec<T> {
-        self.results.into_sorted_vec().iter().map(|score_result| score_result.choice.clone()).collect()
+        self.results
+            .into_sorted_vec()
+            .iter()
+            .map(|score_result| score_result.choice.clone())
+            .collect()
     }
 
     fn push_pop(&mut self, result: ScoreResult<T>) {
@@ -37,7 +42,6 @@ impl<T:Clone> SortedResultSet<T> {
         self.results.push(result);
     }
 }
-
 
 pub struct ScoreResult<T> {
     pub quality: f32,
@@ -47,7 +51,10 @@ pub struct ScoreResult<T> {
 impl<T> Ord for ScoreResult<T> {
     fn cmp(&self, other: &ScoreResult<T>) -> Ordering {
         // Reverses ordering to make the binary max heap a min heap in Search::filter.
-        self.quality.partial_cmp(&other.quality).unwrap_or(Ordering::Equal).reverse()
+        self.quality
+            .partial_cmp(&other.quality)
+            .unwrap_or(Ordering::Equal)
+            .reverse()
     }
 }
 
@@ -57,11 +64,10 @@ impl<T> PartialOrd for ScoreResult<T> {
     }
 }
 
-impl<T> Eq for ScoreResult<T> {
-}
+impl<T> Eq for ScoreResult<T> {}
 
 impl<T> PartialEq for ScoreResult<T> {
     fn eq(&self, other: &ScoreResult<T>) -> bool {
-       self.quality == other.quality
+        self.quality == other.quality
     }
 }

@@ -1,25 +1,27 @@
-use crate::search::Search;
 use crate::ansi::Ansi;
-use crate::tty::TTY;
 use crate::fake_tty::FakeIO;
 use crate::renderer::Renderer;
-use crate::text::Text;
-use std::cmp::min;
+use crate::search::Search;
 use crate::text::Printable;
+use crate::text::Text;
+use crate::tty::TTY;
+use std::cmp::min;
 
-pub struct Screen <'a> {
+pub struct Screen<'a> {
     pub ansi: Ansi<'a>,
     pub height: usize,
     pub width: usize,
 }
 
-impl <'a> Screen <'a>{
+impl<'a> Screen<'a> {
     pub fn new() -> Screen<'a> {
-        let ansi = Ansi { io: Box::new(TTY::new()) };
+        let ansi = Ansi {
+            io: Box::new(TTY::new()),
+        };
         let (width, height) = ansi.io.dimensions();
         Screen {
-            ansi: ansi,
-            height: height,
+            ansi,
+            height,
             width: width - 1,
         }
     }
@@ -30,7 +32,9 @@ impl <'a> Screen <'a>{
 
     pub fn fake_with_input(input: Vec<&str>) -> Screen<'a> {
         Screen {
-            ansi: Ansi { io: Box::new(FakeIO::new_with_input(input)) },
+            ansi: Ansi {
+                io: Box::new(FakeIO::new_with_input(input)),
+            },
             height: 20,
             width: 10,
         }
@@ -38,10 +42,10 @@ impl <'a> Screen <'a>{
 
     pub fn handle_keystroke(&self, search: Search<'a>, input: &str) -> Search<'a> {
         match input {
-           "\u{e}" => search.down(),
-           "\u{10}" => search.up(),
-           "\u{7f}" => search.backspace(),
-           "\n" => search.done(),
+            "\u{e}" => search.down(),
+            "\u{10}" => search.up(),
+            "\u{7f}" => search.backspace(),
+            "\n" => search.done(),
             _ => search.append_to_search(input),
         }
     }
@@ -55,8 +59,9 @@ impl <'a> Screen <'a>{
 
         for (idx, text) in result.into_iter().enumerate() {
             self.write(start_line + idx, text);
-        };
-        self.ansi.set_position(start_line, renderer.header(search).len());
+        }
+        self.ansi
+            .set_position(start_line, renderer.header(search).len());
         self.ansi.show_cursor();
     }
 
@@ -81,7 +86,11 @@ impl <'a> Screen <'a>{
         self.ansi.set_position(self.height - 1, 0);
     }
 
-    pub fn run_search(&mut self, lines: Vec<String>, initial_query: Option<String>) -> Option<String> {
+    pub fn run_search(
+        &mut self,
+        lines: Vec<String>,
+        initial_query: Option<String>,
+    ) -> Option<String> {
         let height = min(20, self.height);
         let mut search = Search::blank(&lines, initial_query, height);
 
@@ -94,10 +103,15 @@ impl <'a> Screen <'a>{
             match input {
                 Some(character) => {
                     search = self.handle_keystroke(search, character.as_ref());
-                },
+                }
                 None => break,
             };
         }
         search.selection()
+    }
+}
+impl<'a> Default for Screen<'a> {
+    fn default() -> Self {
+        Self::new()
     }
 }

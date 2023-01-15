@@ -23,10 +23,10 @@ impl<'a> Printable for Text<'a> {
                 ansi.print(&text);
             }
             Text::Normal(ref text) => {
-                ansi.print(&text);
+                ansi.print(text);
             }
             Text::Highlight(ref text) => {
-                ansi.inverted(&text);
+                ansi.inverted(text);
             }
             Text::Blank => ansi.print(""),
         };
