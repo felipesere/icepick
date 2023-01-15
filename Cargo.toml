@@ -1,9 +1,10 @@
 [package]
 name = "icepick"
-version = "0.0.1"
+version = "0.0.3"
 authors = ["Felipe Sere <felipesere@gmail.com>",
            "Uku Taht <uku.taht@gmail.com>",
-           "Carol Nichols <cnichols@thinkthroughmath.com>"]
+           "Carol Nichols <cnichols@thinkthroughmath.com>",
+           "Erwin van Eijk <erwinvaneijk@gmail.com>"]
 
 description = "A command-line fuzzy matcher based on Gary Bernheards selecta"
 homepage = "http://github.com/felipesere/icepick"
@@ -22,11 +23,9 @@ test = true
 doc = false
 
 [dependencies]
-libc = "0.2.4"
-getopts = "0.2.14"
-
-[dependencies.ansi_term]
-git = "https://github.com/ogham/rust-ansi-term.git"
+libc = "0.2.139"
+getopts = "0.2.21"
+ansi_term = "0.12"
 
 [profile.release]
 opt-level = 3

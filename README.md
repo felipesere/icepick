@@ -1,6 +1,6 @@
 #Icepick is a reimplementation of Selecta in Rust
 
-[![Build Status](https://travis-ci.org/felipesere/icepick.svg?branch=master)](https://travis-ci.org/felipesere/icepick)
+![Build Status](https://github.com/erwinvaneijk/icepick/actions/workflows/build.yml/badge.svg)
 
 A fuzzy text selector for files and anything else you need to select.
 Use it from vim, from the command line, or anywhere you can run a shell command.
@@ -23,7 +23,7 @@ Then you can pipe input to it and fuzzy select on it:
 find . -name "*.css" | icepick | xargs rm
 ```
 
-The above commend would allow you to match on all CSS files in your current 
+The above commend would allow you to match on all CSS files in your current
 directory and remove the selected one.
 
 For more uses see [the original Ruby implementation](https://github.com/garybernhardt/selecta) by Gary Bernhardt.
@@ -45,4 +45,5 @@ If you have an idea to improve performance, run `cargo bench` and see how the re
 @felipesere
 @heruku
 @carols10cents
+@erwinvaneijk
 

@@ -1,13 +1,16 @@
-use tty::IO;
+use crate::tty::IO;
 
 pub struct Ansi<'a> {
-    pub io: Box<(IO + 'a)>,
+    pub io: Box<(dyn IO + 'a)>,
 }
 
-impl <'a> Ansi<'a> {
+impl<'a> Ansi<'a> {
     pub fn escape(&mut self, message: &str) {
         let out = Ansi::esc(message);
-        self.io.write(out.as_ref());
+        match self.io.write(out.as_ref()) {
+            Ok(_) => (),
+            Err(e) => panic!("{}", e),
+        };
     }
 
     fn esc(input: &str) -> String {
@@ -33,11 +36,17 @@ impl <'a> Ansi<'a> {
 
     pub fn inverted(&mut self, line: &str) {
         let compound = format!("{}{}{}", Ansi::esc("7m"), line, Ansi::esc("0m"));
-        self.io.write(compound.as_ref());
+        match self.io.write(compound.as_ref()) {
+            Ok(_) => (),
+            Err(e) => panic!("{}", e),
+        }
     }
 
     pub fn print(&mut self, line: &str) {
-        self.io.write(line);
+        match self.io.write(line) {
+            Ok(_) => (),
+            Err(e) => panic!("{}", e),
+        };
     }
 
     pub fn blank_line(&mut self, line: usize) {
