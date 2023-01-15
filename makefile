@@ -15,3 +15,5 @@ install: build
 uninstall:
 	rm $(prefix)/bin/icepick
 
+bench:
+	rustup run nightly cargo bench
